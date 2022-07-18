@@ -1,13 +1,16 @@
+from fastapi.staticfiles import StaticFiles
 import fastapi
 from db.base import database
 import uvicorn
-from endpoints import users, auth, jobs
+from endpoints import users, auth, jobs, main_page
 
 app = fastapi.FastAPI(title="Test FastAPI")
 
 app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
+app.include_router(main_page.router, prefix="", tags=["mainpage"])
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.on_event("startup")
 async def startup():

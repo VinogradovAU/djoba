@@ -1,0 +1,25 @@
+<html>
+<head>
+    <title>Работать тут</title>
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+
+    <h1>Список запросов:</h1>
+   <ol style=" list-style-type: none;">
+       {% for job in jobs_items %}
+       <div class="job_box">
+            <li>
+                <ul>
+                <li>Item ID: {{ job.id | title }}</li>
+                <li><a href="/job/{{ job.id }}">{{ job.title }}</a></li>
+                <li>{{ job.description }}</li>
+                <li>{{ job.updated_at }}</li>
+                </ul>
+            </li>
+       </div>
+        {% endfor %}
+   </ol>
+
+</body>
+</html>

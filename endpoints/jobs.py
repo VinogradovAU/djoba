@@ -9,7 +9,8 @@ from pydantic import PositiveInt
 router = APIRouter()
 
 
-@router.get("/", response_model=List[jobs_model])
+
+@router.get("/api", response_model=List[jobs_model])
 async def read_jobs(
         limit: PositiveInt = 100,
         skip: int = 0,
@@ -19,7 +20,8 @@ async def read_jobs(
     res = await jobs.get_list_jobs(limit=limit, skip=skip)
     return res
 
-@router.post("/", response_model=jobs_model)
+
+@router.post("/api", response_model=jobs_model)
 async def create_job(
         j: jobIn_model,
         jobs: JobRepositoryes = Depends(get_job_repository),
@@ -27,7 +29,7 @@ async def create_job(
     return await jobs.create_job(user_id=current_user.id, j=j)
 
 
-@router.put("/", response_model=jobs_model)
+@router.put("/api", response_model=jobs_model)
 async def update_job(
         id: int,
         j: jobIn_model,
@@ -38,7 +40,8 @@ async def update_job(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
     return await jobs.update_job(id=id, user_id=current_user.id, j=j)
 
-@router.delete("/")
+
+@router.delete("/api")
 async def delete_job(id: int,
                      jobs: JobRepositoryes = Depends(get_job_repository),
                      current_user: User = Depends(get_current_user)):
