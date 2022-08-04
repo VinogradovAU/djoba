@@ -1,16 +1,19 @@
 from repositories.base import BaseRepository
-from models.jobs import jobs_model, jobIn_model
+from models.jobs import jobs_model, jobIn_model, jobOut_model
 from db.jobs import jobs
 from typing import List, Optional
 import datetime
 from fastapi import HTTPException, status
 from pydantic import ValidationError
-
+import uuid
 
 class JobRepositoryes(BaseRepository):
 
     async def create_job(self, user_id: int, j: jobIn_model) -> jobs_model:
+        my_uuid = str(uuid.uuid4())
+        print(f'my_uuid: {my_uuid}')
         job = jobs_model(
+            uuid=my_uuid,
             id=0,
             user_id=user_id,
             title=j.title,
@@ -28,6 +31,15 @@ class JobRepositoryes(BaseRepository):
 
     async def get_list_jobs(self, limit: int = 100, skip: int = 0) -> List[jobs_model]:
         query = jobs.select().limit(limit).offset(skip)
+        try:
+            res = await self.database.fetch_all(query=query)
+        except ValidationError as e:
+            return (e.json())
+        return res
+    
+    async def get_list_jobs_without_id(self, limit: int = 100, skip: int = 0) -> List[jobOut_model]:
+        # query = jobs.select().limit(limit).offset(skip)
+        query = f"SELECT uuid, user_id, title, description, salary_from, salary_to, created_at, updated_at FROM jobs LIMIT {limit} OFFSET {skip}"
         try:
             res = await self.database.fetch_all(query=query)
         except ValidationError as e:

@@ -1,5 +1,7 @@
 from pydantic import BaseModel
+from typing import Union
 import datetime
+from uuid import UUID
 
 
 class BaseJob(BaseModel):
@@ -11,7 +13,8 @@ class BaseJob(BaseModel):
 
 
 class jobs_model(BaseJob):
-    id: int
+    uuid: str
+    id: Union[UUID, int, str]
     user_id: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
@@ -19,3 +22,9 @@ class jobs_model(BaseJob):
 
 class jobIn_model(BaseJob):
     pass
+
+class jobOut_model(BaseJob):
+    uuid: str
+    user_id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime

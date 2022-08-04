@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from repositories.users import UserRepository
-from depends import get_user_repository, get_current_user
+from .depends import get_user_repository, get_current_user
 from typing import List
 from models.user import User, UserIn, UserOut
 from pydantic import PositiveInt
@@ -8,7 +8,7 @@ from pydantic import PositiveInt
 router = APIRouter()
 
 
-@router.get("/", response_model=List[UserOut])
+@router.get("/api", response_model=List[UserOut])
 async def read_users(
         users: UserRepository = Depends(get_user_repository),
         limit: PositiveInt = 100,
@@ -20,7 +20,7 @@ async def read_users(
     return res
 
 
-@router.post("/", response_model=User)
+@router.post("/api", response_model=User)
 async def create_user(
         user: UserIn,
         users: UserRepository = Depends(get_user_repository),
@@ -28,7 +28,7 @@ async def create_user(
     return await users.create(u=user)
 
 
-@router.put("/", response_model=User)
+@router.put("/api", response_model=User)
 async def update_user(
         id: int,
         user: UserIn,
