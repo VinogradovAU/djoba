@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from repositories.users import UserRepository
-from depends import get_user_repository, get_current_user
+from .depends import get_user_repository, get_current_user
 from typing import List
 from models.user import User, UserIn, UserOut
 from pydantic import PositiveInt

@@ -1,11 +1,16 @@
+from enum import unique
 import sqlalchemy
 from .base import metadata
 import datetime
+from sqlalchemy_utils import UUIDType
+import uuid
+from sqlalchemy.dialects.postgresql import UUID
 
 jobs = sqlalchemy.Table(
     'jobs',
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, autoincrement=True, unique=True),
+    sqlalchemy.Column("uuid", sqlalchemy.String, unique=True),
     sqlalchemy.Column("user_id", sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), nullable=False),
     sqlalchemy.Column("title", sqlalchemy.String),
     sqlalchemy.Column("description", sqlalchemy.String),
