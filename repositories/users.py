@@ -35,7 +35,7 @@ class UserRepository(BaseRepository):
             return None
         return User.parse_obj(user)
 
-    async def create(self, u: UserIn) -> User:
+    async def create(self, u: UserIn) -> Optional[User]:
         user = User(
             name=u.name,
             email=u.email,
@@ -48,8 +48,9 @@ class UserRepository(BaseRepository):
         values = {**user.dict()}
         values.pop("id", None)
         query = users.insert().values(**values)
-        user.id = await self.database.execute(query)
-        user.hashed_password = "hidden"
+        user = await self.database.execute(query)
+        if user is None:
+            return None
         return user
 
     async def update_user(self, id: int, u: UserIn) -> User:
@@ -77,3 +78,20 @@ class UserRepository(BaseRepository):
             return None
         return User.parse_obj(user)
 
+    async def create_user_from_formtemplate(self, u: UserIn) -> Optional[User]:
+        user = User(
+            name=u.name,
+            email=u.email,
+            hashed_password=hashed_password(u.hashed_password),
+            is_company=u.is_company,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow()
+        )
+
+        values = {**user.dict()}
+        values.pop("id", None)
+        query = users.insert().values(**values)
+        user = await self.database.execute(query)
+        if user is None:
+            return None
+        return user

@@ -30,7 +30,7 @@ class LoginForm:
         return False
 
 
-class RegisterFormForm:
+class RegisterForm:
     def __init__(self, request: Request):
         self.request: Request = request
         self.errors: List = []

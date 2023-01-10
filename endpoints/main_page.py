@@ -30,7 +30,7 @@ async def main_page(
         # "jobs_items": jobs_items,
     }
 
-    # просто зашли за главную
+    # просто зашли на главную
     if manager.direction == '/':
         print(f'main_page-->main_page')
         if manager.autorization:
@@ -44,6 +44,10 @@ async def main_page(
                 if decode_token is None:
                     print(f'token не протух')
                     context['authenticated'] = True
+                    if manager.user:
+                        context['user_name'] = manager.user.name
+                        context['user_id'] = manager.user.id
+
             except Exception as e:
                 print(f'ошибка проверки token')
                 context['authenticated'] = True
@@ -58,6 +62,9 @@ async def main_page(
         manager.set_cookie = True
         manager.user_status = 'online'
         context['authenticated'] = True
+        if manager.user:
+            context['user_name'] = manager.user.name
+            context['user_id'] = manager.user.id
         response = templates.TemplateResponse("index.html", context=context)
         response.set_cookie(key="access_token", value=manager.access_token, httponly=True)
         manager.direction = '/'

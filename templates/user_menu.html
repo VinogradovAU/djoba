@@ -4,6 +4,9 @@
         {% if authenticated %}
         <h4><a href="/auth/profil">Профиль</a></h4>
         <h4><a href="/auth/logout">Выход</a></h4>
+            {% if user_name %}
+            <h2> Привет {{user_id}}: {{user_name}} </h2>
+            {% endif %}
         {% else %}
         <h4><a href="/auth/login">Вход</a></h4>
         <h4><a href="/auth/registration">Регистрация</a></h4>

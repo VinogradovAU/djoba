@@ -9,7 +9,7 @@ class User(BaseModel):
     name: str
     email: EmailStr
     hashed_password: str
-    is_company: bool
+    is_company: bool = False
     status_online: bool = False
     is_admin: bool = False
     created_at: Optional[datetime.datetime] = None

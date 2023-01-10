@@ -2,11 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request, Form
 from models.my_token import MyToken, Login
 from repositories.users import UserRepository
 from endpoints.depends import get_user_repository
-from core.security import verify_password, create_access_token
+from core.security import verify_password, create_access_token, hashed_password
 from fastapi.templating import Jinja2Templates
-from auth.forms import LoginForm
+from auth.forms import LoginForm, RegisterForm
 from fastapi.responses import RedirectResponse
 from core.security import manager
+from models.user import User
+import datetime
 
 templates = Jinja2Templates(directory="templates")
 router = APIRouter()
@@ -18,6 +20,51 @@ router = APIRouter(include_in_schema=False)
 async def registration(request: Request):
     print('this is get registration function')
     return templates.TemplateResponse("registration.html", {"request": request})
+
+
+@router.post("/registration")
+async def registration_post(request: Request, users: UserRepository = Depends(get_user_repository)):
+    print('this is POST registration function')
+    form = RegisterForm(request)
+    await form.load_data()
+    if await form.is_valid():
+        print("form is valid - ok")
+        try:
+            # проверяем есть юзер с таким мылом в системе или нет. если нет, то генерим под новое мыло токен
+            access_token = await verify_register_new_user(form, users)
+            if access_token:
+                print(f'сгенерирован access_token: {access_token}')
+                # тут надо завести нового юзера в бд и залогинить его
+                UserA = User(
+                    name=form.email.split('@')[0],
+                    email=form.email,
+                    hashed_password=form.password,
+                    is_company=False,
+                    status_online=True,
+                    is_admin=False,
+                    created_at=datetime.datetime.now(),
+                    updated_at=datetime.datetime.now(),
+                )
+                new_user = await users.create_user_from_formtemplate(u=UserA)
+                # настраиваем менеджер для залогиненного юзера
+                manager.access_token = access_token
+                manager.direction = 'login'
+                if new_user:
+                    manager.user = await users.get_by_email(form.email)
+                return RedirectResponse("/", status_code=302)
+            form.__dict__.update(msg="")
+            form.__dict__.get("errors").append("Incorrect Email or Password")
+            form.__dict__.update(authenticated=False)
+            response = templates.TemplateResponse("registration.html", form.__dict__)
+            return response
+
+        except HTTPException:
+            form.__dict__.update(msg="")
+            form.__dict__.get("errors").append("Incorrect Email or Password")
+            return templates.TemplateResponse("registration.html", form.__dict__)
+    form.__dict__.update(msg="")
+    form.__dict__.get("errors").append("Incorrect Email or Password")
+    return templates.TemplateResponse("registration.html", form.__dict__)
 
 
 @router.post("/", response_model=MyToken)
@@ -56,7 +103,7 @@ async def verify_login(form: Form, users: UserRepository = Depends(get_user_repo
 
 
 @router.post("/login")
-async def login(request: Request, users: UserRepository = Depends(get_user_repository)):
+async def login_post(request: Request, users: UserRepository = Depends(get_user_repository)):
     print('this is POST login function')
     form = LoginForm(request)
     await form.load_data()
@@ -68,6 +115,7 @@ async def login(request: Request, users: UserRepository = Depends(get_user_repos
                 print(f'сгенерирован access_token: {access_token}')
                 manager.access_token = access_token
                 manager.direction = 'login'
+                manager.user = await users.get_by_email(form.email)
                 return RedirectResponse("/", status_code=302)
             form.__dict__.update(msg="")
             form.__dict__.get("errors").append("Incorrect Email or Password")
@@ -82,3 +130,13 @@ async def login(request: Request, users: UserRepository = Depends(get_user_repos
     form.__dict__.update(msg="")
     form.__dict__.get("errors").append("Incorrect Email or Password")
     return templates.TemplateResponse("login.html", form.__dict__)
+
+
+async def verify_register_new_user(form: Form, users: UserRepository = Depends(get_user_repository)):
+    user = await users.get_by_email(form.email)
+    # если юзер есть то возвращем false
+    if user:
+        return False
+    # если юзера нет то генерим для новго юзера токен
+    access_token = create_access_token({"sub": form.email})
+    return access_token

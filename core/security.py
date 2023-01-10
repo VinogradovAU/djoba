@@ -1,6 +1,6 @@
 import datetime
 from typing import Optional, List, Any
-from fastapi import Request, HTTPException, status, Response
+from fastapi import Request, HTTPException, status, Form, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from passlib.context import CryptContext
 from jose import jwt
@@ -57,7 +57,8 @@ class Manager():
                  response: Any = None,
                  set_cookie: bool = False,
                  access_token: str = '',
-                 direction: str = '/', #login или logout пришли на главную по 302 или просто на главную заход
+                 direction: str = '/',  # login или logout пришли на главную по 302 или просто на главную заход
+                 user: Any = None,
                  ):
         self.user_status = user_status
         self.autorization = autorization
@@ -66,7 +67,7 @@ class Manager():
         self.set_cookie = set_cookie
         self.access_token = ''
         self.direction = direction
-
+        self.user = user
 
 
 manager = Manager()
