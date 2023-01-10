@@ -1,15 +1,13 @@
-<html>
-<head>
-    <title>Item Details</title>
-    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
-</head>
-<body>
+{% extends "index.html" %}
 
+{% block title %}
+  <title>Item Details</title>
+{% endblock %}
+
+{% block content %}
     <h1>Item ID: {{ id }}</h1>
     <p>{{ job_item.title }}</p>
     <p>{{ job_item.description }}</p>
     <p>Цена от:{{ job_item.salary_from }} до {{ job_item.salary_to }} руб.</p>
     <p>Дата обновления: {{ job_item.updated_at }}</p>
-
-</body>
-</html>
+{% endblock %}

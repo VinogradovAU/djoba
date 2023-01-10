@@ -1,15 +1,23 @@
+import datetime
+
 from fastapi.staticfiles import StaticFiles
 import fastapi
+from models.user import User
+from core.config import ADMIN_USERMANE, ADMIN_PASSWORD, ADMIN_EMAIL
+from core.security import hashed_password
 from db.base import database
 import uvicorn
 from endpoints import users, auth, jobs, main_page
 from fastapi.middleware.cors import CORSMiddleware
+from db.users import users as db_users
 
 app = fastapi.FastAPI(title="Djoba Project")
 
 origins = [
     "http://localhost",
     "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "http://192.168.1.10:8000",
 ]
 
 app.add_middleware(
@@ -30,7 +38,24 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.on_event("startup")
 async def startup():
     await database.connect()
-
+    query = db_users.select().where(db_users.c.email == ADMIN_EMAIL)
+    user = await database.fetch_one(query=query)
+    if user is None:
+        #----------------------------------
+        user = User(
+            name=ADMIN_USERMANE,
+            email=ADMIN_EMAIL,
+            hashed_password=hashed_password(ADMIN_PASSWORD),
+            is_company=False,
+            is_admin=True,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow()
+        )
+        values = {**user.dict()}
+        values.pop("id", None)
+        query = db_users.insert().values(**values)
+        user.id = await database.execute(query)
+        #----------------------------------
 
 @app.on_event("shutdown")
 async def shutdown():

@@ -10,6 +10,8 @@ users = sqlalchemy.Table(
     sqlalchemy.Column("name", sqlalchemy.String),
     sqlalchemy.Column("hashed_password", sqlalchemy.String),
     sqlalchemy.Column("is_company", sqlalchemy.Boolean),
+    sqlalchemy.Column("is_admin", sqlalchemy.Boolean, default=False),
+    sqlalchemy.Column("status_online", sqlalchemy.Boolean, default=False),
     sqlalchemy.Column("created_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),
     sqlalchemy.Column("updated_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),
 )

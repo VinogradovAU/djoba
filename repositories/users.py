@@ -76,3 +76,4 @@ class UserRepository(BaseRepository):
         if user is None:
             return None
         return User.parse_obj(user)
+

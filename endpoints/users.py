@@ -20,7 +20,7 @@ async def read_users(
     return res
 
 
-@router.post("/api", response_model=User)
+@router.post("/api", response_model=User, response_model_exclude={"hashed_password"})
 async def create_user(
         user: UserIn,
         users: UserRepository = Depends(get_user_repository),
@@ -28,7 +28,7 @@ async def create_user(
     return await users.create(u=user)
 
 
-@router.put("/api", response_model=User)
+@router.put("/api", response_model=User, response_model_exclude={"hashed_password"})
 async def update_user(
         id: int,
         user: UserIn,
@@ -38,5 +38,5 @@ async def update_user(
     if old_user is None or old_user.email != current_user.email:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found user")
     us = await users.update_user(id=id, u=user)
-    us.hashed_password = "hidden"
+    # us.hashed_password = "hidden"
     return us

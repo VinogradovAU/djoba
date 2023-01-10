@@ -9,3 +9,7 @@ class MyToken(BaseModel):
 class Login(BaseModel):
     email: EmailStr
     password: str
+
+class Token_for_login(BaseModel):
+    access_token: str
+

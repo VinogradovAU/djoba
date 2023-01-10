@@ -1,25 +1,63 @@
-<html>
+<!doctype html>
+<html lang="ru">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="{{ url_for('static', path='/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+    {% block title %}
     <title>Работать тут</title>
-    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+    {% endblock %}
+
 </head>
 <body>
+<header>
+    <div class="container">
+        <!-- Stack the columns on mobile by making one full-width and the other half-width -->
+        {% include 'user_menu.html' %}
+    </div>
 
-    <h1>Список запросов:</h1>
-   <ol style=" list-style-type: none;">
-       {% for job in jobs_items %}
-       <div class="job_box">
-            <li>
-                <ul>
-                <li>Item ID: {{ job.id | title }}</li>
-                <li><a href="/job/{{ job.id }}">{{ job.title }}</a></li>
-                <li>{{ job.description }}</li>
-                <li>{{ job.updated_at }}</li>
-                </ul>
-            </li>
-       </div>
-        {% endfor %}
-   </ol>
+</header>
+
+<content>
+    <div class="container ttd">
+        <div class="row ttd">
+            <div calss="col-12 ttd">
+                {% block content %}
+
+                <h1>Список запросов:</h1>
+                `
+                <ol style=" list-style-type: none;">
+                    {% for job in jobs_items %}
+                    <div class="job_box">
+                        <li>
+                            <ul>
+                                <li>Item ID: {{ job.id | title }}</li>
+                                <li><a href="/job/{{ job.id }}">{{ job.title }}</a></li>
+                                <li>{{ job.description }}</li>
+                                <li>{{ job.updated_at }}</li>
+                            </ul>
+                        </li>
+                    </div>
+                    {% endfor %}
+                    `
+                </ol>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</content>
+<footer>
+    <div class="container">
+        <div class="row ttd">
+            <div class="col-12 ttd">
+                FOOTER
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
 
 </body>
 </html>

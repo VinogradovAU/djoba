@@ -1,0 +1,27 @@
+.ttd {
+border: 1px solid;
+}
+h1 {
+    color: green;
+}
+
+div.job_box {
+	border: 1px solid;
+}
+
+header {
+height: 150px;
+border: 1px solid;
+}
+
+header .row {
+height: 150px;
+}
+
+content {
+border: 1px solid;
+}
+
+footer {
+border: 1px solid;
+};

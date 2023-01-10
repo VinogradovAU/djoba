@@ -1,6 +1,6 @@
 import datetime
-
-from fastapi import Request, HTTPException, status
+from typing import Optional, List, Any
+from fastapi import Request, HTTPException, status, Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from passlib.context import CryptContext
 from jose import jwt
@@ -20,7 +20,9 @@ def verify_password(password: str, hash: str) -> bool:
 def create_access_token(data: dict):
     to_encode = data.copy()
     to_encode.update({"exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITM)
+    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITM)
+    print(f'token: {token}')
+    return token
 
 
 def decode_access_token(token: str):
@@ -45,3 +47,26 @@ class JWTBearer(HTTPBearer):
             return credentials.credentials
         else:
             raise exp
+
+
+class Manager():
+
+    def __init__(self, user_status: str = 'offline',
+                 autorization: bool = False,
+                 resp: Optional[List] = None,
+                 response: Any = None,
+                 set_cookie: bool = False,
+                 access_token: str = '',
+                 direction: str = '/', #login или logout пришли на главную по 302 или просто на главную заход
+                 ):
+        self.user_status = user_status
+        self.autorization = autorization
+        self.resp = resp
+        self.response = response
+        self.set_cookie = set_cookie
+        self.access_token = ''
+        self.direction = direction
+
+
+
+manager = Manager()

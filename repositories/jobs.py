@@ -74,7 +74,12 @@ class JobRepositoryes(BaseRepository):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="job not found")
         return jobs_model.parse_obj(job)
 
-
+    async def get_job_by_uuid(self, uuid: str) -> Optional[jobs_model]:
+        query = jobs.select().where(jobs.c.uuid==uuid)
+        job = await self.database.fetch_one(query=query)
+        if job is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="job not found")
+        return jobs_model.parse_obj(job)
 
 
 

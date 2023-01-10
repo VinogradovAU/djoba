@@ -9,6 +9,15 @@ from pydantic import PositiveInt
 router = APIRouter()
 
 
+@router.get("/api/job/{uuid}", response_model=jobs_model)
+async def read_job(
+        uuid: str,
+        jobs: JobRepositoryes = Depends(get_job_repository)):
+    res = await jobs.get_job_by_uuid(uuid=uuid)
+    if not res:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+    return res
+
 @router.get("/api/job/{id}", response_model=jobs_model)
 async def read_job(
         id: int,

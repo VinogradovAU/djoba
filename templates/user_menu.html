@@ -1,0 +1,12 @@
+<div class="row ttd">
+    <div class="col-md-8 ttd">.col-md-8</div>
+    <div class="col-6 col-md-4 ttd">
+        {% if authenticated %}
+        <h4><a href="/auth/profil">Профиль</a></h4>
+        <h4><a href="/auth/logout">Выход</a></h4>
+        {% else %}
+        <h4><a href="/auth/login">Вход</a></h4>
+        <h4><a href="/auth/registration">Регистрация</a></h4>
+        {% endif %}
+    </div>
+</div>

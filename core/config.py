@@ -8,3 +8,7 @@ SECRET_KEY = config("EE_SECRET_KEY", cast=str, default="8f0742c8ad3faa0f7941e90e
 
 ALGORITM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+ADMIN_USERMANE = 'admin'
+ADMIN_PASSWORD = 'admin1234'
+ADMIN_EMAIL = 'admin@djoba.ru'
