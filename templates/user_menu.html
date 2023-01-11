@@ -2,10 +2,10 @@
     <div class="col-md-8 ttd">.col-md-8</div>
     <div class="col-6 col-md-4 ttd">
         {% if authenticated %}
-        <h4><a href="/auth/profil">Профиль</a></h4>
+        <h4><a href="/profile/{{user_uuid}}">Профиль</a></h4>
         <h4><a href="/auth/logout">Выход</a></h4>
             {% if user_name %}
-            <h2> Привет {{user_id}}: {{user_name}} </h2>
+            <h2> Привет {{user_name}} </h2>
             {% endif %}
         {% else %}
         <h4><a href="/auth/login">Вход</a></h4>

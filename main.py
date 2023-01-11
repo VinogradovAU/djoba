@@ -7,9 +7,10 @@ from core.config import ADMIN_USERMANE, ADMIN_PASSWORD, ADMIN_EMAIL
 from core.security import hashed_password
 from db.base import database
 import uvicorn
-from endpoints import users, auth, jobs, main_page
+from endpoints import users, auth, jobs, main_page, profile
 from fastapi.middleware.cors import CORSMiddleware
 from db.users import users as db_users
+import uuid
 
 app = fastapi.FastAPI(title="Djoba Project")
 
@@ -32,6 +33,7 @@ app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
 app.include_router(main_page.router, prefix="", tags=["mainpage"])
+app.include_router(profile.router, prefix="", tags=["profile"])
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
@@ -42,8 +44,11 @@ async def startup():
     user = await database.fetch_one(query=query)
     if user is None:
         #----------------------------------
+        my_uuid = str(uuid.uuid4())
+        # print(my_uuid)
         user = User(
             name=ADMIN_USERMANE,
+            uuid=my_uuid,
             email=ADMIN_EMAIL,
             hashed_password=hashed_password(ADMIN_PASSWORD),
             is_company=False,

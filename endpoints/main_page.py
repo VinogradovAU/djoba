@@ -46,7 +46,7 @@ async def main_page(
                     context['authenticated'] = True
                     if manager.user:
                         context['user_name'] = manager.user.name
-                        context['user_id'] = manager.user.id
+                        context['user_uuid'] = manager.user.uuid
 
             except Exception as e:
                 print(f'ошибка проверки token')
@@ -64,7 +64,7 @@ async def main_page(
         context['authenticated'] = True
         if manager.user:
             context['user_name'] = manager.user.name
-            context['user_id'] = manager.user.id
+            context['user_uuid'] = manager.user.uuid
         response = templates.TemplateResponse("index.html", context=context)
         response.set_cookie(key="access_token", value=manager.access_token, httponly=True)
         manager.direction = '/'

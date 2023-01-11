@@ -9,7 +9,7 @@ from db.users import users
 from repositories.base import BaseRepository
 from core.security import hashed_password
 from sqlalchemy import select
-
+import uuid
 
 
 class UserRepository(BaseRepository):
@@ -35,8 +35,17 @@ class UserRepository(BaseRepository):
             return None
         return User.parse_obj(user)
 
+    async def get_by_uuid(self, uuid: str) -> Optional[User]:
+        query = users.select().where(users.c.uuid == uuid)
+        user = await database.fetch_one(query=query)
+        if user is None:
+            return None
+        return User.parse_obj(user)
+
     async def create(self, u: UserIn) -> Optional[User]:
+        my_uuid = str(uuid.uuid4())
         user = User(
+            uuid=my_uuid,
             name=u.name,
             email=u.email,
             hashed_password=hashed_password(u.password),
@@ -81,6 +90,7 @@ class UserRepository(BaseRepository):
     async def create_user_from_formtemplate(self, u: UserIn) -> Optional[User]:
         user = User(
             name=u.name,
+            uuid=u.uuid,
             email=u.email,
             hashed_password=hashed_password(u.hashed_password),
             is_company=u.is_company,

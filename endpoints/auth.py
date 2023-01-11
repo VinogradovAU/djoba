@@ -9,9 +9,10 @@ from fastapi.responses import RedirectResponse
 from core.security import manager
 from models.user import User
 import datetime
+import uuid
 
 templates = Jinja2Templates(directory="templates")
-router = APIRouter()
+# router = APIRouter()
 
 router = APIRouter(include_in_schema=False)
 
@@ -35,8 +36,10 @@ async def registration_post(request: Request, users: UserRepository = Depends(ge
             if access_token:
                 print(f'сгенерирован access_token: {access_token}')
                 # тут надо завести нового юзера в бд и залогинить его
+                my_uuid = str(uuid.uuid4())
                 UserA = User(
                     name=form.email.split('@')[0],
+                    uuid=my_uuid,
                     email=form.email,
                     hashed_password=form.password,
                     is_company=False,
@@ -116,6 +119,10 @@ async def login_post(request: Request, users: UserRepository = Depends(get_user_
                 manager.access_token = access_token
                 manager.direction = 'login'
                 manager.user = await users.get_by_email(form.email)
+                manager.autorization = True
+                print(f'manager.user.uuid:{manager.user.uuid}')
+                if manager.user.is_admin:
+                    return RedirectResponse(f"/profile/{manager.user.uuid}", status_code=302)
                 return RedirectResponse("/", status_code=302)
             form.__dict__.update(msg="")
             form.__dict__.get("errors").append("Incorrect Email or Password")

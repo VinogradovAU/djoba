@@ -1,11 +1,13 @@
 import datetime
-from typing import Optional
+from typing import Optional, Union
+from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, validator, constr
 
 
 class User(BaseModel):
     id: Optional[int] = None
+    uuid: str
     name: str
     email: EmailStr
     hashed_password: str
