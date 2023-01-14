@@ -15,7 +15,7 @@
 <header>
     <div class="container">
         <!-- Stack the columns on mobile by making one full-width and the other half-width -->
-        {% include 'user_menu.html' %}
+        {% include 'main_menu.html' %}
     </div>
 
 </header>
@@ -33,8 +33,8 @@
                 <h3>Данные администратора:</h3>
                     {%if user_object %}
                     <li>
-                        <lo>UUID: {{user_object.id}}</lo>
-                        <lo>ID: {{user_object.uuid}}</lo>
+                        <lo>ID: {{user_object.id}}</lo>
+                        <lo>UUID: {{user_object.uuid}}</lo>
                         <lo>Имя: {{user_object.name}}</lo>
                     </li>
 
@@ -43,8 +43,51 @@
                 {% endblock %}
             </div>
         </div>
+        <div class="row ttd">
+            <div calss="col-md-12">
+                 <h4>Список пользователей:</h4>
+                <br>
+            </div>
+        </div>
+
+        <div class="container ttd">
+                {% if all_users %}
+                    {% for item in all_users %}
+                        <div calss="row ttd">
+                            <div class="col-md-3 ttd">
+                                <label >ID пользователя: {{item.id}}
+                                {%if authenticated %}
+                                <label style="color: green"> (ONLINE)</label>
+                                {%else%}
+                                <label style="color: gray"> (OFFLINE)</label>
+                                {%endif%}
+                                </label>
+                            </div>
+                            <div class="col-md-3 ttd">
+                                <label>Имя {{item.name}}</label>
+                            </div>
+                             <div class="col-md-3 ttd">
+                                <label>email: {{item.email}}</label>
+                            </div>
+                            <div class="col-md-3 ttd">
+                                {%if item.status_banned %}
+                                <label style="color: red">Заблокирован</label>
+                                <a href="/activation/{{item.uuid}}">разблокировать</a>
+                                {%else%}
+                                <label style="color: green">Активный</label>
+                                <a href="/deactivate/{{item.uuid}}">Заблокировать</a>
+                                {%endif%}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                <h4>список пользователей пуст</h4>
+                {% endif %}
+        </div>
+
     </div>
 </content>
+
 <footer>
     <div class="container">
         <div class="row ttd">

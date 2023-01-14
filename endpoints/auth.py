@@ -82,9 +82,10 @@ async def api_login(mylogin: Login, users: UserRepository = Depends(get_user_rep
 
 
 @router.get("/logout")
-async def logout(request: Request):
+async def logout(request: Request, users: UserRepository = Depends(get_user_repository)):
     print('this is get logout function')
     manager.direction = 'logout'
+    await users.user_set_status(manager.user, False)
     return RedirectResponse(url="/", status_code=302)
 
 
@@ -120,6 +121,7 @@ async def login_post(request: Request, users: UserRepository = Depends(get_user_
                 manager.direction = 'login'
                 manager.user = await users.get_by_email(form.email)
                 manager.autorization = True
+                await users.user_set_status(manager.user, True)
                 print(f'manager.user.uuid:{manager.user.uuid}')
                 if manager.user.is_admin:
                     return RedirectResponse(f"/profile/{manager.user.uuid}", status_code=302)

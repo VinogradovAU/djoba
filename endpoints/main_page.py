@@ -50,7 +50,7 @@ async def main_page(
 
             except Exception as e:
                 print(f'ошибка проверки token')
-                context['authenticated'] = True
+                context['authenticated'] = False
 
         response = templates.TemplateResponse("index.html", context=context)
         return response

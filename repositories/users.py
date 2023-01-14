@@ -13,12 +13,36 @@ import uuid
 
 
 class UserRepository(BaseRepository):
+    async def user_set_status(self, u: UserIn, status_online: bool) -> User:
+
+        user = User(
+            id=u.id,
+            uuid=u.uuid,
+            name=u.name,
+            email=u.email,
+            is_admin=u.is_admin,
+            hashed_password=u.hashed_password,
+            status_online=status_online,
+            updated_at=datetime.datetime.utcnow()
+        )
+        values = {**user.dict()}
+        query = users.update().where(users.c.id == u.id).values(**values)
+        return await self.database.execute(query)
+
 
     async def get_all(self, limit: int = 100, skip: int = 0) -> List[UserOut]:
 
         try:
-            query = select(users.c.id, users.c.name, users.c.email, users.c.is_company, users.c.created_at,
-                           users.c.updated_at).limit(limit).offset(skip)
+            query = select(users.c.id,
+                           users.c.uuid,
+                           users.c.name,
+                           users.c.email,
+                           users.c.is_company,
+                           users.c.is_admin,
+                           users.c.status_banned,
+                           users.c.status_online,
+                           users.c.created_at,
+                           users.c.updated_at).limit(limit).offset(skip).order_by(users.c.is_admin)
 
             res = await database.fetch_all(query=query)
         except ValidationError as e:
@@ -65,6 +89,7 @@ class UserRepository(BaseRepository):
     async def update_user(self, id: int, u: UserIn) -> User:
         user = User(
             id=id,
+            uuid=u.uuid,
             name=u.name,
             email=u.email,
             hashed_password=hashed_password(u.password),
@@ -72,12 +97,11 @@ class UserRepository(BaseRepository):
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow()
         )
-
         values = {**user.dict()}
         values.pop("created_at", None)
         values.pop("id", None)
         query = users.update().where(users.c.id == id).values(**values)
-        await self.database.execute(query)
+        user = await self.database.execute(query)
         return user
 
     async def get_by_email(self, email: str) -> Optional[User]:

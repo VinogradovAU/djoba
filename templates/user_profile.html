@@ -15,14 +15,16 @@
 <header>
     <div class="container">
         <!-- Stack the columns on mobile by making one full-width and the other half-width -->
-        {% include 'user_menu.html' %}
+        {% include 'main_menu.html' %}
     </div>
 
 </header>
 
 <content>
+
     <div class="container ttd">
 <!--        тут будет блок меню для личного кабинета пользователя-->
+        <h3>Блок меню пользователя:</h3>
     </div>
     <div class="container ttd">
         <div class="row ttd">
@@ -35,6 +37,8 @@
                         <lo>UUID: {{user_object.id}}</lo>
                         <lo>ID: {{user_object.uuid}}</lo>
                         <lo>Имя: {{user_object.name}}</lo>
+                        <lo>Email: {{user_object.email}}</lo>
+                        <lo>is_company: {{user_object.is_company}}</lo>
                     </li>
 
                     {%endif%}

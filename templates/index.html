@@ -15,7 +15,8 @@
 <header>
     <div class="container">
         <!-- Stack the columns on mobile by making one full-width and the other half-width -->
-        {% include 'user_menu.html' %}
+
+        {% include 'main_menu.html' %}
     </div>
 
 </header>
@@ -26,7 +27,7 @@
             <div calss="col-12 ttd">
                 {% block content %}
 
-                <h1>Список запросов:</h1>
+                <h4>Список запросов:</h4>
                 `
                 <ol style=" list-style-type: none;">
                     {% for job in jobs_items %}
