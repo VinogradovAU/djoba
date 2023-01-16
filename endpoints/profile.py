@@ -13,28 +13,27 @@ from core.security import manager
 router = APIRouter(include_in_schema=False)
 
 
-@router.get("/profile/{uuid}")
+@router.get("/profile")
 async def profil(
         request: Request,
-        uuid: str,
         users: UserRepository = Depends(get_user_repository)):
     print('this is get profile function')
-    print(f'get user id: {uuid}')
 
-    user = await users.get_by_uuid(uuid)
-    if user:
+
+    # user = await users.get_by_uuid(uuid)
+    if manager.user:
         context = {
             "request": request,
-            "user_object": user,
-            "user_name": user.name,
-            "user_uuid": user.uuid,
+            "user_object": manager.user,
+            "user_name": manager.user.name,
+            "user_uuid": manager.user.uuid,
         }
         if manager.autorization:
             context['authenticated'] = True
         else:
             return RedirectResponse("/auth/login", status_code=302)
 
-        if user.is_admin:
+        if manager.user.is_admin:
             all_users = await users.get_all(limit=100, skip=0)
             for k in all_users:
                 print(f'uuid: {k.uuid}')
