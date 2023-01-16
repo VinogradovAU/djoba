@@ -121,10 +121,10 @@ async def login_post(request: Request, users: UserRepository = Depends(get_user_
                 manager.direction = 'login'
                 manager.user = await users.get_by_email(form.email)
                 manager.autorization = True
+                if manager.user.is_admin:
+                    manager.is_admin = True
                 await users.user_set_status(manager.user, True)
                 print(f'manager.user.uuid:{manager.user.uuid}')
-                if manager.user.is_admin:
-                    return RedirectResponse(f"/profile/{manager.user.uuid}", status_code=302)
                 return RedirectResponse("/", status_code=302)
             form.__dict__.update(msg="")
             form.__dict__.get("errors").append("Incorrect Email or Password")

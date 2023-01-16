@@ -1,10 +1,10 @@
 import datetime
-
+from fastapi import Request, Cookie
 from fastapi.staticfiles import StaticFiles
 import fastapi
 from models.user import User
 from core.config import ADMIN_USERMANE, ADMIN_PASSWORD, ADMIN_EMAIL
-from core.security import hashed_password
+from core.security import hashed_password, decode_access_token, manager
 from db.base import database
 import uvicorn
 from endpoints import users, auth, jobs, main_page, profile
@@ -37,13 +37,43 @@ app.include_router(profile.router, prefix="", tags=["profile"])
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    response = await call_next(request)
+    print(f'сработал middleware')
+    try:
+        access_token = request.cookies.get('access_token')
+        print(f'cookies содержат token: {access_token}')
+        decode_token = decode_access_token(access_token)
+        print(f'decode_token: {decode_token}')
+        if decode_token is None:
+            print(f'token протух')
+            manager.autorization = False
+            manager.set_cookie = False
+            request.cookies.clear()
+        else:
+            print(f'token НЕ протух')
+            manager.autorization = True
+            manager.set_cookie = True
+            manager.user_status = 'Online'
+            # if manager.user:
+            #     context['user_name'] = manager.user.name
+            #     context['user_uuid'] = manager.user.uuid
+
+    except Exception as e:
+        print(f'ошибка проверки token')
+        manager.autorization = False
+        manager.set_cookie = False
+    return response
+
+
 @app.on_event("startup")
 async def startup():
     await database.connect()
     query = db_users.select().where(db_users.c.email == ADMIN_EMAIL)
     user = await database.fetch_one(query=query)
     if user is None:
-        #----------------------------------
+        # ----------------------------------
         my_uuid = str(uuid.uuid4())
         # print(my_uuid)
         user = User(
@@ -60,7 +90,8 @@ async def startup():
         values.pop("id", None)
         query = db_users.insert().values(**values)
         user.id = await database.execute(query)
-        #----------------------------------
+        # ----------------------------------
+
 
 @app.on_event("shutdown")
 async def shutdown():

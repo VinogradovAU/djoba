@@ -55,30 +55,31 @@
                     {% for item in all_users %}
                         <div calss="row ttd">
                             <div class="col-md-3 ttd">
-                                <label >ID пользователя: {{item.id}}
+                                <label><b>ID пользователя:<b></b> {{item.id}}
                                 {%if authenticated %}
-                                <label style="color: green"> (ONLINE)</label>
+                                <label style="color: green"> <b>(ONLINE)</b></label>
                                 {%else%}
-                                <label style="color: gray"> (OFFLINE)</label>
+                                <label style="color: gray"><b>(OFFLINE)</b></label>
                                 {%endif%}
                                 </label>
                             </div>
                             <div class="col-md-3 ttd">
-                                <label>Имя {{item.name}}</label>
+                                <label><b>Имя:</b> {{item.name}}</label>
                             </div>
                              <div class="col-md-3 ttd">
-                                <label>email: {{item.email}}</label>
+                                <label><b>Email</b>: {{item.email}}</label>
                             </div>
                             <div class="col-md-3 ttd">
                                 {%if item.status_banned %}
-                                <label style="color: red">Заблокирован</label>
-                                <a href="/activation/{{item.uuid}}">разблокировать</a>
+                                <label style="color: red"><b>Заблокирован</b></label>
+                                <a href="/activation/{{item.uuid}}"> Разблокировать</a>
                                 {%else%}
-                                <label style="color: green">Активный</label>
-                                <a href="/deactivate/{{item.uuid}}">Заблокировать</a>
+                                <label style="color: green"><b>Активный</b></label>
+                                <a href="/deactivate/{{item.uuid}}"> Заблокировать</a>
                                 {%endif%}
                             </div>
                         </div>
+                    <br>
                     {% endfor %}
                 {% else %}
                 <h4>список пользователей пуст</h4>

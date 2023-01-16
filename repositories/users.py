@@ -42,7 +42,7 @@ class UserRepository(BaseRepository):
                            users.c.status_banned,
                            users.c.status_online,
                            users.c.created_at,
-                           users.c.updated_at).limit(limit).offset(skip).order_by(users.c.is_admin)
+                           users.c.updated_at).limit(limit).offset(skip)
 
             res = await database.fetch_all(query=query)
         except ValidationError as e:

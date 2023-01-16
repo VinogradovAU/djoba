@@ -1,5 +1,5 @@
 from models.jobs import jobs_model
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import APIRouter, Request, Depends, Response, Cookie
 from repositories.jobs import JobRepositoryes
 from endpoints.depends import get_job_repository
@@ -65,9 +65,12 @@ async def main_page(
         if manager.user:
             context['user_name'] = manager.user.name
             context['user_uuid'] = manager.user.uuid
+        manager.direction = '/'
+        # if manager.user.is_admin:
+        #     return RedirectResponse(f"/profile/{manager.user.uuid}", status_code=302)
         response = templates.TemplateResponse("index.html", context=context)
         response.set_cookie(key="access_token", value=manager.access_token, httponly=True)
-        manager.direction = '/'
+
         return response
 
     if manager.direction == 'logout':
