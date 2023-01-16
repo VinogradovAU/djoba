@@ -40,19 +40,19 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
-    print(f'сработал middleware')
+    # print(f'сработал middleware')
     try:
         access_token = request.cookies.get('access_token')
-        print(f'cookies содержат token: {access_token}')
+        # print(f'cookies содержат token: {access_token}')
         decode_token = decode_access_token(access_token)
-        print(f'decode_token: {decode_token}')
+        # print(f'decode_token: {decode_token}')
         if decode_token is None:
-            print(f'token протух')
+            # print(f'token протух')
             manager.autorization = False
             manager.set_cookie = False
             request.cookies.clear()
         else:
-            print(f'token НЕ протух')
+            # print(f'token НЕ протух')
             manager.autorization = True
             manager.set_cookie = True
             manager.user_status = 'Online'
@@ -99,4 +99,4 @@ async def shutdown():
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port=8080, host="127.0.0.1", reload=True)
+    uvicorn.run("main:app", port=8001, host="127.0.0.1", reload=True)

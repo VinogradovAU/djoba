@@ -1,4 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Form
+from fastapi.encoders import jsonable_encoder
+from starlette.responses import JSONResponse
+
 from models.my_token import MyToken, Login
 from repositories.users import UserRepository
 from endpoints.depends import get_user_repository
@@ -15,6 +18,30 @@ templates = Jinja2Templates(directory="templates")
 # router = APIRouter()
 
 router = APIRouter(include_in_schema=False)
+
+
+@router.get("/deactivate/{uuid}")
+async def registration(
+        request: Request,
+        uuid: str,
+        users: UserRepository = Depends(get_user_repository)):
+    print('this is get deactivate function')
+
+    if manager.user.is_admin:
+        if manager.autorization:
+            uu = await users.get_by_uuid(uuid)
+            if uu is None:
+                return {'error': 'ошибка uuid', 'status_banned': 'None'}
+            if uu.status_banned:
+                d = {'error': None, 'status_banned': True}
+            else:
+                res = await users.user_status_banned_on(u=uuid)
+                if res:
+                    d = {'error': None, 'status_banned': True}
+                else:
+                    d = {'error': 'не удалось изменить status_banned', 'status_banned': 'None'}
+
+    return d
 
 
 @router.get("/registration")
@@ -115,19 +142,23 @@ async def login_post(request: Request, users: UserRepository = Depends(get_user_
         print("form is valid - ok")
         try:
             access_token = await verify_login(form, users)
+            form.__dict__.get("errors").append("Incorrect Email or Password")
             if access_token:
                 print(f'сгенерирован access_token: {access_token}')
-                manager.access_token = access_token
-                manager.direction = 'login'
                 manager.user = await users.get_by_email(form.email)
-                manager.autorization = True
-                if manager.user.is_admin:
-                    manager.is_admin = True
-                await users.user_set_status(manager.user, True)
-                print(f'manager.user.uuid:{manager.user.uuid}')
-                return RedirectResponse("/", status_code=302)
+                if manager.user.status_banned:
+                    manager.autorization = False
+                    form.__dict__.get("errors").append("Учетная запись заблокирована администратором")
+                else:
+                    manager.access_token = access_token
+                    manager.direction = 'login'
+                    if manager.user.is_admin:
+                        manager.is_admin = True
+                    await users.user_set_status(manager.user, True)
+                    print(f'manager.user.uuid:{manager.user.uuid}')
+                    return RedirectResponse("/", status_code=302)
             form.__dict__.update(msg="")
-            form.__dict__.get("errors").append("Incorrect Email or Password")
+
             form.__dict__.update(authenticated=False)
             response = templates.TemplateResponse("login.html", form.__dict__)
             return response

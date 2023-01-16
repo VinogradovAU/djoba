@@ -71,11 +71,11 @@
                             </div>
                             <div class="col-md-3 ttd">
                                 {%if item.status_banned %}
-                                <label style="color: red"><b>Заблокирован</b></label>
-                                <a href="/activation/{{item.uuid}}"> Разблокировать</a>
+                                <label id=activation_label" style="color: red"><b>Заблокирован</b></label>
+                                <a id="activation" num_id="{{item.uuid}}"> Разблокировать</a>
                                 {%else%}
-                                <label style="color: green"><b>Активный</b></label>
-                                <a href="/deactivate/{{item.uuid}}"> Заблокировать</a>
+                                <label id=deactivation_label" style="color: green"><b>Активный</b></label>
+                                <a id="deactivate" num_id="{{item.uuid}}"> Заблокировать</a>
                                 {%endif%}
                             </div>
                         </div>
@@ -99,6 +99,48 @@
     </div>
 </footer>
 <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
+<script>
 
+async function deact(num_id){
+        url = '/auth/deactivate/' + num_id;
+        let response = await fetch(url);
+        console.log("response.ok", response.ok);
+        console.log("response.status", response.status);
+        console.log("response.text", response.text);
+        if (response.ok) {
+        // если HTTP-статус в диапазоне 200-299
+        // получаем тело ответа (см. про этот метод ниже)
+        // {'error': None, 'status_banned': True}
+        let json = await response.json();
+          if (json['status_banned']=='True'){ console.log("Статус пользователя: Заблокирован")}
+          if (json['status_banned']=='False'){ console.log("Статус пользователя: Активный") }
+          if (json['status_banned']=='None'){ console.log("Не удалось получить статус пользователя")}
+
+          console.log("error: ", json['error']);
+        } else {
+          console.log("Ошибка HTTP: " + response.status);
+        }
+}
+
+
+
+//дожидаемся полной загрузки страницы
+window.onload = function () {
+
+    //получаем идентификатор элемента
+    var a = document.getElementById('deactivate');
+
+    //вешаем на него событие
+    a.onclick = function() {
+        //производим какие-то действия
+        num_id = a.getAttribute('num_id');
+        deact(num_id);
+        //предотвращаем переход по ссылке href
+        return false;
+    }
+}
+
+
+</script>
 </body>
 </html>

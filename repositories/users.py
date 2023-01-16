@@ -13,8 +13,15 @@ import uuid
 
 
 class UserRepository(BaseRepository):
-    async def user_set_status(self, u: UserIn, status_online: bool) -> User:
 
+    async def user_status_banned_on(self, u: str, status: bool = True) -> bool:
+        query = users.update().where(users.c.uuid == u).values(status_banned=status)
+        result = await self.database.execute(query)
+        if result:
+            return True
+        return False
+
+    async def user_set_status(self, u: UserIn, status_online: bool) -> User:
         user = User(
             id=u.id,
             uuid=u.uuid,
