@@ -14,28 +14,20 @@ import uuid
 
 class UserRepository(BaseRepository):
 
-    async def user_status_banned_on(self, u: str, status: bool = True) -> bool:
+    async def user_status_banned_off(self, u: str, status: bool = False) -> bool:
+        print(f'user_status_banned_off function')
         query = users.update().where(users.c.uuid == u).values(status_banned=status)
-        result = await self.database.execute(query)
-        if result:
-            return True
-        return False
-
-    async def user_set_status(self, u: UserIn, status_online: bool) -> User:
-        user = User(
-            id=u.id,
-            uuid=u.uuid,
-            name=u.name,
-            email=u.email,
-            is_admin=u.is_admin,
-            hashed_password=u.hashed_password,
-            status_online=status_online,
-            updated_at=datetime.datetime.utcnow()
-        )
-        values = {**user.dict()}
-        query = users.update().where(users.c.id == u.id).values(**values)
         return await self.database.execute(query)
 
+    async def user_status_banned_on(self, u: str, status: bool = True) -> bool:
+        print(f'user_status_banned_on function')
+        query = users.update().where(users.c.uuid == u).values(status_banned=status)
+        return await self.database.execute(query)
+
+    async def user_set_status(self, u: str, status_online: bool) -> bool:
+        print(f'function user_set_status')
+        query = users.update().where(users.c.uuid == u).values(status_online=status_online)
+        return await self.database.execute(query)
 
     async def get_all(self, limit: int = 100, skip: int = 0) -> List[UserOut]:
 

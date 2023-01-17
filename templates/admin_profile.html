@@ -54,7 +54,7 @@
                 {% if all_users %}
                     {% for item in all_users %}
                         <div calss="row ttd">
-                            <div class="col-md-3 ttd">
+                            <div class="col-md-5 ttd">
                                 <label><b>ID пользователя:<b></b> {{item.id}}
                                 {%if authenticated %}
                                 <label style="color: green"> <b>(ONLINE)</b></label>
@@ -63,19 +63,21 @@
                                 {%endif%}
                                 </label>
                             </div>
-                            <div class="col-md-3 ttd">
+                            <div class="col-md-5 ttd">
                                 <label><b>Имя:</b> {{item.name}}</label>
                             </div>
-                             <div class="col-md-3 ttd">
+                             <div class="col-md-5 ttd">
                                 <label><b>Email</b>: {{item.email}}</label>
                             </div>
-                            <div class="col-md-3 ttd">
-                                {%if item.status_banned %}
-                                <label id=activation_label" style="color: red"><b>Заблокирован</b></label>
-                                <a id="activation" num_id="{{item.uuid}}"> Разблокировать</a>
-                                {%else%}
-                                <label id=deactivation_label" style="color: green"><b>Активный</b></label>
-                                <a id="deactivate" num_id="{{item.uuid}}"> Заблокировать</a>
+                            <div class="col-md-5 ttd">
+                                {%if not item.is_admin%}
+                                    {%if item.status_banned %}
+                                    <label class="activation_label" num_id="{{item.uuid}}" style="color: red"><b>Заблокирован</b></label>
+                                    <button type="button" value ="active" num_id="{{item.uuid}}" class="btn btn-outline-success activation">Разблокировать</button>
+                                    {%else%}
+                                    <label class="activation_label" num_id="{{item.uuid}}" style="color: green"><b>Активный</b></label>
+                                    <button type="button" value ="deactive" num_id="{{item.uuid}}" class="btn btn-outline-danger activation">Заблокировать</button>
+                                    {%endif%}
                                 {%endif%}
                             </div>
                         </div>
@@ -99,48 +101,6 @@
     </div>
 </footer>
 <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
-<script>
-
-async function deact(num_id){
-        url = '/auth/deactivate/' + num_id;
-        let response = await fetch(url);
-        console.log("response.ok", response.ok);
-        console.log("response.status", response.status);
-        console.log("response.text", response.text);
-        if (response.ok) {
-        // если HTTP-статус в диапазоне 200-299
-        // получаем тело ответа (см. про этот метод ниже)
-        // {'error': None, 'status_banned': True}
-        let json = await response.json();
-          if (json['status_banned']=='True'){ console.log("Статус пользователя: Заблокирован")}
-          if (json['status_banned']=='False'){ console.log("Статус пользователя: Активный") }
-          if (json['status_banned']=='None'){ console.log("Не удалось получить статус пользователя")}
-
-          console.log("error: ", json['error']);
-        } else {
-          console.log("Ошибка HTTP: " + response.status);
-        }
-}
-
-
-
-//дожидаемся полной загрузки страницы
-window.onload = function () {
-
-    //получаем идентификатор элемента
-    var a = document.getElementById('deactivate');
-
-    //вешаем на него событие
-    a.onclick = function() {
-        //производим какие-то действия
-        num_id = a.getAttribute('num_id');
-        deact(num_id);
-        //предотвращаем переход по ссылке href
-        return false;
-    }
-}
-
-
-</script>
+<script src="{{ url_for('static', path='/js/main.js') }}"></script>
 </body>
 </html>

@@ -41,13 +41,14 @@ async def main_page(
                 print(f'test token: {access_token}')
                 decode_token = decode_access_token(access_token)
                 print(f'decode_token: {decode_token}')
-                if decode_token is None:
+                if decode_token:
                     print(f'token не протух')
                     context['authenticated'] = True
                     if manager.user:
                         context['user_name'] = manager.user.name
                         context['user_uuid'] = manager.user.uuid
-
+                else:
+                    context['authenticated'] = False
             except Exception as e:
                 print(f'ошибка проверки token')
                 context['authenticated'] = False

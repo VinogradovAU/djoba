@@ -19,7 +19,6 @@ async def profil(
         users: UserRepository = Depends(get_user_repository)):
     print('this is get profile function')
 
-
     # user = await users.get_by_uuid(uuid)
     if manager.user:
         context = {
@@ -31,6 +30,7 @@ async def profil(
         if manager.autorization:
             context['authenticated'] = True
         else:
+            print(f'manager.autorization = Fals ---> редирект на login')
             return RedirectResponse("/auth/login", status_code=302)
 
         if manager.user.is_admin:
@@ -45,4 +45,5 @@ async def profil(
 
         return response
     else:
+        print(f'manager.user не содержит обьект user ---> редирект на login')
         return RedirectResponse("/auth/login", status_code=302)

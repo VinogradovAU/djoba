@@ -20,12 +20,36 @@ templates = Jinja2Templates(directory="templates")
 router = APIRouter(include_in_schema=False)
 
 
-@router.get("/deactivate/{uuid}")
-async def registration(
+@router.get("/activate/{uuid}")
+async def activate_user(
         request: Request,
         uuid: str,
         users: UserRepository = Depends(get_user_repository)):
-    print('this is get deactivate function')
+    print('this is get activate_user function')
+
+    if manager.user.is_admin:
+        if manager.autorization:
+            uu = await users.get_by_uuid(uuid)
+            if uu is None:
+                return {'error': 'ошибка uuid', 'status_banned': 'None'}
+            if uu.status_banned:
+                await users.user_status_banned_off(u=uuid)
+                new_res = await users.get_by_uuid(uuid)
+                if not new_res.status_banned:
+                    d = {'error': None, 'status_banned': False}
+                else:
+                    d = {'error': 'не удалось изменить status_banned', 'status_banned': 'None'}
+            else:
+                d = {'error': None, 'status_banned': False}
+
+    return d
+
+@router.get("/deactivate/{uuid}")
+async def deactivate_user(
+        request: Request,
+        uuid: str,
+        users: UserRepository = Depends(get_user_repository)):
+    print('this is get deactivate_user function')
 
     if manager.user.is_admin:
         if manager.autorization:
@@ -35,8 +59,9 @@ async def registration(
             if uu.status_banned:
                 d = {'error': None, 'status_banned': True}
             else:
-                res = await users.user_status_banned_on(u=uuid)
-                if res:
+                await users.user_status_banned_on(u=uuid)
+                new_res = await users.get_by_uuid(uuid)
+                if new_res.status_banned:
                     d = {'error': None, 'status_banned': True}
                 else:
                     d = {'error': 'не удалось изменить status_banned', 'status_banned': 'None'}
@@ -112,7 +137,7 @@ async def api_login(mylogin: Login, users: UserRepository = Depends(get_user_rep
 async def logout(request: Request, users: UserRepository = Depends(get_user_repository)):
     print('this is get logout function')
     manager.direction = 'logout'
-    await users.user_set_status(manager.user, False)
+    await users.user_set_status(manager.user.uuid, False)
     return RedirectResponse(url="/", status_code=302)
 
 
@@ -154,7 +179,7 @@ async def login_post(request: Request, users: UserRepository = Depends(get_user_
                     manager.direction = 'login'
                     if manager.user.is_admin:
                         manager.is_admin = True
-                    await users.user_set_status(manager.user, True)
+                    await users.user_set_status(manager.user.uuid, True)
                     print(f'manager.user.uuid:{manager.user.uuid}')
                     return RedirectResponse("/", status_code=302)
             form.__dict__.update(msg="")
