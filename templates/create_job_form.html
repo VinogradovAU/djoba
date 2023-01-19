@@ -23,7 +23,6 @@
 </header>
 
 <content>
-
     <div class="container ttd">
 <!--        тут будет блок меню для личного кабинета пользователя-->
         <h3>Блок меню пользователя:</h3>
@@ -33,19 +32,31 @@
             <div calss="col-12 ttd">
                 {% block content %}
 
-                <h1>Данные пользователя:</h1>
-                {%if user_object %}
-                    <li>
-                        <lo>UUID: {{user_object.id}}</lo>
-                        <lo>ID: {{user_object.uuid}}</lo>
-                        <lo>Имя: {{user_object.name}}</lo>
-                        <lo>Email: {{user_object.email}}</lo>
-                        <lo>is_company: {{user_object.is_company}}</lo>
-                    </li>
-
-                    {%endif%}
-
+                <h1>Заполните форму для создания запроса:</h1>
+               <div class="row my-5">
+                <form method="POST">
+        <div class="mb-3">
+          <label>Введите краткое название</label>
+          <input type="text" required placeholder="Название" name="head_text" value="" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label>Опишите суть запроса</label>
+          <input type="textarea" required placeholder="Описание" name="main_text" value="" class="form-control">
+        </div>
+          <div class="mb-3">
+          <label>Цена услуги</label>
+          <input type="text" required placeholder="Цена" name="price" value="0" class="form-control">
+        </div>
+          <div class="mb-3">
+          <label>Телефон для связи</label>
+          <input type="text" required placeholder="phone" name="phone" value="+7 000 0000000" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить как черновик</button>
+        <button type="submit" class="btn btn-primary">Сохранить и опубликовать</button>
+      </form>
+               </div>
                 {% endblock %}
+
             </div>
         </div>
     </div>

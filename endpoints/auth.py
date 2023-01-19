@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Form
-from fastapi.encoders import jsonable_encoder
-from starlette.responses import JSONResponse
-
 from models.my_token import MyToken, Login
 from repositories.users import UserRepository
 from endpoints.depends import get_user_repository
-from core.security import verify_password, create_access_token, hashed_password
+from core.security import verify_password, create_access_token
 from fastapi.templating import Jinja2Templates
 from auth.forms import LoginForm, RegisterForm
 from fastapi.responses import RedirectResponse
@@ -43,6 +40,7 @@ async def activate_user(
                 d = {'error': None, 'status_banned': False}
 
     return d
+
 
 @router.get("/deactivate/{uuid}")
 async def deactivate_user(
@@ -176,10 +174,15 @@ async def login_post(request: Request, users: UserRepository = Depends(get_user_
                     form.__dict__.get("errors").append("Учетная запись заблокирована администратором")
                 else:
                     manager.access_token = access_token
-                    manager.direction = 'login'
+                    manager.autorization = True
+                    if manager.direction == 'create_job':
+                        manager.direction = 'create_job_ok'
+                    else:
+                        manager.direction = 'login'
                     if manager.user.is_admin:
                         manager.is_admin = True
                     await users.user_set_status(manager.user.uuid, True)
+
                     print(f'manager.user.uuid:{manager.user.uuid}')
                     return RedirectResponse("/", status_code=302)
             form.__dict__.update(msg="")

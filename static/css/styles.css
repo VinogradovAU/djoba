@@ -17,6 +17,9 @@ border: 1px solid;
 header .row {
 height: 150px;
 }
+header .row-menu {
+height: 30px;
+}
 
 content {
 border: 1px solid;

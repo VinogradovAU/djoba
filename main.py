@@ -8,6 +8,7 @@ from core.security import hashed_password, decode_access_token, manager
 from db.base import database
 import uvicorn
 from endpoints import users, auth, jobs, main_page, profile
+from endpoints.api import jobs_api
 from fastapi.middleware.cors import CORSMiddleware
 from db.users import users as db_users
 import uuid
@@ -32,6 +33,7 @@ app.add_middleware(
 app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
+app.include_router(jobs_api.router, prefix="/jobs", tags=["jobs_api"])
 app.include_router(main_page.router, prefix="", tags=["mainpage"])
 app.include_router(profile.router, prefix="", tags=["profile"])
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -61,9 +63,10 @@ async def add_process_time_header(request: Request, call_next):
             #     context['user_uuid'] = manager.user.uuid
 
     except Exception as e:
-        print(f'ошибка проверки token')
+        print(f'middleware ошибка проверки token')
         manager.autorization = False
         manager.set_cookie = False
+
     return response
 
 

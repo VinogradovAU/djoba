@@ -31,7 +31,9 @@ async def main_page(
     }
 
     # просто зашли на главную
-    if manager.direction == '/':
+    if manager.direction == '/' or manager.direction == 'create_job':
+        if manager.direction == 'create_job':
+            manager.direction = '/'
         print(f'main_page-->main_page')
         if manager.autorization:
             context['authenticated'] = True
@@ -57,7 +59,7 @@ async def main_page(
         return response
 
     # редирект на главную после нажатия login
-    if manager.direction == 'login':
+    if manager.direction == 'login' or manager.direction == 'create_job_ok':
         print(f'main_page-->login')
         manager.autorization = True
         manager.set_cookie = True
@@ -66,13 +68,18 @@ async def main_page(
         if manager.user:
             context['user_name'] = manager.user.name
             context['user_uuid'] = manager.user.uuid
-        manager.direction = '/'
         # if manager.user.is_admin:
         #     return RedirectResponse(f"/profile/{manager.user.uuid}", status_code=302)
-        response = templates.TemplateResponse("index.html", context=context)
+        if manager.direction == 'create_job_ok':
+            #если логинились для создания нового объявления
+            response = templates.TemplateResponse("create_job_form.html", context=context)
+        else:
+            response = templates.TemplateResponse("index.html", context=context)
         response.set_cookie(key="access_token", value=manager.access_token, httponly=True)
+        manager.direction = '/'
 
         return response
+
 
     if manager.direction == 'logout':
         print(f'main_page-->logout')
