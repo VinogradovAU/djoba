@@ -1,65 +1,61 @@
 <!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
-    <link href="{{ url_for('static', path='/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', path='/css/styles.css') }}" rel="stylesheet">
+    {% include 'meta_link_include.html' %}
+
     {% block title %}
     <title>Работать тут</title>
     {% endblock %}
 
 </head>
 <body>
-<header>
-<div class="container ttd">
-        <!-- header -->
-        <div class="row ttd">
-        {% include 'main_menu.html' %}
-        </div>
-</div>
-</header>
 
-<content>
-<div class="container ttd">
-        <!-- content -->
-        <div class="row ttd">
-            <div calss="col-12 ttd">
-                {% block content %}
-
-                <h4>Список запросов:</h4>
-                <ol style=" list-style-type: none;">
-                    {% for job in jobs_items %}
-                    <div class="job_box">
-                        <li>
-                            <ul>
-                                <li>Item ID: {{ job.id | title }}</li>
-                                <li><a href="/job/{{ job.id }}">{{ job.title }}</a></li>
-                                <li>{{ job.description }}</li>
-                                <li>{{ job.updated_at }}</li>
-                            </ul>
-                        </li>
-                    </div>
-                    {% endfor %}
-                    `
-                </ol>
-                {% endblock %}
-            </div>
+<div class="container my_head fixed-top align-content-center">
+    {% include 'main_menu.html' %}
+    {% if user_name %}
+    <div class="row justify-content-end">
+        <div class="col-4 d-flex justify-content-center">
+            <h8> Привет {{user_name}}</h8>
         </div>
-</div>
-</content>
-<footer>
-<div class="container ttd">
-        <!-- footer -->
-        <div class="row ttd">
-            <div class="col-12 ttd">
-                FOOTER
-            </div>
-        </div>
-</div>
-</footer>
-<script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
+    </div>
+    {% endif %}
 
+</div>
+<div class="container my_content">
+
+    <div class="row">
+        <div calss="col-12 ttd">
+            {% block content %}
+
+            <h4>Список запросов:</h4>
+            <ol style=" list-style-type: none;">
+                {% for job in jobs_items %}
+                <div class="job_box">
+                    <li>
+                        <ul>
+                            <li>Item ID: {{ job.id | title }}</li>
+                            <li><a href="/job/{{ job.id }}">{{ job.title }}</a></li>
+                            <li>{{ job.description }}</li>
+                            <li>{{ job.updated_at }}</li>
+                        </ul>
+                    </li>
+                </div>
+                {% endfor %}
+
+            </ol>
+            {% endblock %}
+        </div>
+
+    </div>
+</div>
+<div class="container my_footer">
+
+    <div class="row">
+        <div class="col">Подвал</div>
+
+    </div>
+</div>
+
+{% include 'js_include.html' %}
 </body>
 </html>

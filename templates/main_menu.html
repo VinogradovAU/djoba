@@ -1,11 +1,46 @@
 
-    <div class="col-md-8 ttd">
-        <div class="row align-items-start">
-            <div class="col-md-3"><h4><a href="/">На главную</a></h4></div>
-            <div class="col-md-5"><h4><a href="/jobs/create_job">Создать объявление</a></h4></div>
-        </div>
-    </div>
 
-    <div class="col-6 col-md-4 ttd">
-        {% include 'user_menu.html' %}
-    </div>
+
+
+
+<div class="row align-items-center justify-content-center">
+            <div class="col-4 d-none d-md-block d-lg-block d-xl-block d-xxl-block my_col_height d-flex justify-content-center align-items-center">
+                <a class="btn btn-link mark" href="/">DJOBA</a></div>
+            <div class="col-2 d-none d-md-none d-lg-block d-xl-block d-xxl-block"></div>
+            <div class="col d-none d-md-block d-lg-block d-xl-block d-xxl-block">
+                <ul class="list-group list-group-flush list-group-horizontal-md">
+                <li class="list-group-item flex-fill">
+                    <a class="btn btn-link" role="button" href="/jobs/create_job">Создать объявление</a></li>
+                            {% include 'user_menu.html' %}
+
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="row align-items-center justify-content-center">
+            <div class="col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none my_col_height d-flex justify-content-center align-items-center">
+                <a class="btn btn-link mark" href="/">DJOBA</a>
+            </div>
+            <div class="col-2 d-xs-block d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none"></div>
+            <div class="col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none">
+                <div class="dropdown">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Кнопка
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a class="btn btn-link" role="button" href="/jobs/create_job">Создать объявление</a></li>
+
+                        {% include 'user_menu.html' %}
+
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+
