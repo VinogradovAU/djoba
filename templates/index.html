@@ -14,7 +14,7 @@
     {% include 'main_menu.html' %}
     {% if user_name %}
     <div class="row justify-content-end">
-        <div class="col-4 d-flex justify-content-center">
+        <div class="col-4 d-flex justify-content-center text-success">
             <h8> Привет {{user_name}}</h8>
         </div>
     </div>
@@ -23,9 +23,31 @@
 </div>
 <div class="container my_content">
 
+    {% block content %}
+    {% if authenticated %}
+    <div class="row user_list_jobs d-flex justify-content-center align-items-center">
+        <div class="col-6 d-flex">
+
+            Пользователь залогинен!
+            Если указаны в профиле предпочтения по подбору объявлений (указан город, район или меро, тематика)
+            выводим соответствующие объявления
+
+        </div>
+    </div>
+    {% else %}
+        <div class="row user_list_jobs d-flex justify-content-center align-items-center">
+            <div class="col-6 d-flex">
+
+                Пользователь АНОНИМ!
+                Выводим список самых свежжих объявлений
+
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row">
         <div calss="col-12 ttd">
-            {% block content %}
+
 
             <h4>Список запросов:</h4>
             <ol style=" list-style-type: none;">
