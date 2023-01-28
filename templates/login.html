@@ -8,7 +8,7 @@
   <div class="container">
     <div class="row">
       <p></p>
-      <h3>Вход в систему</h3>
+
       <div class="text-danger font-weight-bold">
           {% for error in errors %}
             <li>{{error}}</li>
@@ -31,6 +31,8 @@
 
 
     <div class="row my-5">
+      <div class="mx-auto" style="width: 400px;">
+        <div class="d-flex justify-content-center"><h4>Вход в систему</h4></div>
       <form method="POST">
         <div class="mb-3">
           <label>Email</label>
@@ -42,6 +44,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
+    </div>
     </div>
   </div>
   {% endblock %}

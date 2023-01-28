@@ -18,22 +18,30 @@
     <div class="container">
 <!--        тут будет блок меню для личного кабинета пользователя-->
         <h3>Блок меню пользователя:</h3>
+        <div class="text-danger font-weight-bold">
+          {% for error in errors %}
+            <li>{{error}}</li>
+          {% endfor %}
+      </div>
     </div>
     <div class="container my_content">
         <div class="row">
             <div calss="col-12">
                 {% block content %}
 
-                <h1>Заполните форму для создания запроса:</h1>
+
                <div class="row my-5">
-                <form method="POST">
+                   <div class="mx-auto" style="width: 500px;">
+                       <h4>Заполните форму для создания запроса услуги:</h4>
+                <form method="POST" action="/jobs/create_job">
         <div class="mb-3">
           <label>Введите краткое название</label>
-          <input type="text" required placeholder="Название" name="head_text" value="" class="form-control">
+          <input type="text" required placeholder="Название" name="title" value="" class="form-control">
         </div>
         <div class="mb-3">
-          <label>Опишите суть запроса</label>
-          <input type="textarea" required placeholder="Описание" name="main_text" value="" class="form-control">
+          <label>Опишите суть запроса. Какая услуга Вам требуется.</label>
+
+            <textarea class="form-control" required placeholder="Описание" name="description" value="" rows="5"></textarea>
         </div>
           <div class="mb-3">
           <label>Цена услуги</label>
@@ -43,9 +51,35 @@
           <label>Телефон для связи</label>
           <input type="text" required placeholder="phone" name="phone" value="+7 000 0000000" class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary">Сохранить как черновик</button>
-        <button type="submit" class="btn btn-primary">Сохранить и опубликовать</button>
+          <div class="mb-3">
+          <label>Количество дней до снятия запроса услуги с публицкации</label>
+          <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+          <option name="expired_day" selected value="1">1 день</option>
+          <option value="2">2 дня</option>
+          <option value="3">3 дня</option>
+          <option value="4">4 дня</option>
+          <option value="5">5 дней</option>
+          <option value="6">6 дней</option>
+          <option value="7">7 дней</option>
+        </select>
+          </div>
+        <div class="mb-3">
+          <label>Укажите город</label>
+          <input type="text" required placeholder="Москва" name="city" value="" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label>Укажите метро</label>
+          <input type="text" required placeholder="Красносельская" name="metrostation" value="" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label>Укажите адрес</label>
+          <input type="text" required placeholder="для определения локации получения услуги. квартиру не обязательно указывать" name="address" value="" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary" name="button" value="draft">Сохранить как черновик</button>
+        <button type="submit" class="btn btn-primary" name="button" value="publish">Сохранить и опубликовать</button>
       </form>
+               </div>
                </div>
                 {% endblock %}
 

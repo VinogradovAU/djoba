@@ -1,4 +1,4 @@
-from models.jobs import jobs_model
+from models.jobs import Jobs_model
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import APIRouter, Request, Depends, Response, Cookie
 from repositories.jobs import JobRepositoryes
@@ -22,7 +22,7 @@ async def main_page(
     authenticated = False
 
     jobs_items = await jobs.get_list_jobs(limit=100, skip=0)
-    jobs_items_list = list(map(jobs_model.parse_obj, jobs_items))
+    jobs_items_list = list(map(Jobs_model.parse_obj, jobs_items))
     context = {
         "request": request,
         "jobs_items": jobs_items_list,
