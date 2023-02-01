@@ -13,33 +13,54 @@
         {% include 'main_menu.html' %}
 </div>
 
+                       <div class="container my_content">
+  <div class="row">
+  <div class="col-md-12 p-0">
+<div class="card">
+            <div>
+                <h5 class="card-header">Блок меню пользователя:</h5>
+            </div>
+            <div class="razdelitel">
+
+            </div>
 
 
-    <div class="container">
-<!--        тут будет блок меню для личного кабинета пользователя-->
-        <h3>Блок меню пользователя:</h3>
-    </div>
-    <div class="container my_content">
-        <div class="row">
-            <div calss="col-12">
-                {% block content %}
 
-                <h1>Данные пользователя:</h1>
-                {%if user_object %}
-                    <li>
-                        <lo>UUID: {{user_object.id}}</lo>
-                        <lo>ID: {{user_object.uuid}}</lo>
-                        <lo>Имя: {{user_object.name}}</lo>
-                        <lo>Email: {{user_object.email}}</lo>
-                        <lo>is_company: {{user_object.is_company}}</lo>
-                    </li>
+                               <div class="container my_content p-0">
+  <div class="row m-0">
+      {% block content %}
+    <div class="col-md-4">
+
+                    {%if user_object %}
+
+                    {% include 'user_card.html' %}
 
                     {%endif%}
 
-                {% endblock %}
-            </div>
+
+    </div>
+    <div class="col-md-8">
+          <div class="card">
+          <h5 class="card-header">Featured</h5>
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
         </div>
     </div>
+
+      {% endblock %}
+  </div>
+</div>
+
+          </div>
+        </div>
+
+</div>
+</div>
+
+
 
 
 

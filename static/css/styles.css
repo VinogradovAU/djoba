@@ -1,5 +1,5 @@
 div {
-   /* border: 1px solid #000000;*/
+   /*border: 1px solid #000000;*/
 }
 
 /*
@@ -38,4 +38,12 @@ body {
 	height: 300px;
     background-color: #f8f9fa;
 
+}
+
+.card, .card-header, .card-body, .card-footer{
+    border-radius:0px !important;
+}
+.razdelitel {
+	height: 15px;
+	width: auto;
 }

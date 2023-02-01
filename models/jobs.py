@@ -26,8 +26,13 @@ class Jobs_model(BaseJob):
     updated_at: datetime.datetime
 
 
-class JobIn_model(BaseJob):
-    pass
+class JobIn_model(BaseModel):
+    title: str
+    description: str
+    price: condecimal(max_digits=5, decimal_places=2) = Field(default=0)
+    address: str
+    city: str
+    metrostation: Optional[str] = None
 
 
 class JobOut_model(BaseJob):
