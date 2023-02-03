@@ -7,7 +7,7 @@ from uuid import UUID
 class BaseJob(BaseModel):
     title: str
     description: str
-    price: condecimal(max_digits=5, decimal_places=2) = Field(default=0)
+    price: condecimal(max_digits=17, decimal_places=2) = Field(default=0)
     address: str
     city: str
     metrostation: Optional[str] = None
@@ -29,10 +29,11 @@ class Jobs_model(BaseJob):
 class JobIn_model(BaseModel):
     title: str
     description: str
-    price: condecimal(max_digits=5, decimal_places=2) = Field(default=0)
+    price: condecimal(max_digits=17, decimal_places=2) = Field(default=0)
     address: str
     city: str
     metrostation: Optional[str] = None
+    expired_day: conint(gt=0, lt=8)
 
 
 class JobOut_model(BaseJob):
@@ -52,7 +53,7 @@ class CreateJobIn(BaseModel):
     errors: List = []
     title: str
     description: str
-    price: condecimal(max_digits=5, decimal_places=2) = Field(default=0)
+    price: condecimal(max_digits=17, decimal_places=2) = Field(default=0)
     address: str
     city: str
     metrostation: Optional[str] = None

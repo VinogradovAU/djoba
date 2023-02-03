@@ -40,14 +40,24 @@
 
     </div>
     <div class="col-md-8">
+
+        {%if jobs%}
+        {%for job in jobs%}
           <div class="card">
-          <h5 class="card-header">Featured</h5>
+          <h5 class="card-header">{{ job.uuid }}</h5>
           <div class="card-body">
-            <h5 class="card-title">Special title treatment</h5>
-            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
+            <h5 class="card-title">{{ job.title }}</h5>
+            <p class="card-text">{{ job.description }}</p>
+            <p class="card-text">{{ job.city }}, {{ job.address }} </p>
+            <p class="card-text">м.{{ job.metrostation }}</p>
+            <p class="card-text">Цена: <b>{{ job.price }} р.</b></p>
+            <a href="#" class="btn btn-primary">Редактировать</a>
           </div>
         </div>
+        {%endfor%}
+        {%else%}
+        у вас нет объявлений
+        {%endif%}
     </div>
 
       {% endblock %}
