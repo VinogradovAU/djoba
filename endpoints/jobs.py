@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Depends
 from core.security import manager
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from models.jobs import CreateJobIn
 from pydantic import ValidationError
@@ -12,6 +12,40 @@ from repositories.jobs import JobRepositoryes
 templates = Jinja2Templates(directory="templates")
 
 router = APIRouter()
+
+
+@router.get("/publishon/{uuid_job}")
+async def publishon(
+        request: Request,
+        uuid_job: str):
+    origin_url = dict(request.scope["headers"]).get(b"referer", b"").decode()
+    # my_headers = request.scope["headers"]
+    error = 'False'
+    status_publishon = 'True'  # удалось опубликовать - True, не удалось - False
+    return {
+        'status_publishon': status_publishon,
+        'uuid_job': uuid_job,
+        'referrer_uri': origin_url,
+        'error': error,
+        # 'my_headers': my_headers,
+    }
+
+
+@router.get("/publishoff/{uuid_job}")
+async def publishoff(
+        request: Request,
+        uuid_job: str):
+    origin_url = dict(request.scope["headers"]).get(b"referer", b"").decode()
+    # my_headers = request.scope["headers"]
+    error = 'False'
+    status_publishoff = 'True'  #удалось снять с публикации - True, не удалось - False
+    return {
+        'status_publishoff': status_publishoff,
+        'uuid_job': uuid_job,
+        'referrer_uri': origin_url,
+        'error': error,
+        # 'my_headers': my_headers,
+    }
 
 
 @router.get("/create_job")

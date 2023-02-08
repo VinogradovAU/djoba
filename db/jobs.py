@@ -19,7 +19,7 @@ jobs = sqlalchemy.Table(
     sqlalchemy.Column("metrostation", sqlalchemy.String),
     sqlalchemy.Column("price", sqlalchemy.Float),
     sqlalchemy.Column("is_active", sqlalchemy.Boolean),
-    sqlalchemy.Column("id_publish", sqlalchemy.Boolean),
+    sqlalchemy.Column("is_publish", sqlalchemy.Boolean),
     sqlalchemy.Column("is_expired_time", sqlalchemy.Boolean),
     sqlalchemy.Column("created_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),
     sqlalchemy.Column("updated_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),

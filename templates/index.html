@@ -45,26 +45,26 @@
         </div>
     {% endif %}
 
-    <div class="row">
-        <div calss="col-12 ttd">
+    <div class="row m-0 p-0">
+        <div calss="col">
 
 
             <h4>Список запросов:</h4>
-            <ol style=" list-style-type: none;">
                 {% for job in jobs_items %}
-                <div class="job_box">
-                    <li>
-                        <ul>
-                            <li>Item ID: {{ job.id | title }}</li>
-                            <li><a href="/job/{{ job.id }}">{{ job.title }}</a></li>
-                            <li>{{ job.description }}</li>
-                            <li>{{ job.updated_at }}</li>
-                        </ul>
-                    </li>
+                <div class="card">
+                  <h5 class="card-header">{{ job.uuid }}</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">{{ job.title }}</h5>
+                    <p class="card-text">{{ job.description }}</p>
+                    <p class="card-text">{{ job.city }}, {{ job.address }} </p>
+                    <p class="card-text">м.{{ job.metrostation }}</p>
+                    <p class="card-text">Цена: <b>{{ job.price }} р.</b></p>
+                    <a href="#" class="btn btn-primary">Редактировать</a>
+                  </div>
                 </div>
                 {% endfor %}
 
-            </ol>
+
             {% endblock %}
         </div>
 

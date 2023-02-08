@@ -15,54 +15,36 @@
 
     <div class="container">
 <!--        тут будет блок меню для личного кабинета пользователя-->
-        <h3>Блок меню администратора:</h3>
+        <h4>Блок меню администратора:</h4>
     </div>
-
-    <div class="container my_content">
-        <div class="row">
-            <div calss="col-12">
-                {% block content %}
-
-                <h3>Данные администратора:</h3>
+<div class="razdelitel"></div>
+{% block content %}
+<div class="container my_content p-0">
+    <div class="row m-0">
+        <div class="col-md-4">
                     {%if user_object %}
-                    <li>
-                        <lo>ID: {{user_object.id}}</lo>
-                        <lo>UUID: {{user_object.uuid}}</lo>
-                        <lo>Имя: {{user_object.name}}</lo>
-                    </li>
+
+                    {% include 'user_card.html' %}
 
                     {%endif%}
-
-                {% endblock %}
-            </div>
         </div>
-        <div class="row">
-            <div calss="col-md-12">
-                 <h4>Список пользователей:</h4>
-                <br>
-            </div>
-        </div>
-
-        <div class="container">
-                {% if all_users %}
+        <div class="col-md-8">
+            {% if all_users %}
                     {% for item in all_users %}
-                        <div calss="row">
-                            <div class="col-md-5">
-                                <label><b>ID пользователя:<b></b> {{item.id}}
+            <div class="card">
+                 <div class="card-header"></div>
+                    <div class="card-body">
+                            <div class="card-text">
+                                ID пользователя: {{item.id}}
                                 {%if authenticated %}
-                                <label style="color: green"> <b>(ONLINE)</b></label>
+                                <text style="color: green"><b>(ONLINE)</b></text>
                                 {%else%}
-                                <label style="color: gray"><b>(OFFLINE)</b></label>
+                                <text style="color: gray"><b>(OFFLINE)</b></text>
                                 {%endif%}
-                                </label>
                             </div>
-                            <div class="col-md-5">
-                                <label><b>Имя:</b> {{item.name}}</label>
-                            </div>
-                             <div class="col-md-5">
-                                <label><b>Email</b>: {{item.email}}</label>
-                            </div>
-                            <div class="col-md-5">
+                            <div class="card-text"><b>Имя:</b> {{item.name}}</div>
+                             <div class="card-text"><b>Email</b>: {{item.email}}</div>
+                            <div class="card-text">
                                 {%if not item.is_admin%}
                                     {%if item.status_banned %}
                                     <label class="activation_label" num_id="{{item.uuid}}" style="color: red"><b>Заблокирован</b></label>
@@ -73,18 +55,23 @@
                                     {%endif%}
                                 {%endif%}
                             </div>
-                        </div>
-                    <br>
+
+                 </div>
+            </div>
                     {% endfor %}
-                {% else %}
-                <h4>список пользователей пуст</h4>
+                 {% else %}
+                <div class="card">
+
+                <div class="card-header">список пользователей пуст</div>
+
+                </div>
+
+
                 {% endif %}
         </div>
-
     </div>
-
-
-
+</div>
+{% endblock %}
    <div class="container my_footer">
 
         <div class="row">

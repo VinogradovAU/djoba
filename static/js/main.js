@@ -40,6 +40,73 @@ async function activate_user(num_id){
         }
 }
 
+/*функция делает отправляет запрос на сервер - снять с публикации джобу*/
+async function publish_job_off(element){
+		uuid_job = element.attributes.uuid_job.value;
+        url = '/jobs/publishoff/' + uuid_job;
+        let response = await fetch(url);
+        console.log("response.ok", response.ok);
+        console.log("response.status", response.status);
+        if (response.ok) {
+         let json = await response.json();
+         console.log("json: ", json);
+          if (json['status_publishoff']=='True'){
+          console.log("Джоба снята с публикации");
+
+	          var elem = document.querySelector('.job_status_' + uuid_job);
+	          elem.innerText = 'ЧЕРНОВИК!';
+	          elem.classList.remove('alert-success');
+		      elem.classList.add('alert-primary');
+
+		      element.classList.remove('btn-warning');
+		      element.classList.add('btn-success');
+		      element.innerText = "Опубликовать";
+		      element.attributes.value.value = 'publishon';
+          }
+          if (json['status_publishoff']=='False'){ console.log("Не удалось снять джобу с публикации") }
+          console.log("error: ", json['error']);
+        } else {
+          console.log("Ошибка HTTP: " + response.status);
+        }
+}
+
+
+async function publish_job_change(element){
+		uuid_job = element.attributes.uuid_job.value;
+		value = element.attributes.value.value;
+		if (value =='publishoff') {
+			publish_job_off(element);
+		} else {
+			url = '/jobs/publishon/' + uuid_job;
+        let response = await fetch(url);
+        console.log("response.ok", response.ok);
+        console.log("response.status", response.status);
+        if (response.ok) {
+         let json = await response.json();
+         console.log("json: ", json);
+          if (json['status_publishon']=='True'){
+          console.log("Джоба опубликована");
+              var elem = document.querySelector('.job_status_' + uuid_job);
+	          elem.innerText = 'Объявление опубликовано!';
+	          elem.classList.remove('alert-primary');
+		      elem.classList.add('alert-success');
+
+		      element.classList.remove('btn-success');
+		      element.classList.add('btn-warning');
+		      element.innerText = "Снять с публикации";
+		      element.attributes.value.value = 'publishoff';
+          }
+          if (json['status_publishon']=='False'){ console.log("Не удалось опубликовать джобу") }
+          console.log("error: ", json['error']);
+        } else {
+          console.log("Ошибка HTTP: " + response.status);
+        }
+
+		}
+
+}
+
+
 //дожидаемся полной загрузки страницы
 window.onload = function () {
 

@@ -12,7 +12,7 @@ class BaseJob(BaseModel):
     city: str
     metrostation: Optional[str] = None
     is_active: bool = True  # объявление можно заблокировать, снять с публикации. эделает не Юзер
-    id_publish: bool = False  # при создании объявление оно в режиме черновика. чтобы опубликовать надо True сделать,
+    is_publish: bool = False  # при создании объявление оно в режиме черновика. чтобы опубликовать надо True сделать,
     # при условии, что is_active = True.
     # если у опубликованного объявления истек срок, то is_puslish становтся False и объявление видно только в профиле
     is_expired_time: bool = False  # флаг истечения времени публикации
