@@ -9,9 +9,17 @@ import uuid
 
 
 class JobRepositoryes(BaseRepository):
+    async def job_id_publish_change(self, uuid: str, new_publish: bool = False) -> bool:
+        print(f'job_is_publish_change function')
+        query = jobs.update().where(jobs.c.uuid == uuid).values(is_publish=new_publish)
+        try:
+            await self.database.execute(query)
+            return True
+        except Exception as e:
+            return False
 
     async def create_job_from_html(self, user_id: int,
-                                   j: CreateJobIn, id_publish: bool) -> Jobs_model:
+                                   j: CreateJobIn, is_publish: bool) -> Jobs_model:
         job_uuid = str(uuid.uuid4())
         job = Jobs_model(
             uuid=job_uuid,
@@ -24,7 +32,7 @@ class JobRepositoryes(BaseRepository):
             city=j.city,
             metrostation=j.metrostation,
             is_active=True,
-            id_publish=id_publish,
+            is_publish=is_publish,
             is_expired_time=False,
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow()
@@ -60,7 +68,7 @@ class JobRepositoryes(BaseRepository):
             city=j.city,
             metrostation=j.metrostation,
             is_active=True,
-            id_publish=True,
+            is_publish=True,
             is_expired_time=j.is_expired_time,
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow())

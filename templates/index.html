@@ -51,6 +51,7 @@
 
             <h4>Список запросов:</h4>
                 {% for job in jobs_items %}
+                    {% if job.is_publish %}
                 <div class="card">
                   <h5 class="card-header">{{ job.uuid }}</h5>
                   <div class="card-body">
@@ -62,6 +63,7 @@
                     <a href="#" class="btn btn-primary">Редактировать</a>
                   </div>
                 </div>
+                    {% endif %}
                 {% endfor %}
 
 

@@ -54,13 +54,13 @@
                     ЧЕРНОВИК!
               </div>
               {% endif %}
-          <div class="card-body">
+            <div class="card-body">
             <h5 class="card-title">{{ job.title }}</h5>
             <p class="card-text">{{ job.description }}</p>
             <p class="card-text">{{ job.city }}, {{ job.address }} </p>
             <p class="card-text">м.{{ job.metrostation }}</p>
             <p class="card-text">Цена: <b>{{ job.price }} р.</b></p>
-            <a href="#" class="btn btn-primary">Редактировать</a>
+            <a href="/jobs/job_edit/{{ job.uuid }}" class="btn btn-primary">Редактировать</a>
 
               {% if job.is_publish %}
             <button type="button" class="btn btn-warning" uuid_job="{{job.uuid}}" onclick="return publish_job_change(this);" value="publishoff">Снять с публикации</button>

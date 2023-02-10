@@ -17,35 +17,54 @@ router = APIRouter()
 @router.get("/publishon/{uuid_job}")
 async def publishon(
         request: Request,
-        uuid_job: str):
+        uuid_job: str,
+        jobs: JobRepositoryes = Depends(get_job_repository)):
     origin_url = dict(request.scope["headers"]).get(b"referer", b"").decode()
     # my_headers = request.scope["headers"]
-    error = 'False'
-    status_publishon = 'True'  # удалось опубликовать - True, не удалось - False
-    return {
-        'status_publishon': status_publishon,
-        'uuid_job': uuid_job,
-        'referrer_uri': origin_url,
-        'error': error,
-        # 'my_headers': my_headers,
-    }
+    if manager.user:
+        if manager.autorization:
+            job = await jobs.job_id_publish_change(uuid=uuid_job, new_publish=True)
+            if job:
+                error = 'False'
+                status_publishon = 'True'  # удалось опубликовать - True, не удалось - False
+            else:
+                error = 'True'
+                status_publishon = 'False'
+            return {
+                'status_publishon': status_publishon,
+                'uuid_job': uuid_job,
+                'referrer_uri': origin_url,
+                'error': error,
+                # 'my_headers': my_headers,
+            }
+    return RedirectResponse("/auth/login", status_code=302)
 
 
 @router.get("/publishoff/{uuid_job}")
 async def publishoff(
         request: Request,
-        uuid_job: str):
+        uuid_job: str,
+        jobs: JobRepositoryes = Depends(get_job_repository)):
     origin_url = dict(request.scope["headers"]).get(b"referer", b"").decode()
     # my_headers = request.scope["headers"]
-    error = 'False'
-    status_publishoff = 'True'  #удалось снять с публикации - True, не удалось - False
-    return {
-        'status_publishoff': status_publishoff,
-        'uuid_job': uuid_job,
-        'referrer_uri': origin_url,
-        'error': error,
-        # 'my_headers': my_headers,
-    }
+
+    if manager.user:
+        if manager.autorization:
+            job = await jobs.job_id_publish_change(uuid=uuid_job, new_publish=False)
+            if job:
+                error = 'False'
+                status_publishoff = 'True'  # удалось снять с публикации - True, не удалось - False
+            else:
+                error = 'True'
+                status_publishoff = 'False'
+            return {
+                'status_publishoff': status_publishoff,
+                'uuid_job': uuid_job,
+                'referrer_uri': origin_url,
+                'error': error,
+                # 'my_headers': my_headers,
+            }
+    return RedirectResponse("/auth/login", status_code=302)
 
 
 @router.get("/create_job")
