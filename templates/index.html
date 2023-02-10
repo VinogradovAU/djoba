@@ -53,7 +53,12 @@
                 {% for job in jobs_items %}
                     {% if job.is_publish %}
                 <div class="card">
-                  <h5 class="card-header">{{ job.uuid }}</h5>
+                    <dev class="card-header">
+                        <div class="row m-0 p-0">
+                            <div class="col d-flex justify-content-start"><h5>{{ job.uuid }}</h5></div>
+                            <div class="col d-flex justify-content-end"><h5>Истекает: {{ job.disactivate_date }}</h5></div>
+                        </div>
+                    </dev>
                   <div class="card-body">
                     <h5 class="card-title">{{ job.title }}</h5>
                     <p class="card-text">{{ job.description }}</p>

@@ -129,11 +129,11 @@ async def create_job(request: Request, jobs: JobRepositoryes = Depends(get_job_r
 
             if form_valid.button == 'publish':
                 print(f'СОХРАНИТЬ И ОПУБЛИКОВАТЬ')
-                new_job = await jobs.create_job_from_html(user_id=manager.user.id, j=form_valid, id_publish=True)
+                new_job = await jobs.create_job_from_html(user_id=manager.user.id, j=form_valid, is_publish=True)
 
             else:
                 print(f'СОХРАНИТЬ КАК ЧЕРНОВИК')
-                await jobs.create_job_from_html(user_id=manager.user.id, j=form_valid, id_publish=False)
+                await jobs.create_job_from_html(user_id=manager.user.id, j=form_valid, is_publish=False)
 
             return RedirectResponse("/profile", status_code=302)
     print(f'пользователь не залогинен')

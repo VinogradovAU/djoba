@@ -61,3 +61,6 @@ class CreateJobIn(BaseModel):
     expired_day: conint(gt=0, lt=8)
     button: str
     resp: bool = False
+
+class Jobs_model_join(Jobs_model, Active_job):
+    pass

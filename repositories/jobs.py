@@ -79,9 +79,15 @@ class JobRepositoryes(BaseRepository):
         return job
 
     async def get_list_jobs(self, limit: int = 100, skip: int = 0) -> List[Jobs_model]:
+        test_query = f"SELECT * from jobs JOIN active_jobs ON jobs.id = active_jobs.job_id LIMIT {limit} OFFSET {skip};"
+
+
+        # for k in records:
+        #     print(f'id:{k.id}, {k.title}, истекает: {k.disactivate_date}')
+
         query = jobs.select().limit(limit).offset(skip)
         try:
-            res = await self.database.fetch_all(query=query)
+            res = await self.database.fetch_all(query=test_query)
         except ValidationError as e:
             return (e.json())
         return res
