@@ -16,6 +16,7 @@ jobs = sqlalchemy.Table(
     sqlalchemy.Column("description", sqlalchemy.String),
     sqlalchemy.Column("address", sqlalchemy.String),
     sqlalchemy.Column("city", sqlalchemy.String),
+    sqlalchemy.Column("phone", sqlalchemy.String),
     sqlalchemy.Column("metrostation", sqlalchemy.String),
     sqlalchemy.Column("price", sqlalchemy.Float),
     sqlalchemy.Column("is_active", sqlalchemy.Boolean),

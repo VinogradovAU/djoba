@@ -10,6 +10,7 @@ class BaseJob(BaseModel):
     price: condecimal(max_digits=17, decimal_places=2) = Field(default=0)
     address: str
     city: str
+    phone: str
     metrostation: Optional[str] = None
     is_active: bool = True  # объявление можно заблокировать, снять с публикации. эделает не Юзер
     is_publish: bool = False  # при создании объявление оно в режиме черновика. чтобы опубликовать надо True сделать,
@@ -32,6 +33,7 @@ class JobIn_model(BaseModel):
     price: condecimal(max_digits=17, decimal_places=2) = Field(default=0)
     address: str
     city: str
+    phone: str
     metrostation: Optional[str] = None
     expired_day: conint(gt=0, lt=8)
 

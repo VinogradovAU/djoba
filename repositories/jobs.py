@@ -18,6 +18,44 @@ class JobRepositoryes(BaseRepository):
         except Exception as e:
             return False
 
+    async def update_job_from_html(self,
+                                   joba: Jobs_model,
+                                   j: CreateJobIn, is_publish: bool) -> Jobs_model:
+
+        job = Jobs_model(
+            uuid=joba.uuid,
+            id=joba.id,
+            user_id=joba.user_id,
+            title=j.title,
+            description=j.description,
+            price=j.price,
+            address=j.address,
+            city=j.city,
+            phone=j.phone,
+            metrostation=j.metrostation,
+            is_active=joba.is_active,
+            is_publish=is_publish,
+            is_expired_time=False,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow()
+        )
+        values = {**job.dict()}
+        values.pop("id", None)
+        query = jobs.update().where(jobs.c.id == joba.id).values(**values)
+        #создаем запись в таблице jobs
+        await self.database.execute(query=query)
+
+        #вычисляем время когда объявление(запрос) должен быть снят с публикации - типа вышло время
+        new_expired_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=j.expired_day * 24 * 60)
+        activ_job = Active_job(
+            job_id=job.id,
+            disactivate_date=new_expired_time
+        )
+        #создаем запись в таблице active_jobs
+        query = active_jobs.update().where(active_jobs.c.job_id == job.id).values(**{**activ_job.dict()})
+        await self.database.execute(query=query)
+        return job
+
     async def create_job_from_html(self, user_id: int,
                                    j: CreateJobIn, is_publish: bool) -> Jobs_model:
         job_uuid = str(uuid.uuid4())
@@ -30,6 +68,7 @@ class JobRepositoryes(BaseRepository):
             price=j.price,
             address=j.address,
             city=j.city,
+            phone=j.phone,
             metrostation=j.metrostation,
             is_active=True,
             is_publish=is_publish,
@@ -66,6 +105,7 @@ class JobRepositoryes(BaseRepository):
             price=j.price,
             address=j.address,
             city=j.city,
+            phone=j.city,
             metrostation=j.metrostation,
             is_active=True,
             is_publish=True,
@@ -102,16 +142,31 @@ class JobRepositoryes(BaseRepository):
         return res
 
     async def update_job(self, id: int, user_id: int, j: JobIn_model) -> Jobs_model:
+
+        # вычисляем время когда объявление(запрос) должен быть снят с публикации - типа вышло время
+        new_expired_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=j.expired_day * 24 * 60)
+        activ_job = Active_job(
+            job_id=id,
+            disactivate_date=new_expired_time
+        )
+        # создаем запись в таблице active_jobs
+        query = active_jobs.update().where(jobs.c.id == id).values(**{**activ_job.dict()})
+        await self.database.execute(query=query)
+
         job = Jobs_model(
             id=id,
             user_id=user_id,
             title=j.title,
             description=j.description,
-            salary_from=j.salary_from,
-            salary_to=j.salary_to,
-            is_active=j.is_active,
+            price=j.price,
+            address=j.address,
+            city=j.city,
+            phone=j.phone,
+            metrostation=j.metrostation,
+            is_expired_time=False,
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow())
+
         values = {**job.dict()}
         values.pop("created_at", None)
         query = jobs.update().where(jobs.c.id == id).values(**values)
@@ -133,7 +188,8 @@ class JobRepositoryes(BaseRepository):
         query = jobs.select().where(jobs.c.uuid == uuid)
         job = await self.database.fetch_one(query=query)
         if job is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="job not found")
+            # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="job not found")
+            return False
         return Jobs_model.parse_obj(job)
 
     async def get_job_by_user_id(self, user_id: int) -> Optional[Jobs_model]:

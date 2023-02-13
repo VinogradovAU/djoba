@@ -14,6 +14,36 @@ templates = Jinja2Templates(directory="templates")
 router = APIRouter()
 
 
+@router.get("/job_edit/{uuid_job}")
+async def job_edit(
+        request: Request,
+        uuid_job: str,
+        jobs: JobRepositoryes = Depends(get_job_repository)
+):
+    print('this is get job_edit function')
+    if manager.user:
+        if manager.autorization:
+            errors = []
+            context = {
+                "request": request,
+                "user_name": manager.user.name,
+                "authenticated": True,
+                "form": False,
+                "errors": errors,
+            }
+            joba = await jobs.get_job_by_uuid(uuid_job)
+
+            if joba:
+                context["joba"] = joba
+                print(f'joba.title: {joba.title}')
+            else:
+                context["joba"] = False
+                print(f'joba: False')
+            return templates.TemplateResponse("edit_job_form.html", context=context)
+
+    return RedirectResponse("/auth/login", status_code=302)
+
+
 @router.get("/publishon/{uuid_job}")
 async def publishon(
         request: Request,
@@ -134,6 +164,65 @@ async def create_job(request: Request, jobs: JobRepositoryes = Depends(get_job_r
             else:
                 print(f'СОХРАНИТЬ КАК ЧЕРНОВИК')
                 await jobs.create_job_from_html(user_id=manager.user.id, j=form_valid, is_publish=False)
+
+            return RedirectResponse("/profile", status_code=302)
+    print(f'пользователь не залогинен')
+    manager.direction = 'create_job'
+    return RedirectResponse("/auth/login", status_code=302)
+
+@router.post("/job_edit/{uuid_job}")
+async def job_edit(request: Request,
+                   uuid_job: str,
+                   jobs: JobRepositoryes = Depends(get_job_repository)):
+    # проверяю залогинен ли пользователь если да то отправляю страницу с формой,
+    # если нет, то редирект на login form
+    print('this is POST job_edit function')
+    if manager.user:
+        if manager.autorization:
+            errors = []
+            context = {
+                "request": request,
+                "user_name": manager.user.name,
+                "authenticated": True,
+            }
+            form = await request.form()
+            try:
+                form_valid = CreateJobIn(
+                    errors=errors,
+                    title=form.get('title'),
+                    description=form.get('description'),
+                    price=form.get('price'),
+                    address=form.get('address'),
+                    city=form.get('city'),
+                    metrostation=form.get('metrostation'),
+                    phone=form.get('phone'),
+                    expired_day=form.get('expired_day'),
+                    button=form.get('button'),
+                    resp=True,
+                )
+                joba = await jobs.get_job_by_uuid(uuid=uuid_job)
+            except ValidationError as e:
+                print(e.json()[0])
+                err = e.json()
+                print(e.__dict__)
+
+                print("form is NOT valid")
+                print(form.__dict__)
+                errors.append("form is NOT valid")
+                errors.append(f"Ошибка ввода поля: {err}")
+                context["errors"] = errors
+                context["form"] = form
+                return templates.TemplateResponse("edit_job_form.html", context=context)
+            # form = CreateJobForm(request)
+
+
+            if form_valid.button == 'publish':
+                print(f'СОХРАНИТЬ И ОПУБЛИКОВАТЬ')
+                new_job = await jobs.update_job_from_html(joba=joba, j=form_valid, is_publish=True)
+
+            else:
+                print(f'СОХРАНИТЬ КАК ЧЕРНОВИК')
+                await jobs.update_job_from_html(joba=joba, j=form_valid, is_publish=False)
 
             return RedirectResponse("/profile", status_code=302)
     print(f'пользователь не залогинен')

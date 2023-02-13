@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    {% include 'meta_link_include.html' %}
+
+    {% block title %}
+    <title>Личный кабинет</title>
+    {% endblock %}
+
+</head>
+<body>
+<div class="container my_head fixed-top">
+        {% include 'main_menu.html' %}
+
+</div>
+
+
+    <div class="container">
+<!--        тут будет блок меню для личного кабинета пользователя-->
+        <h3>Блок меню пользователя:</h3>
+        <div class="text-danger font-weight-bold">
+          {% for error in errors %}
+            <li>{{error}}</li>
+          {% endfor %}
+            {% if form %}
+                {% if form.resp %}
+                ЭТО ОТВЕТ ПОСЛЕ ОБРАБОТКИ ФОРМЫ. ЧТО-ТО ПОШЛО НЕ ТАК!
+                {%endif%}
+            {%endif%}
+      </div>
+    </div>
+    <div class="container my_content">
+        <div class="row">
+            <div calss="col-12">
+
+                {% block content %}
+                {% if joba %}
+
+               <div class="row my-5">
+                   <div class="mx-auto" style="width: 500px;">
+                       <h4>Отредактируте запрос/объявление:</h4>
+                <form method="POST" action="/jobs/job_edit/{{joba.uuid}}">
+        <div class="mb-3">
+          <label>Введите краткое название</label>
+          <input type="text" required placeholder="Название" name="title" value="{{joba.title}}" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label>Опишите суть запроса. Какая услуга Вам требуется.</label>
+
+            <textarea class="form-control" required placeholder="{{joba.description}}" name="description" value="{{joba.description}}" rows="5">{{joba.description}}</textarea>
+        </div>
+          <div class="mb-3">
+          <label>Цена услуги</label>
+          <input type="text" required placeholder="{{joba.price}}" name="price" value="{{joba.price}}" class="form-control">
+        </div>
+          <div class="mb-3">
+          <label>Телефон для связи</label>
+          <input type="text" required placeholder="{{joba.phone}}" name="phone" value="{{joba.phone}}" class="form-control">
+        </div>
+         <div class="mb-3">
+          <label>Количество дней до снятия запроса услуги с публицкации</label>
+          <select class="form-select form-select-sm" name="expired_day" aria-label=".form-select-sm example">
+          <option selected value="1">1 день</option>
+          <option value="2">2 дня</option>
+          <option value="3">3 дня</option>
+          <option value="4">4 дня</option>
+          <option value="5">5 дней</option>
+          <option value="6">6 дней</option>
+          <option value="7">7 дней</option>
+        </select>
+          </div>
+        <div class="mb-3">
+          <label>Укажите город</label>
+          <input type="text" required placeholder="joba.city" name="city" value="{{ joba.city }}" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label>Укажите метро</label>
+          <input type="text" required placeholder="{{ joba.metrostation }}" name="metrostation" value="{{ joba.metrostation }}" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label>Укажите адрес</label>
+          <input type="text" required placeholder="{{ joba.address }}" name="address" value="{{ joba.address }}" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary" name="button" value="draft">Сохранить как черновик</button>
+        <button type="submit" class="btn btn-primary" name="button" value="publish">Сохранить и опубликовать</button>
+      </form>
+               </div>
+               </div>
+                {% endif %}
+                нет данных
+                {% endblock %}
+
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container my_footer">
+
+        <div class="row">
+            <div class="col">Подвал</div>
+
+        </div>
+    </div>
+
+{% include 'js_include.html' %}
+</body>
+</html>
