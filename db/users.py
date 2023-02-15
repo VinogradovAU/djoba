@@ -9,6 +9,7 @@ users = sqlalchemy.Table(
     sqlalchemy.Column("uuid", sqlalchemy.String, unique=True),
     sqlalchemy.Column("email", sqlalchemy.String, primary_key=True, unique=True),
     sqlalchemy.Column("name", sqlalchemy.String),
+    sqlalchemy.Column("phone", sqlalchemy.String),
     sqlalchemy.Column("hashed_password", sqlalchemy.String),
     sqlalchemy.Column("is_company", sqlalchemy.Boolean),
     sqlalchemy.Column("is_admin", sqlalchemy.Boolean, default=False),

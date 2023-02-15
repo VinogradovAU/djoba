@@ -16,6 +16,55 @@ templates = Jinja2Templates(directory="templates")
 
 router = APIRouter(include_in_schema=False)
 
+@router.get('/profile/edit/{uuid}')
+async def edit_user_info(
+        request: Request,
+        uuid: str,
+        users: UserRepository = Depends(get_user_repository)
+):
+    print(f'this is get edit_user_info function')
+    if manager.user:
+        context = {
+            "request": request,
+            "user_object": manager.user,
+            "user_name": manager.user.name,
+            "user_uuid": manager.user.uuid,
+        }
+        if manager.autorization:
+            context['authenticated'] = True
+        else:
+            print(f'manager.autorization = Fals ---> редирект на login')
+            return RedirectResponse("/auth/login", status_code=302)
+
+        response = templates.TemplateResponse("edit_user_form.html", context=context)
+        return response
+
+    print(f'manager.user -> False ---> редирект на login')
+    return RedirectResponse("/auth/login", status_code=302)
+
+@router.post('/profile/edit/{uuid}')
+async def edit_user_info(
+        request: Request,
+        uuid: str,
+        users: UserRepository = Depends(get_user_repository)
+):
+    print(f'this is post edit_user_info function')
+    if manager.user:
+        context = {
+            "request": request,
+            "user_object": manager.user,
+            "user_name": manager.user.name,
+            "user_uuid": manager.user.uuid,
+        }
+        if manager.autorization:
+            context['authenticated'] = True
+        else:
+            print(f'manager.autorization = Fals ---> редирект на login')
+            return RedirectResponse("/auth/login", status_code=302)
+
+
+    return {'что-то пошло':'не так'}
+
 
 @router.get("/activate/{uuid}")
 async def activate_user(

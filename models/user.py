@@ -10,6 +10,7 @@ class User(BaseModel):
     uuid: str
     name: str
     email: EmailStr
+    phone: Optional[str] = None
     hashed_password: str
     is_company: bool = False
     status_banned: bool = False
