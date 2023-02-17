@@ -25,7 +25,10 @@
     </div>
     <div class="row my-5">
       <div class="mx-auto" style="width: 450px;">
-        <div class="d-flex justify-content-center" style="margin-bottom: 30px;"><h4>Регистрация нового пользователя</h4></div>
+        <div class="d-flex justify-content-center" style="margin-bottom: 30px;"><h4>Заполните форму редактирования</h4></div>
+        {%if info_text %}
+        <div class="d-flex justify-content-center" style="margin-bottom: 30px;"><h2>{{info_text}}</h2></div>
+        {%endif%}
       <form method="POST" action="/auth/profile/edit/{uuid}">
         <div class="mb-3">
           <label>Email</label>
@@ -33,28 +36,25 @@
         </div>
         <div class="mb-3">
           <label>Имя</label>
-          <input type="text" required placeholder="Your Name" value="{{user_object.name}}" name="user_name" class="form-control">
+          <input type="text" required placeholder="Your Name" name="user_name" value="{{user_object.name}}" class="form-control">
         </div>
         <div class="mb-3">
-          <label>Номер телефона</label>
+          <label>Номер телефона в формате: +79261234567</label>
           <input type="text" required placeholder="Your name" name="phone" value="{{user_object.phone}}" class="form-control">
         </div>
         <div class="mb-3">
-          <label>Компания</label>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="{{ user_object.is_company}}"
-                     {% if user_object.is_company %}
-                     checked
-                    >
-              <label class="form-check-label" for="flexCheckChecked">
-                Юридическое. лицо
-              </label>
-                {%else%}
-                <label class="form-check-label" for="flexCheckChecked">
-                Физическое. лицо
-              </label>
-                {%endif%}
-            </div>
+          <select class="form-select" name="is_company" aria-label="Default select example">
+          <option  value="1"
+                  {% if user_object.is_company %}
+                      selected
+                  {%endif%}
+          >Компания</option>
+          <option value="0"
+            {% if not user_object.is_company %}
+                      selected
+                  {%endif%}
+          >Физическое лицо</option>
+        </select>
         </div>
         <button type="submit" class="btn btn-primary">Сохранить</button>
       </form>

@@ -4,7 +4,7 @@ import datetime
 from typing import List, Optional
 
 from db.base import database, metadata
-from models.user import User, UserIn, UserOut
+from models.user import User, UserIn, UserOut, EditUserProfilData
 from db.users import users
 from repositories.base import BaseRepository
 from core.security import hashed_password
@@ -128,3 +128,20 @@ class UserRepository(BaseRepository):
         if user is None:
             return None
         return user
+
+    async def update_user_from_form_profil(self, id: int, u: EditUserProfilData) -> Optional[bool]:
+        user_data = EditUserProfilData(
+            name=u.name,
+            email=u.email,
+            phone=u.phone,
+            is_company=u.is_company,
+            updated_at=datetime.datetime.utcnow(),
+        )
+        values = {**user_data.dict()}
+        query = users.update().where(users.c.id == id).values(**values)
+        # создаем запись в таблице jobs
+        try:
+            await self.database.execute(query=query)
+        except Exception as e:
+            return False
+        return True

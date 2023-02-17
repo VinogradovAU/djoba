@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from auth.forms import LoginForm, RegisterForm
 from fastapi.responses import RedirectResponse
 from core.security import manager
-from models.user import User
+from models.user import User, EditUserProfilData
 import datetime
 import uuid
 
@@ -15,6 +15,7 @@ templates = Jinja2Templates(directory="templates")
 # router = APIRouter()
 
 router = APIRouter(include_in_schema=False)
+
 
 @router.get('/profile/edit/{uuid}')
 async def edit_user_info(
@@ -24,7 +25,9 @@ async def edit_user_info(
 ):
     print(f'this is get edit_user_info function')
     if manager.user:
+        errors = []
         context = {
+            "errors": errors,
             "request": request,
             "user_object": manager.user,
             "user_name": manager.user.name,
@@ -42,6 +45,7 @@ async def edit_user_info(
     print(f'manager.user -> False ---> редирект на login')
     return RedirectResponse("/auth/login", status_code=302)
 
+
 @router.post('/profile/edit/{uuid}')
 async def edit_user_info(
         request: Request,
@@ -50,7 +54,9 @@ async def edit_user_info(
 ):
     print(f'this is post edit_user_info function')
     if manager.user:
+        errors = []
         context = {
+            "errors": errors,
             "request": request,
             "user_object": manager.user,
             "user_name": manager.user.name,
@@ -58,12 +64,42 @@ async def edit_user_info(
         }
         if manager.autorization:
             context['authenticated'] = True
+
+            # надо доставть форму из запроса и валидировать пола
+            form = await request.form()
+            try:
+                print(f'валидирую данные форму')
+                is_company = True if form.get('is_company') == '1' else False
+                form_valid = EditUserProfilData(
+                    name=form.get('user_name'),
+                    email=form.get('email'),
+                    phone=form.get('phone'),
+                    is_company=is_company,
+                )
+                print(dict(form_valid))
+                if form_valid:
+                    # print(f'валидация формы пройдена. далее будем сохранять')
+                    user = await users.update_user_from_form_profil(id=manager.user.id, u=form_valid)
+                    if user:
+                        manager.user = await users.get_by_uuid(uuid=manager.user.uuid)
+                        return RedirectResponse("/profile", status_code=302)
+                    errors.append("Не удалось сохранить изменения")
+                    response = templates.TemplateResponse("edit_user_form.html", context=context)
+                    return response
+
+            except Exception as e:
+                # ошибка валидации формы
+                print(e)
+                errors.append('Ошибка валидации формы. Проверьти поля')
+                errors.append(e)
+                context['errors'] = errors
+                response = templates.TemplateResponse("edit_user_form.html", context=context)
+                return response
         else:
             print(f'manager.autorization = Fals ---> редирект на login')
             return RedirectResponse("/auth/login", status_code=302)
-
-
-    return {'что-то пошло':'не так'}
+    print(f'в manager нет user ----> редирект на /profile')
+    return RedirectResponse("/profile", status_code=302)
 
 
 @router.get("/activate/{uuid}")

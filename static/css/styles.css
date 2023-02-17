@@ -47,3 +47,8 @@ body {
 	height: 15px;
 	width: auto;
 }
+.list-background-color{
+	background-color: #cfe2ffbf;
+	/*background-color: var(--bs-primary-bg-subtle);
+*/
+}

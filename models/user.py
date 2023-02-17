@@ -1,6 +1,7 @@
 import datetime
 from typing import Optional, Union
 from uuid import UUID
+import phonenumbers
 
 from pydantic import BaseModel, EmailStr, validator, constr
 
@@ -35,6 +36,21 @@ class UserOut(BaseModel):
     is_company: bool
     created_at: datetime.datetime
     updated_at: datetime.datetime
+
+
+class EditUserProfilData(BaseModel):
+    name: str
+    email: EmailStr
+    phone: str
+    is_company: Union[bool, None] = False
+
+    @validator("phone")
+    def phone_validation(cls, v):
+        try:
+            x = phonenumbers.parse(v, None)
+        except Exception as e:
+            raise ValueError("phonenumbers don't match")
+        return v
 
 
 @validator("password2")
