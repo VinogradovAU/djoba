@@ -15,6 +15,31 @@
     <p class="card-text">{{ job.city }}, {{ job.address }} </p>
     <p class="card-text">м.{{ job.metrostation }}</p>
     <p class="card-text">Цена: <b>{{ job.price }} р.</b></p>
-    <a href="#" class="btn btn-primary">Откликнуться</a>
+<!--    <a href="#" class="btn btn-primary">Бронировать</a>-->
+      <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Бронировать
+</button> (телефон автора будет доступен во время бронирования)
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">БРОНИРОВАНИЕ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Объявление будет забронировано на 2 часа. За это время рекомендуется связаться с автором объявления.
+      </div>
+        <div id="phone-path" value="{{ job.uuid }}"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Отменить</button>
+        <button type="button" class="btn btn-warning">Показать телефон</button>
+        <button type="button" class="btn btn-success">Подтвердить бронь</button>
+      </div>
+    </div>
   </div>
 </div>
