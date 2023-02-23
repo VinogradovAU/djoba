@@ -1,13 +1,20 @@
-{% extends "index.html" %}
-
-{% block title %}
-  <title>Item Details</title>
-{% endblock %}
-
-{% block content %}
-    <h1>Item ID: {{ id }}</h1>
-    <p>{{ job_item.title }}</p>
-    <p>{{ job_item.description }}</p>
-    <p>Цена от:{{ job_item.salary_from }} до {{ job_item.salary_to }} руб.</p>
-    <p>Дата обновления: {{ job_item.updated_at }}</p>
-{% endblock %}
+<div class="card">
+    <dev class="card-header">
+        <div class="row m-0 p-0">
+            {% if job.name %}
+            <div class="col d-flex justify-content-start text-success"><h5>{{ job.name }}, {{ job.email }}</h5></div>
+            {%else%}
+            <div class="col d-flex justify-content-start"><h5>{{ job.uuid }}</h5></div>
+            {%endif%}
+            <div class="col d-flex justify-content-end"><h5>Истекает: {{ job.disactivate_date }}</h5></div>
+        </div>
+    </dev>
+  <div class="card-body">
+    <h5 class="card-title">{{ job.title }}</h5>
+    <p class="card-text">{{ job.description }}</p>
+    <p class="card-text">{{ job.city }}, {{ job.address }} </p>
+    <p class="card-text">м.{{ job.metrostation }}</p>
+    <p class="card-text">Цена: <b>{{ job.price }} р.</b></p>
+    <a href="#" class="btn btn-primary">Откликнуться</a>
+  </div>
+</div>

@@ -2,6 +2,7 @@ from pydantic import BaseModel, condecimal, Field, conint
 from typing import Union, Optional, List
 import datetime
 from uuid import UUID
+from models.user import User
 
 
 class BaseJob(BaseModel):
@@ -64,5 +65,5 @@ class CreateJobIn(BaseModel):
     button: str
     resp: bool = False
 
-class Jobs_model_join(Jobs_model, Active_job):
+class Jobs_model_join(Jobs_model, Active_job, User):
     pass

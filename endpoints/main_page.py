@@ -23,7 +23,11 @@ async def main_page(
 
     jobs_items = await jobs.get_list_jobs(limit=100, skip=0)
     # jobs_items_list = list(map(Jobs_model.parse_obj, jobs_items))
-    jobs_items_list = list(map(Jobs_model_join.parse_obj, jobs_items))
+    if not jobs_items['erorr']:
+        jobs_items_list = list(map(Jobs_model_join.parse_obj, jobs_items['list_jobs']))
+    else:
+        jobs_items_list = []
+        print(f'ошибка при попытки вычитать список объявлений: {jobs_items["erorr"]}')
     context = {
         "request": request,
         "jobs_items": jobs_items_list,
@@ -50,6 +54,7 @@ async def main_page(
                     if manager.user:
                         context['user_name'] = manager.user.name
                         context['user_uuid'] = manager.user.uuid
+                        context['user'] = manager.user
                 else:
                     context['authenticated'] = False
             except Exception as e:
@@ -69,6 +74,8 @@ async def main_page(
         if manager.user:
             context['user_name'] = manager.user.name
             context['user_uuid'] = manager.user.uuid
+            context['user'] = manager.user
+
         # if manager.user.is_admin:
         #     return RedirectResponse(f"/profile/{manager.user.uuid}", status_code=302)
         if manager.direction == 'create_job_ok':

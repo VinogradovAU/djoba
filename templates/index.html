@@ -12,13 +12,7 @@
 
 <div class="container my_head fixed-top align-content-center">
     {% include 'main_menu.html' %}
-    {% if user_name %}
-    <div class="row justify-content-end">
-        <div class="col-4 d-flex justify-content-end text-success">
-            <h8> Привет {{user_name}}</h8>
-        </div>
-    </div>
-    {% endif %}
+
 
 </div>
 <div class="container my_content">
@@ -48,30 +42,12 @@
     <div class="row m-0 p-0">
         <div calss="col">
 
-
             <h4>Список запросов:</h4>
                 {% for job in jobs_items %}
                     {% if job.is_publish %}
-                <div class="card">
-                    <dev class="card-header">
-                        <div class="row m-0 p-0">
-                            <div class="col d-flex justify-content-start"><h5>{{ job.uuid }}</h5></div>
-                            <div class="col d-flex justify-content-end"><h5>Истекает: {{ job.disactivate_date }}</h5></div>
-                        </div>
-                    </dev>
-                  <div class="card-body">
-                    <h5 class="card-title">{{ job.title }}</h5>
-                    <p class="card-text">{{ job.description }}</p>
-                    <p class="card-text">{{ job.city }}, {{ job.address }} </p>
-                    <p class="card-text">м.{{ job.metrostation }}</p>
-                    <p class="card-text">Цена: <b>{{ job.price }} р.</b></p>
-                    <a href="#" class="btn btn-primary">Редактировать</a>
-                  </div>
-                </div>
+                            {% include 'job.html' %}
                     {% endif %}
                 {% endfor %}
-
-
             {% endblock %}
         </div>
 

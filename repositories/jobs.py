@@ -1,11 +1,13 @@
 from repositories.base import BaseRepository
 from models.jobs import Jobs_model, JobIn_model, JobOut_model, CreateJobIn, Active_job
 from db.jobs import jobs, active_jobs
+from db.users import users
 from typing import List, Optional
 import datetime
 from fastapi import HTTPException, status
 from pydantic import ValidationError
 import uuid
+from sqlalchemy import select
 
 
 class JobRepositoryes(BaseRepository):
@@ -120,17 +122,23 @@ class JobRepositoryes(BaseRepository):
 
     async def get_list_jobs(self, limit: int = 100, skip: int = 0) -> List[Jobs_model]:
         test_query = f"SELECT * from jobs JOIN active_jobs ON jobs.id = active_jobs.job_id LIMIT {limit} OFFSET {skip};"
+        # test_query = f"SELECT * from jobs JOIN active_jobs ON jobs.id = active_jobs.job_id JOIN users ON" \
+        #              f"jobs.user_id = users.id LIMIT {limit} OFFSET {skip};"
 
+        # query = jobs.select().limit(limit).offset(skip)
+        query = select(jobs, active_jobs, users).join(active_jobs).join(users).limit(limit).offset(skip)
+        # print(f'----> query= {query}')
 
-        # for k in records:
-        #     print(f'id:{k.id}, {k.title}, истекает: {k.disactivate_date}')
-
-        query = jobs.select().limit(limit).offset(skip)
+        result = {"erorr": False, 'list_jobs': '' }
         try:
-            res = await self.database.fetch_all(query=test_query)
+            # res = await self.database.fetch_all(query=test_query)
+            res = await self.database.fetch_all(query=query)
         except ValidationError as e:
-            return (e.json())
-        return res
+            result['list_jobs'] = None
+            result['erorr'] = (e.json())
+            return result
+        result['list_jobs'] = res
+        return result
 
     async def get_list_jobs_without_id(self, limit: int = 100, skip: int = 0) -> List[JobOut_model]:
         # query = jobs.select().limit(limit).offset(skip)
