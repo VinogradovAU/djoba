@@ -11,6 +11,15 @@ from sqlalchemy import select
 
 
 class JobRepositoryes(BaseRepository):
+    async def get_phone_by_jobuuid(self, uuid: str) -> str:
+        query = jobs.select().where(jobs.c.uuid == uuid)
+        job = await self.database.fetch_one(query=query)
+        if job is None:
+            # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="phone not found")
+            return False
+        print(f'job---> {job}')
+        return job.phone
+
     async def job_id_publish_change(self, uuid: str, new_publish: bool = False) -> bool:
         print(f'job_is_publish_change function')
         query = jobs.update().where(jobs.c.uuid == uuid).values(is_publish=new_publish)

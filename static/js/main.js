@@ -1,3 +1,65 @@
+var phone_path = document.querySelector('.phone-path')
+async function get_phone_from_jobuuid(element_button){
+	var uuid_job = element_button.getAttribute('jobuuid');
+//	console.log('uuid_job:' + uuid_job);
+	get_phone_from_server(uuid_job);
+//	phone_path.innerText = "запросим у сервера и получим номер";
+}
+
+//пот вызове модального окна, с кнопки вызова берется uuid джобы и
+//пишется в атрибут кнопки показа телефонного номера.
+//этот uuid нужет при нажатии кнопки - "показать телефон" для запроса не сервер
+var exampleModal = document.getElementById('exampleModal')
+exampleModal.addEventListener('show.bs.modal', function (event) {
+  // Кнопка, запускающая модальное окно
+  var button = event.relatedTarget
+  // Извлечь информацию из атрибутов data-bs- *
+  var jobuuid = button.getAttribute('data-bs-jobuuid')
+  var title = button.getAttribute('title')
+  // При необходимости вы можете инициировать запрос AJAX здесь
+  // а затем выполните обновление в обратном вызове.
+  //
+  // Обновите содержимое модального окна.
+  var modalTitle = exampleModal.querySelector('.modal-title')
+//  var modalBodyInput = exampleModal.querySelector('.modal-body input')
+
+  modalTitle.textContent = title
+  var button_get_phone = exampleModal.querySelector('.get-phone')
+  button_get_phone.setAttribute('jobuuid', jobuuid)
+//  modalBodyInput.value = recipient
+  phone_path.innerText = ""; //очищаю поле с телефоном
+})
+
+async function get_phone_from_server(uuid_job){
+        url = '/jobs/get_phone/' + uuid_job;
+        let response = await fetch(url);
+        console.log("response.ok", response.ok);
+        console.log("response.status", response.status);
+        if (response.ok) {
+        // если HTTP-статус в диапазоне 200-299
+        // получаем тело ответа (см. про этот метод ниже)
+        // {'error': None, 'phone': '89260000000'}
+            let json = await response.json();
+            console.log("json: ", json);
+            if (json['phone']!='' && json['error'] == 'None'){
+            console.log("Получен номер телефона:", json['phone'])
+            phone_path.innerHTML = '<h2>' + json['phone'] + '</h2>';
+            }else {
+                if (json['error']==401){
+                    phone_path.innerHTML = '<a class="btn btn-primary" href="/auth/login" role="button">Нажмине чтобы войти</a>'
+                } else {
+                    phone_path.innerText = 'Ошибка ' + json['error'];
+                }
+                console.log("error: ", json['error']);
+            }
+
+        } else {
+            phone_path.innerText = 'Не удалось получить номер. Обратитесь к администратору';
+            console.log("Ошибка HTTP: " + response.status);
+        }
+
+}
+
 async function deactivate_user(num_id){
         url = '/auth/deactivate/' + num_id;
         let response = await fetch(url);

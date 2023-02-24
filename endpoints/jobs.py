@@ -13,6 +13,24 @@ templates = Jinja2Templates(directory="templates")
 
 router = APIRouter()
 
+@router.get("/get_phone/{uuid_job}")
+async def get_phone_jobuuid(
+        request: Request,
+        uuid_job: str,
+        jobs: JobRepositoryes = Depends(get_job_repository)
+):
+    print('this is get get_phone_jobuuid')
+    if manager.user:
+        if manager.autorization:
+            phone = await jobs.get_phone_by_jobuuid(uuid=uuid_job)
+            if phone:
+                return {'error': 'None', 'phone': phone}
+            else:
+                return {'error': 'phone not found', 'phone': ''}
+
+    return {'error': 401, 'phone': ''}
+
+
 
 @router.get("/job_edit/{uuid_job}")
 async def job_edit(

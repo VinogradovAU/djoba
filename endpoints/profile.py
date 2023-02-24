@@ -14,7 +14,6 @@ from core.security import manager
 
 router = APIRouter(include_in_schema=False)
 
-
 @router.get("/profile")
 async def profil(
         request: Request,
