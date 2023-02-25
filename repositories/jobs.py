@@ -60,7 +60,7 @@ class JobRepositoryes(BaseRepository):
         new_expired_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=j.expired_day * 24 * 60)
         activ_job = Active_job(
             job_id=job.id,
-            disactivate_date=new_expired_time
+            disactivate_date=new_expired_time.strftime("%Y-%m-%d %H:%M")
         )
         #создаем запись в таблице active_jobs
         query = active_jobs.update().where(active_jobs.c.job_id == job.id).values(**{**activ_job.dict()})
@@ -97,7 +97,7 @@ class JobRepositoryes(BaseRepository):
         new_expired_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=j.expired_day * 24 * 60)
         activ_job = Active_job(
             job_id=job.id,
-            disactivate_date=new_expired_time
+            disactivate_date=new_expired_time.strftime("%Y-%m-%d %H:%M")
         )
         #создаем запись в таблице active_jobs
         query = active_jobs.insert().values(**{**activ_job.dict()})
@@ -210,7 +210,8 @@ class JobRepositoryes(BaseRepository):
         return Jobs_model.parse_obj(job)
 
     async def get_job_by_user_id(self, user_id: int) -> Optional[Jobs_model]:
-        query = jobs.select().where(jobs.c.user_id == user_id)
+        # query = jobs.select().where(jobs.c.user_id == user_id)
+        query = select(jobs, active_jobs).where(jobs.c.user_id == user_id).join(active_jobs)
         res = await self.database.fetch_all(query=query)
         if res is None:
             return False

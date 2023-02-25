@@ -9,26 +9,34 @@ async function get_phone_from_jobuuid(element_button){
 //пот вызове модального окна, с кнопки вызова берется uuid джобы и
 //пишется в атрибут кнопки показа телефонного номера.
 //этот uuid нужет при нажатии кнопки - "показать телефон" для запроса не сервер
-var exampleModal = document.getElementById('exampleModal')
-exampleModal.addEventListener('show.bs.modal', function (event) {
-  // Кнопка, запускающая модальное окно
-  var button = event.relatedTarget
-  // Извлечь информацию из атрибутов data-bs- *
-  var jobuuid = button.getAttribute('data-bs-jobuuid')
-  var title = button.getAttribute('title')
-  // При необходимости вы можете инициировать запрос AJAX здесь
-  // а затем выполните обновление в обратном вызове.
-  //
-  // Обновите содержимое модального окна.
-  var modalTitle = exampleModal.querySelector('.modal-title')
-//  var modalBodyInput = exampleModal.querySelector('.modal-body input')
 
-  modalTitle.textContent = title
-  var button_get_phone = exampleModal.querySelector('.get-phone')
-  button_get_phone.setAttribute('jobuuid', jobuuid)
-//  modalBodyInput.value = recipient
-  phone_path.innerText = ""; //очищаю поле с телефоном
-})
+
+    var exampleModal = document.getElementById('exampleModal');
+
+if (typeof(exampleModal) != 'undefined' && exampleModal != null)
+{
+		  exampleModal.addEventListener('show.bs.modal', function (event) {
+		  // Кнопка, запускающая модальное окно
+		  var button = event.relatedTarget
+		  // Извлечь информацию из атрибутов data-bs- *
+		  var jobuuid = button.getAttribute('data-bs-jobuuid')
+		  var title = button.getAttribute('title')
+		  // При необходимости вы можете инициировать запрос AJAX здесь
+		  // а затем выполните обновление в обратном вызове.
+		  //
+		  // Обновите содержимое модального окна.
+		  var modalTitle = exampleModal.querySelector('.modal-title')
+		//  var modalBodyInput = exampleModal.querySelector('.modal-body input')
+
+		  modalTitle.textContent = title
+		  var button_get_phone = exampleModal.querySelector('.get-phone')
+		  button_get_phone.setAttribute('jobuuid', jobuuid)
+		//  modalBodyInput.value = recipient
+		  phone_path.innerText = ""; //очищаю поле с телефоном
+		})
+
+}
+
 
 async function get_phone_from_server(uuid_job){
         url = '/jobs/get_phone/' + uuid_job;
@@ -114,6 +122,8 @@ async function publish_job_off(element){
          console.log("json: ", json);
           if (json['status_publishoff']=='True'){
           console.log("Джоба снята с публикации");
+              var data_info_header = document.querySelector('.clear_data_' + uuid_job)
+              data_info_header.innerHTML="";
 
 	          var elem = document.querySelector('.job_status_' + uuid_job);
 	          elem.innerText = 'ЧЕРНОВИК!';
@@ -148,6 +158,8 @@ async function publish_job_change(element){
          console.log("json: ", json);
           if (json['status_publishon']=='True'){
           console.log("Джоба опубликована");
+              var data_info_header = document.querySelector('.clear_data_' + uuid_job)
+              data_info_header.innerHTML='<h5>' + data_info_header.getAttribute("value") + '</h5>';
               var elem = document.querySelector('.job_status_' + uuid_job);
 	          elem.innerText = 'Объявление опубликовано!';
 	          elem.classList.remove('alert-primary');

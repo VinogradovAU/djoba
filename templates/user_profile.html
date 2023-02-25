@@ -44,7 +44,15 @@
         {%if jobs%}
         {%for job in jobs%}
           <div class="card">
-          <h5 class="card-header">{{ job.uuid }}</h5>
+          <div class="card-header">
+              <div class="row m-0 p-0">
+                  <div class="col d-flex justify-content-start text-success"><h5>{{ job.uuid }}</h5></div>
+                  <div class="col d-flex justify-content-end clear_data_{{job.uuid}}" value="Истекает: {{ job.disactivate_date }}">
+                      {%if job.is_publish %}
+                      <h5>Истекает: {{ job.disactivate_date }}</h5></div>
+                      {%endif%}
+              </div>
+          </div>
               {% if job.is_publish %}
               <div class="alert alert-success job_status_{{job.uuid}}" role="alert">
                     Объявление опубликовано!
