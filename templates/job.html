@@ -2,7 +2,11 @@
     <dev class="card-header">
         <div class="row m-0 p-0">
             {% if job.name %}
-            <div class="col d-flex justify-content-start text-success"><h5>{{ job.name }}, {{ job.email }}</h5></div>
+            <div class="col d-flex justify-content-start text-success">
+                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalUserInfo" data-bs-jobuuid={{job.uuid}}>
+                    <h5>{{ job.name }}</h5>
+                </button>
+                </div>
             {%else%}
             <div class="col d-flex justify-content-start"><h5>{{ job.uuid }}</h5></div>
             {%endif%}
@@ -39,6 +43,25 @@
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Отменить</button>
         <button type="button" class="btn btn-warning get-phone" jobuuid="" onclick="return get_phone_from_jobuuid(this);">Показать телефон</button>
         <button type="button" class="btn btn-success">Подтвердить бронь</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for User Info -->
+<div class="modal fade" id="modalUserInfo" tabindex="-1" aria-labelledby="modalUserInfoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalUserInfoLabel">Информация о пользователе</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       Тут пока пусто
+      </div>
+        <div class="phone-path text-center"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Закрыть</button>
       </div>
     </div>
   </div>

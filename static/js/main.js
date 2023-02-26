@@ -1,3 +1,24 @@
+//модальное окно для вывода данных юзера по кнопке ИМЯ на джобе (на объявлении)
+ var modalUserInfo = document.getElementById('modalUserInfo');
+
+if (typeof(modalUserInfo) != 'undefined' && modalUserInfo != null)
+{
+	modalUserInfo.addEventListener('show.bs.modal', function (event) {
+		  // Кнопка, запускающая модальное окно
+		  var button = event.relatedTarget
+		  // Извлечь информацию из атрибутов data-bs- *
+		  var jobauuid = button.getAttribute('data-bs-jobuuid')
+
+		  //modal_body это div в котрый мы поместим полученноую о юзере инфу в формате html
+		  var modal_body = modalUserInfo.querySelector('.modal-body')
+
+		  //ТУТ функция запроса к бэку
+		  modal_body.innerHTML = '<h2>ТУТ инфа о юзере с UUID объявления: '+ jobauuid+'</h2>'
+		  modal_body.innerHTML = info_html
+
+		})
+}
+
 var phone_path = document.querySelector('.phone-path')
 async function get_phone_from_jobuuid(element_button){
 	var uuid_job = element_button.getAttribute('jobuuid');
