@@ -12,10 +12,31 @@ if (typeof(modalUserInfo) != 'undefined' && modalUserInfo != null)
 		  //modal_body это div в котрый мы поместим полученноую о юзере инфу в формате html
 		  var modal_body = modalUserInfo.querySelector('.modal-body')
 
-		  //ТУТ функция запроса к бэку
-		  modal_body.innerHTML = '<h2>ТУТ инфа о юзере с UUID объявления: '+ jobauuid+'</h2>'
+		  //ТУТ функция запроса к бэку и возврат уже готового куска HTML
+		  info_html = '<h2>ТУТ инфа о юзере с UUID объявления: '+ jobauuid+'</h2>'
+		  info_html = info_html + '<div class="row">' +
+            '<div class="col">' +
+                '<div class="row rait_row">' +
+                    '<div class="wrapper exmpl">'+
+                        '<div><img src="/static/images/star-10.png"></div>'+
+                    '</div>'+
+                     '<div class="wrapper exmpl">'+
+                        '<div><img src="/static/images/star-10.png"></div>'+
+                    '</div>'+
+                     '<div class="wrapper exmpl">'+
+                        '<div><img src="/static/images/star-05.png"></div>'+
+                    '</div>'+
+                    '<div class="wrapper exmpl">'+
+                        '<div><img src="/static/images/star-0.png"></div>'+
+                    '</div>'+
+                    '<div class="wrapper exmpl">'+
+                        '<div><img src="/static/images/star-0.png"></div>'+
+                    '</div>'+
+                    '<div class="wrapper exmpl"><h3>2.5</h3></div>'+
+                '</div>'+
+            '</div>'+
+        '</div>'
 		  modal_body.innerHTML = info_html
-
 		})
 }
 

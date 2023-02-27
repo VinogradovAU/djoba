@@ -50,6 +50,8 @@ class JobOut_model(BaseJob):
 class Active_job(BaseModel):
     job_id: int
     disactivate_date: datetime.datetime
+    # performer_id: Optional[int] = None
+    # performer_confirmed: bool
 
 
 class CreateJobIn(BaseModel):

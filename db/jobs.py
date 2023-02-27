@@ -31,5 +31,11 @@ active_jobs = sqlalchemy.Table(
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, autoincrement=True, unique=True),
     sqlalchemy.Column("job_id", sqlalchemy.Integer, sqlalchemy.ForeignKey("jobs.id"), nullable=False),
+    sqlalchemy.Column("performer_id", sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), nullable=True,
+                      default=None),
+    sqlalchemy.Column("performer_confirmed", sqlalchemy.Boolean, nullable=True, default=False),
     sqlalchemy.Column("disactivate_date", sqlalchemy.DateTime),
 )
+
+# performer_id - исполнитель работы. появится когда юзер желающий исполнить работу нажмет кнопку бронирования
+# performer_confirmed - хозяин джобы подтверждает отдать работу юзеру-исполнителю

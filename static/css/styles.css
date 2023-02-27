@@ -52,3 +52,21 @@ body {
 	/*background-color: var(--bs-primary-bg-subtle);
 */
 }
+
+/* картинка звездочка*/
+
+.wrapper {
+    width: 50px;
+    height: 50px;
+    display: block;
+    /*    border: 5px solid #515151;*/
+}
+
+.exmpl img {
+    display: block;
+    width: 100%;
+}
+
+.rait_row {
+    height: 50px;
+}

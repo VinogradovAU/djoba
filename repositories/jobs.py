@@ -53,16 +53,16 @@ class JobRepositoryes(BaseRepository):
         values = {**job.dict()}
         values.pop("id", None)
         query = jobs.update().where(jobs.c.id == joba.id).values(**values)
-        #создаем запись в таблице jobs
+        # создаем запись в таблице jobs
         await self.database.execute(query=query)
 
-        #вычисляем время когда объявление(запрос) должен быть снят с публикации - типа вышло время
+        # вычисляем время когда объявление(запрос) должен быть снят с публикации - типа вышло время
         new_expired_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=j.expired_day * 24 * 60)
         activ_job = Active_job(
             job_id=job.id,
             disactivate_date=new_expired_time.strftime("%Y-%m-%d %H:%M")
         )
-        #создаем запись в таблице active_jobs
+        # создаем запись в таблице active_jobs
         query = active_jobs.update().where(active_jobs.c.job_id == job.id).values(**{**activ_job.dict()})
         await self.database.execute(query=query)
         return job
@@ -90,16 +90,16 @@ class JobRepositoryes(BaseRepository):
         values = {**job.dict()}
         values.pop("id", None)
         query = jobs.insert().values(**values)
-        #создаем запись в таблице jobs
+        # создаем запись в таблице jobs
         job.id = await self.database.execute(query=query)
 
-        #вычисляем время когда объявление(запрос) должен быть снят с публикации - типа вышло время
+        # вычисляем время когда объявление(запрос) должен быть снят с публикации - типа вышло время
         new_expired_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=j.expired_day * 24 * 60)
         activ_job = Active_job(
             job_id=job.id,
             disactivate_date=new_expired_time.strftime("%Y-%m-%d %H:%M")
         )
-        #создаем запись в таблице active_jobs
+        # создаем запись в таблице active_jobs
         query = active_jobs.insert().values(**{**activ_job.dict()})
         await self.database.execute(query=query)
         return job
@@ -135,10 +135,12 @@ class JobRepositoryes(BaseRepository):
         #              f"jobs.user_id = users.id LIMIT {limit} OFFSET {skip};"
 
         # query = jobs.select().limit(limit).offset(skip)
-        query = select(jobs, active_jobs, users).join(active_jobs).join(users).limit(limit).offset(skip)
+        query = select(jobs, active_jobs, users).join(active_jobs, active_jobs.c.job_id == jobs.c.id).join(users,
+                                                                                                           users.c.id == jobs.c.user_id).limit(
+            limit).offset(skip)
         # print(f'----> query= {query}')
 
-        result = {"erorr": False, 'list_jobs': '' }
+        result = {"erorr": False, 'list_jobs': ''}
         try:
             # res = await self.database.fetch_all(query=test_query)
             res = await self.database.fetch_all(query=query)
