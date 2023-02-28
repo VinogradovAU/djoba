@@ -11,6 +11,22 @@ from sqlalchemy import select
 
 
 class JobRepositoryes(BaseRepository):
+
+    async def get_userinfo_by_uuid_job(self, uuid_job: str) -> str:
+        query = jobs.select().where(jobs.c.uuid == uuid_job)
+        job = await self.database.fetch_one(query=query)
+        if job is None:
+            # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="phone not found")
+            return False
+        query = users.select().where(users.c.id == job.user_id)
+        user = await self.database.fetch_one(query=query)
+        if user is None:
+            # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="phone not found")
+            return False
+        return user
+
+
+
     async def get_phone_by_jobuuid(self, uuid: str) -> str:
         query = jobs.select().where(jobs.c.uuid == uuid)
         job = await self.database.fetch_one(query=query)

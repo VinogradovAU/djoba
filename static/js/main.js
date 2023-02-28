@@ -7,36 +7,12 @@ if (typeof(modalUserInfo) != 'undefined' && modalUserInfo != null)
 		  // Кнопка, запускающая модальное окно
 		  var button = event.relatedTarget
 		  // Извлечь информацию из атрибутов data-bs- *
-		  var jobauuid = button.getAttribute('data-bs-jobuuid')
+		  var uuid_job = button.getAttribute('data-bs-jobuuid')
 
 		  //modal_body это div в котрый мы поместим полученноую о юзере инфу в формате html
 		  var modal_body = modalUserInfo.querySelector('.modal-body')
+		  get_userinfo_from_server(uuid_job, modal_body)
 
-		  //ТУТ функция запроса к бэку и возврат уже готового куска HTML
-		  info_html = '<h2>ТУТ инфа о юзере с UUID объявления: '+ jobauuid+'</h2>'
-		  info_html = info_html + '<div class="row">' +
-            '<div class="col">' +
-                '<div class="row rait_row">' +
-                    '<div class="wrapper exmpl">'+
-                        '<div><img src="/static/images/star-10.png"></div>'+
-                    '</div>'+
-                     '<div class="wrapper exmpl">'+
-                        '<div><img src="/static/images/star-10.png"></div>'+
-                    '</div>'+
-                     '<div class="wrapper exmpl">'+
-                        '<div><img src="/static/images/star-05.png"></div>'+
-                    '</div>'+
-                    '<div class="wrapper exmpl">'+
-                        '<div><img src="/static/images/star-0.png"></div>'+
-                    '</div>'+
-                    '<div class="wrapper exmpl">'+
-                        '<div><img src="/static/images/star-0.png"></div>'+
-                    '</div>'+
-                    '<div class="wrapper exmpl"><h3>2.5</h3></div>'+
-                '</div>'+
-            '</div>'+
-        '</div>'
-		  modal_body.innerHTML = info_html
 		})
 }
 
@@ -79,6 +55,96 @@ if (typeof(exampleModal) != 'undefined' && exampleModal != null)
 
 }
 
+async function get_userinfo_from_server(uuid_job, modal_body){
+        url = '/userinfo/' + uuid_job;
+        let response = await fetch(url);
+        console.log("response.ok", response.ok);
+        console.log("response.status", response.status);
+        if (response.ok) {
+        // если HTTP-статус в диапазоне 200-299
+        // получаем тело ответа (см. про этот метод ниже)
+        // {'error': None,
+        //'user_name': 'user_name', 'user_phone':'user_phone',
+        //'user_email':'user_email', 'user_rait':'user_rait'}
+
+	            let json = await response.json();
+
+	            if (json) {
+	                let err = 0
+
+					if (json['user_banned']==false || json['user_banned']==true){
+		                console.log('user_banned is ok')
+		            } else {console.log('user_banned is ERROR'); err = 1}
+
+		            if (json['user_name']!=''){
+		                console.log('user_name is ok')
+		            }else {console.log('user_name is ERROR'); err = 1}
+
+		            if (json['error']!=''){
+		                console.log('error is ok')
+		            }else {console.log('error is ERROR'); err = 1}
+
+		            if (json['user_phone']!=''){
+		                console.log('user_phone is ok')
+		            }else {console.log('user_phone is ERROR'); err = 1}
+
+		            if (json['user_email']!=''){
+		                console.log('user_email is ok')
+		            }else {console.log('user_email is ERROR'); err = 1}
+
+		            if (json['user_rait']!=''){
+		                console.log('user_rait is ok')
+		            }else {console.log('user_rait is ERROR'); err = 1}
+
+					  //ТУТ функция запроса к бэку и возврат уже готового куска HTML
+					info_html=''
+					if (err==1) {
+					  info_html = '<h2>Не удалось получить данные о пользователе. Обратитесь к администратору</h2>'
+
+					} else {
+					  info_html = info_html + '<div class="card>"'+
+								'<ul class="list-group list-group-flush">'+
+							    '<li class="list-group-item list-background-color">Имя: '+ json['user_name'] + '</li>'+
+							    '<li class="list-group-item list-background-color">Тел.: '+ json['user_phone'] + '</li>'+
+							    '<li class="list-group-item list-background-color">Email: '+ json['user_email'] + '</li>'+
+							    '</ul></div>'
+					  info_html = info_html + '<div class="row">' +
+			            '<div class="col">' +
+			                '<div class="row rait_row">' +
+			                    '<div class="wrapper exmpl">'+
+			                        '<div><img src="/static/images/star-10.png"></div>'+
+			                    '</div>'+
+			                     '<div class="wrapper exmpl">'+
+			                        '<div><img src="/static/images/star-10.png"></div>'+
+			                    '</div>'+
+			                     '<div class="wrapper exmpl">'+
+			                        '<div><img src="/static/images/star-05.png"></div>'+
+			                    '</div>'+
+			                    '<div class="wrapper exmpl">'+
+			                        '<div><img src="/static/images/star-0.png"></div>'+
+			                    '</div>'+
+			                    '<div class="wrapper exmpl">'+
+			                        '<div><img src="/static/images/star-0.png"></div>'+
+			                    '</div>'+
+			                    '<div class="wrapper exmpl"><h3>2.5</h3></div>'+
+			                '</div>'+
+			            '</div>'+
+			        '</div>'
+					}
+			        modal_body.innerHTML = info_html
+
+		        } else {
+		          info_html = '<h2>Не удалось получить данные о пользователе. Обратитесь к администратору</h2>'
+				  modal_body.innerHTML = info_html
+		        }
+
+        } else {
+            console.log("Ошибка HTTP: " + response.status);
+            info_html = '<h2>Не удалось получить данные о пользователе. Обратитесь к администратору</h2>'
+            modal_body.innerHTML = info_html
+        }
+
+}
 
 async function get_phone_from_server(uuid_job){
         url = '/jobs/get_phone/' + uuid_job;

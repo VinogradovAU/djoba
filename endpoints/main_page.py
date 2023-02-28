@@ -18,7 +18,6 @@ async def main_page(
         request: Request,
         jobs: JobRepositoryes = Depends(get_job_repository),
 ):
-
     authenticated = False
 
     jobs_items = await jobs.get_list_jobs(limit=100, skip=0)
@@ -79,7 +78,7 @@ async def main_page(
         # if manager.user.is_admin:
         #     return RedirectResponse(f"/profile/{manager.user.uuid}", status_code=302)
         if manager.direction == 'create_job_ok':
-            #если логинились для создания нового объявления
+            # если логинились для создания нового объявления
             response = templates.TemplateResponse("create_job_form.html", context=context)
         else:
             response = templates.TemplateResponse("index.html", context=context)
@@ -87,7 +86,6 @@ async def main_page(
         manager.direction = '/'
 
         return response
-
 
     if manager.direction == 'logout':
         print(f'main_page-->logout')
@@ -113,3 +111,23 @@ async def job_page(request: Request,
                "job_item": res}
     print(type(res))
     return templates.TemplateResponse("job.html", context=context)
+
+
+@router.get("/userinfo/{uuid_job}")
+async def get_user_info(request: Request,
+                    uuid_job: str,
+                    jobs: JobRepositoryes = Depends(get_job_repository)):
+    user_info = await jobs.get_userinfo_by_uuid_job(uuid_job=uuid_job)
+    # status_banned
+    print('this is get get_user_info function')
+
+    if not user_info:
+        return {"error": 'Ошибка получения данных'}
+    else:
+        return {"error": None,
+                   "user_name": user_info.name,
+                   "user_phone": user_info.phone,
+                   "user_email": user_info.email,
+                   "user_rait": user_info.rait,
+                   "user_banned": user_info.status_banned}
+
