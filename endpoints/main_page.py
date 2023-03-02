@@ -124,10 +124,11 @@ async def get_user_info(request: Request,
     if not user_info:
         return {"error": 'Ошибка получения данных'}
     else:
+        rait = str(user_info.rating)
         return {"error": None,
                    "user_name": user_info.name,
                    "user_phone": user_info.phone,
                    "user_email": user_info.email,
-                   "user_rait": user_info.rait,
+                   "user_rait": rait,
                    "user_banned": user_info.status_banned}
 

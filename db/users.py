@@ -15,7 +15,7 @@ users = sqlalchemy.Table(
     sqlalchemy.Column("is_admin", sqlalchemy.Boolean, default=False),
     sqlalchemy.Column("status_banned", sqlalchemy.Boolean, default=False),
     sqlalchemy.Column("status_online", sqlalchemy.Boolean, default=False),
-    sqlalchemy.Column("rating", sqlalchemy.DECIMAL(1, 1), default=0),
+    sqlalchemy.Column("rating", sqlalchemy.DECIMAL(3, 1), default=0),
     sqlalchemy.Column("created_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),
     sqlalchemy.Column("updated_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),
 )

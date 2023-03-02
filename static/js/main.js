@@ -55,6 +55,66 @@ if (typeof(exampleModal) != 'undefined' && exampleModal != null)
 
 }
 
+function generate_stars(rait_num){
+	val_rait = rait_num;
+	if (val_rait == null) {
+        val_rait = "0.0";
+    }
+	if (val_rait == "") {
+        val_rait = "0.0";
+    }
+    rait_html = '';
+    rait_html = rait_html + '<h3>' + val_rait + '</h3>';
+
+    rait = val_rait.split(".");
+    flag = 0;
+
+    if (rait[0] == 0 && rait[1] == 0) {
+        //все звезды пустые
+        star_num = rait[1];
+        for (x = 1; x <= 5; x++) {
+            rait_html = rait_html + '<div class="wrapper exmpl"><div><img src="/static/images/star-' + star_num + '.png"></div></div>'
+        }
+        flag = 1;
+    }
+    if (rait[0] == 0 && rait[1] > 0 && flag == 0) {
+        //одна звезда частично, остальныепустые
+        star_num = 0;
+        rait_html = rait_html + '<div class="wrapper exmpl"><div><img src="/static/images/star-0' + rait[1] + '.png"></div></div>'
+        for (x = 1; x <= 4; x++) {
+            rait_html = rait_html + '<div class="wrapper exmpl"><div><img src="/static/images/star-' + star_num + '.png"></div></div>'
+        }
+        flag = 1;
+    }
+
+    if (rait[0] > 0 && rait[1] >= 0 && flag == 0) {
+        //одна звезда частично, остальныепустые
+        star_num = 10;
+        for (x = 1; x <= rait[0]; x++) {
+            rait_html = rait_html + '<div class="wrapper exmpl"><div><img src="/static/images/star-' + star_num + '.png"></div></div>'
+        }
+
+        if (rait[1] == 0) {
+            star_num = 0;
+            aa = 5 - rait[0]
+            for (x = 1; x <= aa; x++) {
+                rait_html = rait_html + '<div class="wrapper exmpl"><div><img src="/static/images/star-' + star_num + '.png"></div></div>'
+            }
+        } else {
+            star_num = rait[1];
+            rait_html = rait_html + '<div class="wrapper exmpl"><div><img src="/static/images/star-0' + star_num + '.png"></div></div>'
+            star_num = 0;
+            ss = 5 - rait[0] - 1;
+            for (x = 1; x <= ss; x++) {
+                rait_html = rait_html + '<div class="wrapper exmpl"><div><img src="/static/images/star-' + star_num + '.png"></div></div>'
+            }
+            flag = 1;
+        }
+    }
+return rait_html
+}
+
+
 async function get_userinfo_from_server(uuid_job, modal_body){
         url = '/userinfo/' + uuid_job;
         let response = await fetch(url);
@@ -94,7 +154,11 @@ async function get_userinfo_from_server(uuid_job, modal_body){
 
 		            if (json['user_rait']!=''){
 		                console.log('user_rait is ok')
-		            }else {console.log('user_rait is ERROR'); err = 1}
+		                rait=json['user_rait'];
+		            }else {
+		            console.log('user_rait is ERROR');
+		            err = 1;
+		            rait="0.0"}
 
 					  //ТУТ функция запроса к бэку и возврат уже готового куска HTML
 					info_html=''
@@ -110,23 +174,8 @@ async function get_userinfo_from_server(uuid_job, modal_body){
 							    '</ul></div>'
 					  info_html = info_html + '<div class="row">' +
 			            '<div class="col">' +
-			                '<div class="row rait_row">' +
-			                    '<div class="wrapper exmpl">'+
-			                        '<div><img src="/static/images/star-10.png"></div>'+
-			                    '</div>'+
-			                     '<div class="wrapper exmpl">'+
-			                        '<div><img src="/static/images/star-10.png"></div>'+
-			                    '</div>'+
-			                     '<div class="wrapper exmpl">'+
-			                        '<div><img src="/static/images/star-05.png"></div>'+
-			                    '</div>'+
-			                    '<div class="wrapper exmpl">'+
-			                        '<div><img src="/static/images/star-0.png"></div>'+
-			                    '</div>'+
-			                    '<div class="wrapper exmpl">'+
-			                        '<div><img src="/static/images/star-0.png"></div>'+
-			                    '</div>'+
-			                    '<div class="wrapper exmpl"><h3>2.5</h3></div>'+
+			                '<div class="row rait_row">'
+			                + generate_stars(rait) +
 			                '</div>'+
 			            '</div>'+
 			        '</div>'
