@@ -3,9 +3,9 @@
         <div class="row m-0 p-0">
             {% if job.name %}
             <div class="col d-flex justify-content-start text-success">
-                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalUserInfo" data-bs-jobuuid={{job.uuid}}>
-                    <h5>{{ job.name }}</h5>
-                </button>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalUserInfo" data-bs-jobuuid={{job.uuid}}>
+                    <h5>{{ job.name | title }}</h5>
+                </button><h4 style="margin-left: 10px;">{{ job.rating }}</h4>
                 </div>
             {%else%}
             <div class="col d-flex justify-content-start"><h5>{{ job.uuid }}</h5></div>
