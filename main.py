@@ -18,8 +18,8 @@ app = fastapi.FastAPI(title="Djoba Project")
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "http://127.0.0.1:8000",
-    "http://192.168.1.10:8000",
+    "http://127.0.0.1:8001",
+    "http://192.168.1.34:8001",
 ]
 
 app.add_middleware(
@@ -102,4 +102,4 @@ async def shutdown():
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port=8001, host="127.0.0.1", reload=True)
+    uvicorn.run("main:app", port=8001, host="0.0.0.0", reload=True)
