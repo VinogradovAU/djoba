@@ -36,7 +36,7 @@
                     <div class="card-body">
                             <div class="card-text">
                                 ID пользователя: {{item.id}}
-                                {%if authenticated %}
+                                {%if item.status_online %}
                                 <text style="color: green"><b>(ONLINE)</b></text>
                                 {%else%}
                                 <text style="color: gray"><b>(OFFLINE)</b></text>
