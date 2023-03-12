@@ -14,6 +14,7 @@ from db.users import users as db_users
 import uuid
 
 app = fastapi.FastAPI(title="Djoba Project")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 origins = [
     "http://localhost",
