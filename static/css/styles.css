@@ -70,3 +70,10 @@ body {
 .rait_row {
     height: 50px;
 }
+.text-logo {
+    font-size: 1.25rem;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    height: 60px;
+}

@@ -20,7 +20,7 @@
     {% block content %}
     {% if authenticated %}
     <div class="row user_list_jobs d-flex justify-content-center align-items-center">
-        <div class="col-6 d-flex">
+        <div class="col-md-8 text-center">
 
             Пользователь залогинен!
             Если указаны в профиле предпочтения по подбору объявлений (указан город, район или меро, тематика)
@@ -30,7 +30,7 @@
     </div>
     {% else %}
         <div class="row user_list_jobs d-flex justify-content-center align-items-center">
-            <div class="col-6 d-flex">
+            <div class="col-md-8 text-center">
 
                 Пользователь АНОНИМ!
                 Выводим список самых свежжих объявлений
