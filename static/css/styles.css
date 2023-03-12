@@ -35,7 +35,7 @@ body {
     background-color: azure;
 }
 .user_list_jobs{
-	height: 100px;
+	min-height: 100px;
     background-color: #f8f9fa;
 
 }
