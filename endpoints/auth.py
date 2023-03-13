@@ -186,7 +186,8 @@ async def registration_post(request: Request, users: UserRepository = Depends(ge
                 new_user = await users.create_user_from_formtemplate(u=UserA)
                 # настраиваем менеджер для залогиненного юзера
                 manager.access_token = access_token
-                manager.direction = 'login'
+
+                # manager.direction = 'login'
                 if new_user:
                     manager.user = await users.get_by_email(form.email)
                 return RedirectResponse("/", status_code=302)
@@ -219,9 +220,13 @@ async def api_login(mylogin: Login, users: UserRepository = Depends(get_user_rep
 @router.get("/logout")
 async def logout(request: Request, users: UserRepository = Depends(get_user_repository)):
     print('this is get logout function')
-    manager.direction = 'logout'
-    await users.user_set_status(manager.user.uuid, False)
-    return RedirectResponse(url="/", status_code=302)
+    user_from_pool = request.state.user
+    await users.user_set_status(user_from_pool.uuid, False)
+    request.cookies.clear()
+    del manager.resp[request.state.access_token]  # удаляем юзера из словаря
+    response = RedirectResponse(url="/", status_code=302)
+    response.set_cookie(key="access_token", value='', httponly=True)
+    return response
 
 
 @router.get("/login")
@@ -253,25 +258,20 @@ async def login_post(request: Request, users: UserRepository = Depends(get_user_
             form.__dict__.get("errors").append("Incorrect Email or Password")
             if access_token:
                 print(f'сгенерирован access_token: {access_token}')
-                manager.user = await users.get_by_email(form.email)
-                if manager.user.status_banned:
-                    manager.autorization = False
+                user_item = await users.get_by_email(form.email)
+
+                if user_item.status_banned:
                     form.__dict__.get("errors").append("Учетная запись заблокирована администратором")
                 else:
-                    manager.access_token = access_token
-                    manager.autorization = True
-                    if manager.direction == 'create_job':
-                        manager.direction = 'create_job_ok'
-                    else:
-                        manager.direction = 'login'
-                    if manager.user.is_admin:
-                        manager.is_admin = True
-                    await users.user_set_status(manager.user.uuid, True)
+                    print(f'manager.resp[access_token]: {access_token}')
+                    manager.resp[access_token] = user_item
+                    await users.user_set_status(user_item.uuid, True)
+                    print(f'user.uuid:{user_item.uuid}')
+                    response = RedirectResponse("/", status_code=302)
+                    response.set_cookie(key="access_token", value=access_token, httponly=True)
+                    return response
 
-                    print(f'manager.user.uuid:{manager.user.uuid}')
-                    return RedirectResponse("/", status_code=302)
             form.__dict__.update(msg="")
-
             form.__dict__.update(authenticated=False)
             response = templates.TemplateResponse("login.html", form.__dict__)
             return response

@@ -5,6 +5,7 @@ from core.security import JWTBearer, decode_access_token
 from repositories.users import UserRepository
 from repositories.jobs import JobRepositoryes
 
+from endpoints import depends
 
 def get_user_repository() -> UserRepository:
     return UserRepository(database)
@@ -23,6 +24,7 @@ async def get_current_user(mytoken: str = Depends(JWTBearer()),
     email: str = payload.get("sub")
     if email is None:
         raise cred_exeption
+    users = depends.get_user_repository()
     user = await users.get_by_email(email=email)
     if user is None:
         raise cred_exeption

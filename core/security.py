@@ -53,7 +53,7 @@ class Manager():
 
     def __init__(self, user_status: str = 'offline',
                  autorization: bool = False,
-                 resp: Optional[List] = None,
+                 resp: Optional[dict] = {},
                  response: Any = None,
                  set_cookie: bool = False,
                  access_token: str = '',

@@ -1,5 +1,5 @@
 import datetime
-from fastapi import Request, Cookie
+from fastapi import Request, Depends
 from fastapi.staticfiles import StaticFiles
 import fastapi
 from models.user import User
@@ -12,9 +12,12 @@ from endpoints.api import jobs_api
 from fastapi.middleware.cors import CORSMiddleware
 from db.users import users as db_users
 import uuid
+from endpoints.depends import get_current_user
 
 app = fastapi.FastAPI(title="Djoba Project")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+pool_managed_object = {}  # словарь {token:manager} по токену мы достаем объект manager
 
 origins = [
     "http://localhost",
@@ -42,31 +45,62 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
-    response = await call_next(request)
-    # print(f'сработал middleware')
-    try:
-        access_token = request.cookies.get('access_token')
-        # print(f'cookies содержат token: {access_token}')
-        decode_token = decode_access_token(access_token)
-        # print(f'decode_token: {decode_token}')
-        if decode_token is None:
-            # print(f'token протух')
-            manager.autorization = False
-            manager.set_cookie = False
-            request.cookies.clear()
-        else:
-            # print(f'token НЕ протух')
-            manager.autorization = True
-            manager.set_cookie = True
-            manager.user_status = 'Online'
-            # if manager.user:
-            #     context['user_name'] = manager.user.name
-            #     context['user_uuid'] = manager.user.uuid
+    print(f'сработал middleware')
+    # try:
+    access_token = request.cookies.get('access_token')
+    print(f'cookies содержат token: {access_token}')
+    request.state.user_is_anonymous = True
+    request.state.user_is_authenticated = False
 
-    except Exception as e:
-        print(f'middleware ошибка проверки token')
+    if access_token is None:
+        # print(f'token протух')
         manager.autorization = False
         manager.set_cookie = False
+        manager.user = None
+        manager.user_status = "offline"
+        manager.access_token = ''
+    else:
+        if access_token in manager.resp:
+            # токен есть в словаре (он там появляется после логирования юзера)
+            # проверяем токен
+            decode_token = decode_access_token(access_token)
+            print(f'decode_token: {decode_token}')
+            print(f'decode_token: {decode_token["sub"]}')
+            if decode_token is None:
+                # неверный токен или истек срок действия
+                manager.autorization = False
+                manager.set_cookie = False
+                request.cookies.clear()
+                print(f'token протух')
+            else:
+                print(f'token НЕ протух')
+                # достанем юзера из бд по емаил из токена
+                user_email = decode_token["sub"]
+                user = await get_current_user(access_token)
+                manager.user = user
+                manager.autorization = True
+                manager.set_cookie = True
+                manager.user_status = 'Online'
+                request.state.user_is_anonymous = False
+                request.state.user_is_authenticated = True
+                request.state.user = user
+                request.state.access_token = access_token
+
+        else:
+            # print(f'в куках пришел неверный токен')
+            manager.autorization = False
+            manager.set_cookie = False
+            manager.user = None
+            manager.user_status = "offline"
+            manager.access_token = ''
+            request.cookies.clear()
+
+
+        # except Exception as e:
+        #     print(f'middleware ошибка проверки token')
+        #     manager.autorization = False
+        #     manager.set_cookie = False
+    response = await call_next(request)
 
     return response
 

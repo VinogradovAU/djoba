@@ -19,7 +19,6 @@ async def main_page(
         jobs: JobRepositoryes = Depends(get_job_repository),
 ):
     authenticated = False
-
     jobs_items = await jobs.get_list_jobs(limit=100, skip=0)
     # jobs_items_list = list(map(Jobs_model.parse_obj, jobs_items))
     if not jobs_items['erorr']:
@@ -34,36 +33,19 @@ async def main_page(
         # "jobs_items": jobs_items,
     }
 
-    # просто зашли на главную
-    if manager.direction == '/' or manager.direction == 'create_job':
-        if manager.direction == 'create_job':
-            manager.direction = '/'
-        print(f'main_page-->main_page')
-        if manager.autorization:
-            context['authenticated'] = True
-            # проверка на то что токен не протух. если протух делаем return сразу при этом authenticated false
-            try:
-                access_token = request.cookies.get("access_token")
-                print(f'test token: {access_token}')
-                decode_token = decode_access_token(access_token)
-                print(f'decode_token: {decode_token}')
-                if decode_token:
-                    print(f'token не протух')
-                    context['authenticated'] = True
-                    if manager.user:
-                        context['user_name'] = manager.user.name
-                        context['user_uuid'] = manager.user.uuid
-                        context['user'] = manager.user
-                else:
-                    context['authenticated'] = False
-            except Exception as e:
-                print(f'ошибка проверки token')
-                context['authenticated'] = False
+    if request.state.user_is_authenticated:
+        context['authenticated'] = True
+        context['user_name'] = request.state.user.name
+        context['user_uuid'] = request.state.user.uuid
+        context['user'] = request.state.user
+    if request.state.user_is_anonymous:
+        context['authenticated'] = False
 
-        response = templates.TemplateResponse("index.html", context=context)
-        return response
+    response = templates.TemplateResponse("index.html", context=context)
+    return response
 
-    # редирект на главную после нажатия login
+    # редирект на главную после создать запрос !!!!!!!!!!!придумать как!!!!!!!!!!!!!!!!
+    """ 
     if manager.direction == 'login' or manager.direction == 'create_job_ok':
         print(f'main_page-->login')
         manager.autorization = True
@@ -86,19 +68,8 @@ async def main_page(
         manager.direction = '/'
 
         return response
+    """
 
-    if manager.direction == 'logout':
-        print(f'main_page-->logout')
-        manager.autorization = False
-        manager.set_cookie = False
-        manager.user_status = 'offline'
-        manager.access_token = ''
-        context['authenticated'] = False
-        response = templates.TemplateResponse("index.html", context=context)
-        # response.delete_cookie("access_token")
-        response.set_cookie(key="access_token", value=manager.access_token, httponly=True)
-        manager.direction = '/'
-        return response
 
 
 @router.get("/job/{id}", response_class=HTMLResponse)
