@@ -1,8 +1,8 @@
 
         {% if authenticated %}
-        <li><a class="btn btn-link text-light" role="button" href="/profile">Профиль</a></li>
-        <li><a class="btn btn-link text-light" role="button" href="/auth/logout">Выход</a></li>
+        <li><a class="btn btn-link dropdown-item" role="button" href="/profile">Профиль</a></li>
+        <li><a class="btn btn-link dropdown-item" role="button" href="/auth/logout">Выход</a></li>
         {% else %}
-        <li><a class="btn btn-link text-light" role="button" href="/auth/login">Вход</a></li>
-        <li><a class="btn btn-link text-light" role="button" href="/auth/registration">Регистрация</a></li>
+        <li><a class="btn btn-link dropdown-item" role="button" href="/auth/login">Вход</a></li>
+        <li><a class="btn btn-link dropdown-item" role="button" href="/auth/registration">Регистрация</a></li>
         {% endif %}
