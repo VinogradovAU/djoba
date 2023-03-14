@@ -65,7 +65,6 @@ async def add_process_time_header(request: Request, call_next):
             # проверяем токен
             decode_token = decode_access_token(access_token)
             print(f'decode_token: {decode_token}')
-            print(f'decode_token: {decode_token["sub"]}')
             if decode_token is None:
                 # неверный токен или истек срок действия
                 manager.autorization = False
@@ -73,6 +72,8 @@ async def add_process_time_header(request: Request, call_next):
                 request.cookies.clear()
                 print(f'token протух')
             else:
+
+                print(f'decode_token: {decode_token["sub"]}')
                 print(f'token НЕ протух')
                 # достанем юзера из бд по емаил из токена
                 user_email = decode_token["sub"]
