@@ -10,6 +10,11 @@
         <div class="col d-none d-md-block d-lg-block d-xl-block d-xxl-block">
             <ul class="list-group list-group-flush list-group-horizontal-md list-unstyled d-flex justify-content-end">
             <li>
+                    {% if user_name %}
+                    <h8 class="text-warning">{{user_name}}</h8>
+                    {% endif %}
+            </li>
+            <li>
                 <a class="btn btn-link text-light" role="button" href="/jobs/create_job">Создать объявление</a></li>
                         {% include 'user_menu.html' %}
 
@@ -24,9 +29,16 @@
                 <a class="navbar-brand text-light text-logo" href="/"><b>DJOBA</b></a>
 
             </div>
-            <div class="col-2 d-xs-block d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none"></div>
+            <div class="col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none"></div>
+
             <div class="col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none">
+
+
+
                 <div class="dropdown d-flex justify-content-end">
+                    {% if user_name %}
+                    <h8 class="text-warning">{{user_name}}</h8>
+                    {% endif %}
                     <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         МЕНЮ
                     </button>
@@ -40,13 +52,16 @@
             </div>
 
         </div>
-        {% if user_name %}
-        <div class="row justify-content-end">
-            <div class="col-4 d-flex justify-content-end text-success">
-                <h8> Привет {{user_name}}</h8>
+
+
+        <div class="row d-flex align-items-center justify-content-center">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8 justify-content-center text-center d-none d-md-block d-lg-block d-xl-block d-xxl-block">
+                <div class="text-white">Услуга за деньги - Услуга за услугу - Услуга за добро</div>
             </div>
+            <div class="col-sm-2"></div>
         </div>
-        {% endif %}
+
 
 
 
