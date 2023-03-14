@@ -103,3 +103,6 @@ padding: 0.25rem;
     max-width: 100%;
     height: 50px;
 }
+.min-width-logо{
+	min-width: 110px;
+}

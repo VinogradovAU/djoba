@@ -14,9 +14,9 @@
 <!--                </button><h4 style="margin-left: 10px;">{{ job.rating }}</h4>-->
                 </div>
             {%else%}
-            <div class="col d-flex justify-content-start"><h5>{{ job.uuid }}</h5></div>
+            <div class="col-sm-6 col-sm-push-6 d-flex justify-content-start"><h5>{{ job.uuid }}</h5></div>
             {%endif%}
-            <div class="col d-flex justify-content-end"><h5>Истекает: {{ job.disactivate_date }}</h5></div>
+            <div class="col-sm-6 col-sm-pull-6 d-flex justify-content-end"><h5>Истекает: {{ job.disactivate_date }}</h5></div>
         </div>
     </dev>
   <div class="card-body">
