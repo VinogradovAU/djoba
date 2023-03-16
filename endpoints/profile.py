@@ -32,6 +32,7 @@ async def profil(
         "user_object": request.state.user,
         "user_name": request.state.user.name,
         "user_uuid": request.state.user.uuid,
+        "authenticated": True,
     }
 
     if request.state.user.is_admin:
