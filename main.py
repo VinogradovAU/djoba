@@ -70,7 +70,6 @@ async def add_process_time_header(request: Request, call_next):
                 manager.autorization = False
                 manager.set_cookie = False
                 request.cookies.clear()
-                del manager.resp[request.state.access_token]  # удаляем юзера из словаря
                 print(f'token протух')
             else:
 
