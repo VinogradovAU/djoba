@@ -29,7 +29,7 @@
         {%if info_text %}
         <div class="d-flex justify-content-center" style="margin-bottom: 30px;"><h2>{{info_text}}</h2></div>
         {%endif%}
-      <form method="POST" action="/auth/profile/edit/{uuid}">
+      <form method="POST" action="/profile/edit/{uuid}">
         <div class="mb-3">
           <label>Email</label>
           <input type="text" required placeholder="Your email" name="email" value="{{user_object.email}}" class="form-control">

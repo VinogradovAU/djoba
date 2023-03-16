@@ -39,7 +39,7 @@ app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
 app.include_router(jobs_api.router, prefix="/jobs", tags=["jobs_api"])
 app.include_router(main_page.router, prefix="", tags=["mainpage"])
-app.include_router(profile.router, prefix="", tags=["profile"])
+app.include_router(profile.router, prefix="/profile", tags=["profile"])
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
@@ -70,6 +70,7 @@ async def add_process_time_header(request: Request, call_next):
                 manager.autorization = False
                 manager.set_cookie = False
                 request.cookies.clear()
+                del manager.resp[request.state.access_token]  # удаляем юзера из словаря
                 print(f'token протух')
             else:
 

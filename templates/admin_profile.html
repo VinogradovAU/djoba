@@ -34,7 +34,9 @@
             <div class="card">
                  <div class="card-header"></div>
                     <div class="card-body">
-                            <div class="card-text">
+                        <div class="row p-0 m-0 fs-8">
+                            <div class="col">
+                                <div class="card-text">
                                 ID пользователя: {{item.id}}
                                 {%if item.status_online %}
                                 <text style="color: green"><b>(ONLINE)</b></text>
@@ -42,8 +44,14 @@
                                 <text style="color: gray"><b>(OFFLINE)</b></text>
                                 {%endif%}
                             </div>
+                            </div>
+                            <div class="col">
                             <div class="card-text"><b>Имя:</b> {{item.name}}</div>
-                             <div class="card-text"><b>Email</b>: {{item.email}}</div>
+                            </div>
+                            <div class="col">
+                            <div class="card-text"><b>Email</b>: {{item.email}}</div>
+                            </div>
+                            <div class="col">
                             <div class="card-text">
                                 {%if not item.is_admin%}
                                     {%if item.status_banned %}
@@ -55,7 +63,8 @@
                                     {%endif%}
                                 {%endif%}
                             </div>
-
+                            </div>
+                        </div>
                  </div>
             </div>
                     {% endfor %}
