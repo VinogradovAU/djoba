@@ -211,7 +211,7 @@ async function get_phone_from_server(uuid_job){
             phone_path.innerHTML = '<h2>' + json['phone'] + '</h2>';
             }else {
                 if (json['error']==401){
-                    phone_path.innerHTML = '<a class="btn btn-primary" href="/auth/login" role="button">Нажмине чтобы войти</a>'
+                    phone_path.innerHTML = '<a class="btn btn-primary" href="/auth/login" role="button">Нажмите чтобы войти</a>'
                 } else {
                     phone_path.innerText = 'Ошибка ' + json['error'];
                 }

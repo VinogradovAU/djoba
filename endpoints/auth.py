@@ -24,23 +24,23 @@ async def edit_user_info(
         users: UserRepository = Depends(get_user_repository)
 ):
     print(f'this is get edit_user_info function')
-    if manager.user:
+
+    if request.state.user_is_authenticated:
         errors = []
         context = {
             "errors": errors,
             "request": request,
-            "user_object": manager.user,
-            "user_name": manager.user.name,
-            "user_uuid": manager.user.uuid,
+            "user_object": request.state.user,
+            "user_name": request.state.user.name,
+            "user_uuid": request.state.user.uuid,
+            "authenticated": True,
         }
-        if manager.autorization:
-            context['authenticated'] = True
-        else:
-            print(f'manager.autorization = Fals ---> редирект на login')
-            return RedirectResponse("/auth/login", status_code=302)
+    else:
+        print(f'authenticated = Fals ---> редирект на login')
+        return RedirectResponse("/auth/login", status_code=302)
 
-        response = templates.TemplateResponse("edit_user_form.html", context=context)
-        return response
+    response = templates.TemplateResponse("edit_user_form.html", context=context)
+    return response
 
     print(f'manager.user -> False ---> редирект на login')
     return RedirectResponse("/auth/login", status_code=302)
@@ -53,53 +53,50 @@ async def edit_user_info(
         users: UserRepository = Depends(get_user_repository)
 ):
     print(f'this is post edit_user_info function')
-    if manager.user:
+    if request.state.user_is_authenticated:
         errors = []
         context = {
             "errors": errors,
             "request": request,
-            "user_object": manager.user,
-            "user_name": manager.user.name,
-            "user_uuid": manager.user.uuid,
+            "user_object": request.state.user,
+            "user_name": request.state.user.name,
+            "user_uuid": request.state.user.uuid,
+            "authenticated": True,
         }
-        if manager.autorization:
-            context['authenticated'] = True
 
-            # надо доставть форму из запроса и валидировать пола
-            form = await request.form()
-            try:
-                print(f'валидирую данные форму')
-                is_company = True if form.get('is_company') == '1' else False
-                form_valid = EditUserProfilData(
-                    name=form.get('user_name'),
-                    email=form.get('email'),
-                    phone=form.get('phone'),
-                    is_company=is_company,
-                )
-                print(dict(form_valid))
-                if form_valid:
-                    # print(f'валидация формы пройдена. далее будем сохранять')
-                    user = await users.update_user_from_form_profil(id=manager.user.id, u=form_valid)
-                    if user:
-                        manager.user = await users.get_by_uuid(uuid=manager.user.uuid)
-                        return RedirectResponse("/profile", status_code=302)
-                    errors.append("Не удалось сохранить изменения")
-                    response = templates.TemplateResponse("edit_user_form.html", context=context)
-                    return response
-
-            except Exception as e:
-                # ошибка валидации формы
-                print(e)
-                errors.append('Ошибка валидации формы. Проверьти поля')
-                errors.append(e)
-                context['errors'] = errors
+        # надо доставть форму из запроса и валидировать пола
+        form = await request.form()
+        try:
+            print(f'валидирую данные форму')
+            is_company = True if form.get('is_company') == '1' else False
+            form_valid = EditUserProfilData(
+                name=form.get('user_name'),
+                email=form.get('email'),
+                phone=form.get('phone'),
+                is_company=is_company,
+            )
+            print(dict(form_valid))
+            if form_valid:
+                # print(f'валидация формы пройдена. далее будем сохранять')
+                user = await users.update_user_from_form_profil(id=manager.user.id, u=form_valid)
+                if user:
+                    manager.user = await users.get_by_uuid(uuid=manager.user.uuid)
+                    return RedirectResponse("/profile", status_code=302)
+                errors.append("Не удалось сохранить изменения")
                 response = templates.TemplateResponse("edit_user_form.html", context=context)
                 return response
-        else:
-            print(f'manager.autorization = Fals ---> редирект на login')
-            return RedirectResponse("/auth/login", status_code=302)
-    print(f'в manager нет user ----> редирект на /profile')
-    return RedirectResponse("/profile", status_code=302)
+
+        except Exception as e:
+            # ошибка валидации формы
+            print(e)
+            errors.append('Ошибка валидации формы. Проверьти поля')
+            errors.append(e)
+            context['errors'] = errors
+            response = templates.TemplateResponse("edit_user_form.html", context=context)
+            return response
+    else:
+        print(f'authenticated = False ---> редирект на login')
+        return RedirectResponse("/auth/login", status_code=302)
 
 
 @router.get("/activate/{uuid}")
@@ -109,21 +106,22 @@ async def activate_user(
         users: UserRepository = Depends(get_user_repository)):
     print('this is get activate_user function')
 
-    if manager.user.is_admin:
-        if manager.autorization:
-            uu = await users.get_by_uuid(uuid)
-            if uu is None:
-                return {'error': 'ошибка uuid', 'status_banned': 'None'}
-            if uu.status_banned:
-                await users.user_status_banned_off(u=uuid)
-                new_res = await users.get_by_uuid(uuid)
-                if not new_res.status_banned:
-                    d = {'error': None, 'status_banned': False}
-                else:
-                    d = {'error': 'не удалось изменить status_banned', 'status_banned': 'None'}
-            else:
+    if request.state.user_is_authenticated and request.state.user.is_admin:
+        uu = await users.get_by_uuid(uuid)
+        if uu is None:
+            return {'error': 'ошибка uuid', 'status_banned': 'None'}
+        if uu.status_banned:
+            await users.user_status_banned_off(u=uuid)
+            new_res = await users.get_by_uuid(uuid)
+            if not new_res.status_banned:
                 d = {'error': None, 'status_banned': False}
+            else:
+                d = {'error': 'не удалось изменить status_banned', 'status_banned': 'None'}
+        else:
+            d = {'error': None, 'status_banned': False}
+        return d
 
+    d = {'error': 'пользователь не авторизован', 'status_banned': 'None'}
     return d
 
 
@@ -134,21 +132,22 @@ async def deactivate_user(
         users: UserRepository = Depends(get_user_repository)):
     print('this is get deactivate_user function')
 
-    if manager.user.is_admin:
-        if manager.autorization:
-            uu = await users.get_by_uuid(uuid)
-            if uu is None:
-                return {'error': 'ошибка uuid', 'status_banned': 'None'}
-            if uu.status_banned:
+    if request.state.user_is_authenticated and request.state.user.is_admin:
+        uu = await users.get_by_uuid(uuid)
+        if uu is None:
+            return {'error': 'ошибка uuid', 'status_banned': 'None'}
+        if uu.status_banned:
+            d = {'error': None, 'status_banned': True}
+        else:
+            await users.user_status_banned_on(u=uuid)
+            new_res = await users.get_by_uuid(uuid)
+            if new_res.status_banned:
                 d = {'error': None, 'status_banned': True}
             else:
-                await users.user_status_banned_on(u=uuid)
-                new_res = await users.get_by_uuid(uuid)
-                if new_res.status_banned:
-                    d = {'error': None, 'status_banned': True}
-                else:
-                    d = {'error': 'не удалось изменить status_banned', 'status_banned': 'None'}
+                d = {'error': 'не удалось изменить status_banned', 'status_banned': 'None'}
+        return d
 
+    d = {'error': 'пользователь не авторизован', 'status_banned': 'None'}
     return d
 
 
@@ -184,23 +183,30 @@ async def registration_post(request: Request, users: UserRepository = Depends(ge
                     updated_at=datetime.datetime.now(),
                 )
                 new_user = await users.create_user_from_formtemplate(u=UserA)
-                # настраиваем менеджер для залогиненного юзера
-                manager.access_token = access_token
-
-                # manager.direction = 'login'
                 if new_user:
-                    manager.user = await users.get_by_email(form.email)
-                return RedirectResponse("/", status_code=302)
-            form.__dict__.update(msg="")
-            form.__dict__.get("errors").append("Incorrect Email or Password")
-            form.__dict__.update(authenticated=False)
-            response = templates.TemplateResponse("registration.html", form.__dict__)
+                    user_item = await users.get_by_email(form.email)
+                    manager.resp[access_token] = user_item
+                    await users.user_set_status(user_item.uuid, True)
+                    response = RedirectResponse("/", status_code=302)
+                    response.set_cookie(key="access_token", value=access_token, httponly=True)
+                else:
+                    form.__dict__.update(msg="")
+                    form.__dict__.get("errors").append("Ошибка регистрации. Обратитесь к администратору.")
+                    form.__dict__.update(authenticated=False)
+                    response = templates.TemplateResponse("registration.html", form.__dict__)
+
+            else:
+                form.__dict__.update(msg="")
+                form.__dict__.get("errors").append("Такой пользователь существует в системе")
+                form.__dict__.update(authenticated=False)
+                response = templates.TemplateResponse("registration.html", form.__dict__)
             return response
 
         except HTTPException:
             form.__dict__.update(msg="")
             form.__dict__.get("errors").append("Incorrect Email or Password")
             return templates.TemplateResponse("registration.html", form.__dict__)
+
     form.__dict__.update(msg="")
     form.__dict__.get("errors").append("Incorrect Email or Password")
     return templates.TemplateResponse("registration.html", form.__dict__)

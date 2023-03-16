@@ -45,31 +45,6 @@ async def main_page(
     return response
 
     # редирект на главную после создать запрос !!!!!!!!!!!придумать как!!!!!!!!!!!!!!!!
-    """ 
-    if manager.direction == 'login' or manager.direction == 'create_job_ok':
-        print(f'main_page-->login')
-        manager.autorization = True
-        manager.set_cookie = True
-        manager.user_status = 'online'
-        context['authenticated'] = True
-        if manager.user:
-            context['user_name'] = manager.user.name
-            context['user_uuid'] = manager.user.uuid
-            context['user'] = manager.user
-
-        # if manager.user.is_admin:
-        #     return RedirectResponse(f"/profile/{manager.user.uuid}", status_code=302)
-        if manager.direction == 'create_job_ok':
-            # если логинились для создания нового объявления
-            response = templates.TemplateResponse("create_job_form.html", context=context)
-        else:
-            response = templates.TemplateResponse("index.html", context=context)
-        response.set_cookie(key="access_token", value=manager.access_token, httponly=True)
-        manager.direction = '/'
-
-        return response
-    """
-
 
 
 @router.get("/job/{id}", response_class=HTMLResponse)
