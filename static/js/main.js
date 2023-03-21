@@ -16,6 +16,40 @@ if (typeof(modalUserInfo) != 'undefined' && modalUserInfo != null)
 		})
 }
 
+async function set_booking_jobuuid(element_button){
+//	var uuid_job = element_button.getAttribute('jobuuid');
+	var getphone_button = document.querySelector('.get-phone');
+	var uuid_job = getphone_button.getAttribute('jobuuid');
+	url = '/jobs/set_booking/' + uuid_job;
+        let response = await fetch(url);
+        console.log("response.ok", response.ok);
+        console.log("response.status", response.status);
+        if (response.ok) {
+        // если HTTP-статус в диапазоне 200-299
+        // получаем тело ответа (см. про этот метод ниже)
+        // {'error': None, 'booking_status': '89260000000'}
+            let json = await response.json();
+            console.log("json: ", json);
+            if (json['code']=='E003'){
+                console.log("booking_status:", json['booking_status']);
+                phone_path.innerText = 'Заявка создана. Автор заявки получит сообщение.';
+                }
+            if (json['code']=='E001' || json['code']=='E002' ||json['code']=='E006'){
+                console.log("error:", json['error']);
+                phone_path.innerText = json['error']; // заявка подана ранее
+                }
+            if (json['code']=='E004' || json['code']=='E005'){
+                phone_path.innerText = 'Не удалось забронировать джобу. Обратитесь к администратору';
+                console.log("error: ", json['error']);
+            }
+
+        } else {
+            phone_path.innerText = 'Не удалось забронировать джобу. Обратитесь к администратору';
+            console.log("Ошибка HTTP: " + response.status);
+        }
+}
+
+
 var phone_path = document.querySelector('.phone-path')
 async function get_phone_from_jobuuid(element_button){
 	var uuid_job = element_button.getAttribute('jobuuid');

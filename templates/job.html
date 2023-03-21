@@ -16,7 +16,10 @@
             {%else%}
             <div class="col-sm-6 col-sm-push-6 d-flex justify-content-start"><h5>{{ job.uuid }}</h5></div>
             {%endif%}
-            <div class="col-sm-6 col-sm-pull-6 d-flex justify-content-end"><h5>Истекает: {{ job.disactivate_date }}</h5></div>
+            {% if job.is_booking %}
+            <div class="col-sm-3 col-sm-pull-6 d-flex align-items-center justify-content-end text-danger"><h9>Есть отклики!</h9></div>
+            {%endif%}
+            <div class="col-sm-6 col-sm-pull-6 d-flex align-items-center justify-content-end"><h5>Истекает: {{ job.disactivate_date }}</h5></div>
         </div>
     </dev>
   <div class="card-body">
@@ -27,9 +30,9 @@
     <p class="card-text">Цена: <b>{{ job.price }} р.</b></p>
 <!--    <a href="#" class="btn btn-primary">Бронировать</a>-->
       <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" title="{{ job.title }}" data-bs-target="#exampleModal" data-bs-jobuuid={{job.uuid}}>
-  Бронировать
-</button> (телефон автора будет доступен во время бронирования)
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" title="{{ job.title }}" data-bs-target="#exampleModal" data-bs-jobuuid="{{job.uuid}}">
+  Откликнуться
+</button> (телефон автора будет доступен в процессе отклика)
   </div>
 </div>
 
@@ -43,9 +46,9 @@
       </div>
       <div class="modal-body">
           {% if authenticated %}
-        Объявление будет забронировано на 2 часа. За это время рекомендуется связаться с автором объявления.
+        При отклике автор получит сообщение.
           {% else %}
-        Для просмотра номера телефона и бронирования необходимо войти в систему.
+        Для просмотра номера телефона необходимо войти в систему.
           {% endif %}
       </div>
         <div class="phone-path text-center"></div>
@@ -53,7 +56,7 @@
           {% if authenticated %}
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Отменить</button>
         <button type="button" class="btn btn-warning get-phone" jobuuid="" onclick="return get_phone_from_jobuuid(this);">Показать телефон</button>
-        <button type="button" class="btn btn-success">Подтвердить бронь</button>
+        <button type="button" class="btn btn-success" jobuuid="" onclick="return set_booking_jobuuid(this);">Откликнуться</button>
           {% else %}
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Отменить</button>
           <a class="btn btn-primary" href="/auth/login" role="button">Нажмите чтобы войти</a>

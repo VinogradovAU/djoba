@@ -8,6 +8,7 @@ from pydantic import ValidationError
 from endpoints.depends import get_job_repository
 
 from repositories.jobs import JobRepositoryes
+from repositories.users import UserRepository
 
 templates = Jinja2Templates(directory="templates")
 
@@ -176,11 +177,11 @@ async def create_job(request: Request, jobs: JobRepositoryes = Depends(get_job_r
 
         if form_valid.button == 'publish':
             print(f'СОХРАНИТЬ И ОПУБЛИКОВАТЬ')
-            new_job = await jobs.create_job_from_html(user_id=manager.user.id, j=form_valid, is_publish=True)
+            new_job = await jobs.create_job_from_html(user_id=request.state.user.id, j=form_valid, is_publish=True)
 
         else:
             print(f'СОХРАНИТЬ КАК ЧЕРНОВИК')
-            await jobs.create_job_from_html(user_id=manager.user.id, j=form_valid, is_publish=False)
+            await jobs.create_job_from_html(user_id=request.state.user.id, j=form_valid, is_publish=False)
 
         return RedirectResponse("/profile", status_code=302)
     print(f'пользователь не залогинен')
@@ -200,7 +201,7 @@ async def job_edit(request: Request,
         errors = []
         context = {
             "request": request,
-            "user_name": manager.user.name,
+            "user_name": request.state.user.name,
             "authenticated": True,
         }
         form = await request.form()
@@ -245,3 +246,37 @@ async def job_edit(request: Request,
     print(f'пользователь не залогинен')
     manager.direction = 'create_job'
     return RedirectResponse("/auth/login", status_code=302)
+
+
+@router.get("/set_booking/{uuid_job}")
+async def set_job_booking(request: Request,
+                          uuid_job: str,
+                          jobs: JobRepositoryes = Depends(get_job_repository)):
+    print(f'set_job_booking function on jobs endpoint')
+    if request.state.user_is_authenticated:
+        # проверяем юзер свое объявление бронирует или чужое
+        job = await jobs.get_job_by_uuid(uuid=uuid_job)
+        if job and request.state.user.id != job.user_id:
+            pass
+        else:
+            status = False
+            code = 'E006'
+            text = 'Нельзя откликнуться на свое объявление'
+            return {'status': status, 'error': text, 'code': code}
+
+        set_is_booking = await jobs.set_is_booking(job_uuid=uuid_job, booking=True)
+        set_booking_job = await jobs.set_booking_job(job_uuid=uuid_job, user_id=int(request.state.user.id))
+        # {'status': status, 'text': text, 'code': code}
+
+        if set_is_booking:  # статус is_booking успешно изменен
+            if set_booking_job['status']:
+                # code='E003'
+                print(f'Статуc бронирования джобы с {uuid_job} установлен в {True}')
+                return {'error': 'None', 'booking_status': 'True', 'code': set_booking_job['code']}
+            else:
+                # code E001 и E002
+                return {'error': set_booking_job['text'], 'booking_status': '', 'code': set_booking_job['code']}
+        else:
+            return {'error': 'Не верный uuid джобы', 'booking_status': '', 'code': 'E004'}
+
+    return {'error': 'Пользователь не распознан', 'booking_status': '', 'code': 'E005'}

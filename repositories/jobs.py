@@ -1,6 +1,7 @@
 from repositories.base import BaseRepository
-from models.jobs import Jobs_model, JobIn_model, JobOut_model, CreateJobIn, Active_job
-from db.jobs import jobs, active_jobs
+from models.jobs import Jobs_model, JobIn_model, JobOut_model, CreateJobIn, Active_job, Booking_job_model
+from models.user import User
+from db.jobs import jobs, active_jobs, booking_job
 from db.users import users
 from typing import List, Optional
 import datetime
@@ -23,9 +24,7 @@ class JobRepositoryes(BaseRepository):
         if user is None:
             # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="phone not found")
             return False
-        return user
-
-
+        return User.parse_obj(user)
 
     async def get_phone_by_jobuuid(self, uuid: str) -> str:
         query = jobs.select().where(jobs.c.uuid == uuid)
@@ -63,6 +62,7 @@ class JobRepositoryes(BaseRepository):
             is_active=joba.is_active,
             is_publish=is_publish,
             is_expired_time=False,
+            is_booking=False,
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow()
         )
@@ -75,11 +75,11 @@ class JobRepositoryes(BaseRepository):
         # вычисляем время когда объявление(запрос) должен быть снят с публикации - типа вышло время
         new_expired_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=j.expired_day * 24 * 60)
         activ_job = Active_job(
-            job_id=job.id,
+            job_uuid=job.uuid,
             disactivate_date=new_expired_time.strftime("%Y-%m-%d %H:%M")
         )
         # создаем запись в таблице active_jobs
-        query = active_jobs.update().where(active_jobs.c.job_id == job.id).values(**{**activ_job.dict()})
+        query = active_jobs.update().where(active_jobs.c.job_uuid == job.uuid).values(**{**activ_job.dict()})
         await self.database.execute(query=query)
         return job
 
@@ -100,6 +100,7 @@ class JobRepositoryes(BaseRepository):
             is_active=True,
             is_publish=is_publish,
             is_expired_time=False,
+            is_booking=False,
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow()
         )
@@ -112,7 +113,7 @@ class JobRepositoryes(BaseRepository):
         # вычисляем время когда объявление(запрос) должен быть снят с публикации - типа вышло время
         new_expired_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=j.expired_day * 24 * 60)
         activ_job = Active_job(
-            job_id=job.id,
+            job_uuid=job.uuid,
             disactivate_date=new_expired_time.strftime("%Y-%m-%d %H:%M")
         )
         # создаем запись в таблице active_jobs
@@ -137,6 +138,7 @@ class JobRepositoryes(BaseRepository):
             is_active=True,
             is_publish=True,
             is_expired_time=j.is_expired_time,
+            is_booking=False,
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow())
         values = {**job.dict()}
@@ -151,8 +153,8 @@ class JobRepositoryes(BaseRepository):
         #              f"jobs.user_id = users.id LIMIT {limit} OFFSET {skip};"
 
         # query = jobs.select().limit(limit).offset(skip)
-        query = select(jobs, active_jobs, users).join(active_jobs, active_jobs.c.job_id == jobs.c.id).join(users,
-                                                                                                           users.c.id == jobs.c.user_id).limit(
+        query = select(jobs, active_jobs, users).join(active_jobs, active_jobs.c.job_uuid == jobs.c.uuid).join(users,
+                                                                                                               users.c.id == jobs.c.user_id).limit(
             limit).offset(skip)
         # print(f'----> query= {query}')
 
@@ -199,6 +201,7 @@ class JobRepositoryes(BaseRepository):
             phone=j.phone,
             metrostation=j.metrostation,
             is_expired_time=False,
+            is_booking=False,
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow())
 
@@ -234,3 +237,45 @@ class JobRepositoryes(BaseRepository):
         if res is None:
             return False
         return res
+
+    async def set_is_booking(self, job_uuid: str, booking: bool) -> bool:
+        query = jobs.update().where(jobs.c.uuid == job_uuid).values(is_booking=booking)
+        try:
+            await self.database.execute(query)
+        except Exception as e:
+            print(e)
+            return False
+        return True
+
+    async def set_booking_job(self, job_uuid: str, user_id: int):
+        query = booking_job.select().where(booking_job.c.job_uuid == job_uuid, booking_job.c.user_id == user_id)
+        res = await self.database.fetch_one(query=query)
+        print(f'res: {res}')
+        if res is not None:
+            # есть такое бронирование. ничего не меняем возвращаем False
+            status = False
+            code = 'E001'
+            text = 'Заявка на выполение уже подана'
+            return {'status': status, 'text': text, 'code': code}
+
+        b_job = Booking_job_model(
+            id=0,
+            job_uuid=job_uuid,
+            user_id=user_id,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow())
+        values = {**b_job.dict()}
+        values.pop("id", None)
+        query = booking_job.insert().values(**values)
+        try:
+            await self.database.execute(query=query)
+        except Exception as e:
+            print(e)
+            status = False
+            code = 'E002'
+            text = 'Ошибка записи заявки в БД'
+            return {'status': status, 'text': text, 'code': code}
+        status = True
+        code = 'E003'
+        text = 'Заявка создана'
+        return {'status': status, 'text': text, 'code': code}

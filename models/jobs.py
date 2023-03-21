@@ -24,6 +24,7 @@ class Jobs_model(BaseJob):
     uuid: str
     id: Union[UUID, int, str]
     user_id: int
+    is_booking: Optional[bool] = False
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
@@ -48,10 +49,9 @@ class JobOut_model(BaseJob):
 
 # данне для таблицы которая хранит ID объявления и дату когда надо снять его с публикации
 class Active_job(BaseModel):
-    job_id: int
+    job_uuid: str
     disactivate_date: datetime.datetime
-    # performer_id: Optional[int] = None
-    # performer_confirmed: bool
+    # performer_id: int = None
 
 
 class CreateJobIn(BaseModel):
@@ -66,6 +66,12 @@ class CreateJobIn(BaseModel):
     expired_day: conint(gt=0, lt=8)
     button: str
     resp: bool = False
+    is_booking: Optional[bool] = False
 
 class Jobs_model_join(Jobs_model, Active_job, User):
     pass
+
+class Booking_job_model(BaseModel):
+    id: int
+    job_uuid: str
+    user_id: int
