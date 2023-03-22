@@ -74,6 +74,12 @@
               {% else %}
             <button type="button" class="btn btn-success" uuid_job="{{job.uuid}}" onclick="return publish_job_change(this);" value="publishon">Опубликовать</button>
               {% endif %}
+            {% if job.is_booking %}
+
+                <button type="button" class="btn btn-success" uuid_job="{{job.uuid}}" onclick="return get_booking_users(this);" value="booking">
+                    Отклики <span class="badge bg-secondary">{{job.b_count}}</span></button>
+
+            {%endif%}
 
           </div>
         </div>

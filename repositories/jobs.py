@@ -8,7 +8,7 @@ import datetime
 from fastapi import HTTPException, status
 from pydantic import ValidationError
 import uuid
-from sqlalchemy import select
+from sqlalchemy import select, func
 
 
 class JobRepositoryes(BaseRepository):
@@ -231,8 +231,14 @@ class JobRepositoryes(BaseRepository):
         return Jobs_model.parse_obj(job)
 
     async def get_job_by_user_id(self, user_id: int) -> Optional[Jobs_model]:
-        # query = jobs.select().where(jobs.c.user_id == user_id)
-        query = select(jobs, active_jobs).where(jobs.c.user_id == user_id).join(active_jobs)
+
+        # query = select(jobs, active_jobs).where(jobs.c.user_id == user_id).join(active_jobs)
+        query = f'''SELECT *, 
+(SELECT count(*) from booking_job where booking_job.job_uuid=jobs.uuid) AS b_count 
+from jobs 
+JOIN active_jobs ON jobs.uuid = active_jobs.job_uuid WHERE jobs.user_id={user_id};'''
+
+        # print(f'query={query}')
         res = await self.database.fetch_all(query=query)
         if res is None:
             return False
