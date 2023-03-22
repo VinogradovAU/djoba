@@ -42,7 +42,7 @@
 
             <h4>Список запросов:</h4>
                 {% for job in jobs_items %}
-                    {% if job.is_publish %}
+                    {% if job.jobs_is_publish %}
                             {% include 'job.html' %}
                     {% endif %}
                 {% endfor %}

@@ -1,4 +1,4 @@
-from models.jobs import Jobs_model, Jobs_model_join
+from models.jobs import Jobs_model, Jobs_model_join, Model_list_jobs_join
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import APIRouter, Request, Depends, Response, Cookie
 from repositories.jobs import JobRepositoryes
@@ -22,7 +22,11 @@ async def main_page(
     jobs_items = await jobs.get_list_jobs(limit=100, skip=0)
     # jobs_items_list = list(map(Jobs_model.parse_obj, jobs_items))
     if not jobs_items['erorr']:
-        jobs_items_list = list(map(Jobs_model_join.parse_obj, jobs_items['list_jobs']))
+        jobs_items_list = list(map(Model_list_jobs_join.parse_obj, jobs_items['list_jobs']))
+        print(f'jobs_items_list-->>>{jobs_items_list}')
+        for k in jobs_items_list:
+            print(k.users_name)
+
     else:
         jobs_items_list = []
         print(f'ошибка при попытки вычитать список объявлений: {jobs_items["erorr"]}')

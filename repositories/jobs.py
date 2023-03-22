@@ -148,15 +148,37 @@ class JobRepositoryes(BaseRepository):
         return job
 
     async def get_list_jobs(self, limit: int = 100, skip: int = 0) -> List[Jobs_model]:
-        test_query = f"SELECT * from jobs JOIN active_jobs ON jobs.id = active_jobs.job_id LIMIT {limit} OFFSET {skip};"
-        # test_query = f"SELECT * from jobs JOIN active_jobs ON jobs.id = active_jobs.job_id JOIN users ON" \
-        #              f"jobs.user_id = users.id LIMIT {limit} OFFSET {skip};"
 
-        # query = jobs.select().limit(limit).offset(skip)
-        query = select(jobs, active_jobs, users).join(active_jobs, active_jobs.c.job_uuid == jobs.c.uuid).join(users,
-                                                                                                               users.c.id == jobs.c.user_id).limit(
-            limit).offset(skip)
-        # print(f'----> query= {query}')
+        query = f'''SELECT jobs.id as "jobs_id",
+                jobs.uuid as "jobs_uuid",
+                jobs.user_id as "jobs_user_id",
+                jobs.title as "jobs_title",
+                jobs.description as "jobs_description",
+                jobs.address as "jobs_address",
+                jobs.city as "jobs_city",
+                jobs.phone as "jobs_phone",
+                jobs.metrostation as "jobs_metrostation",
+                jobs.price as "jobs_price",
+                jobs.is_active as "jobs_is_active",
+                jobs.is_publish as "jobs_is_publish",
+                jobs.is_expired_time as "jobs_is_expired_time",
+                jobs.is_booking as "jobs_is_booking",
+                jobs.created_at as "jobs_created_at",
+                jobs.updated_at as "jobs_updated_at",
+                active_jobs.id as active_jobs_id,
+                active_jobs.job_uuid as active_jobs_job_uuid,
+                active_jobs.performer_confirmed as active_jobs_performer_confirmed,
+                active_jobs.disactivate_date as active_jobs_disactivate_date,
+                users.id as users_id,
+                users.uuid as users_uuid,
+                users.name as users_name,
+                users.phone as users_phon,
+                users.status_banned as users_status_banned,
+                users.rating as users_rating,
+        (SELECT count(*) from booking_job where booking_job.job_uuid=jobs.uuid) AS booking_b_count 
+        from jobs 
+        JOIN active_jobs ON jobs.uuid = active_jobs.job_uuid 
+        JOIN users ON jobs.user_id = users.id LIMIT {limit} OFFSET {skip};'''
 
         result = {"erorr": False, 'list_jobs': ''}
         try:
