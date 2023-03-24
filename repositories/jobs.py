@@ -307,3 +307,12 @@ JOIN active_jobs ON jobs.uuid = active_jobs.job_uuid WHERE jobs.user_id={user_id
         code = 'E003'
         text = 'Заявка создана'
         return {'status': status, 'text': text, 'code': code}
+
+    async def get_users_from_booking_tab(self, job_uuid: str) -> Optional[User]:
+        query = select(booking_job.c.user_id, users).join(users, booking_job.c.user_id == users.c.id).where(
+            booking_job.c.job_uuid == job_uuid)
+        print(f'get user list query--->{query}')
+        res = await self.database.fetch_all(query=query)
+        if res is None:
+            return False
+        return res

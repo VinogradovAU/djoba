@@ -50,6 +50,7 @@ async def profil(
 
     return response
 
+
 @router.get('/edit/{uuid}')
 async def edit_user_info(
         request: Request,
@@ -127,3 +128,29 @@ async def edit_user_info(
     else:
         print(f'authenticated = False ---> редирект на login')
         return RedirectResponse("/auth/login", status_code=302)
+
+
+@router.get('/responses/{uuid}')
+async def response_booking(request: Request,
+        uuid: str,
+        users: UserRepository = Depends(get_user_repository),
+        jobs: JobRepositoryes = Depends(get_job_repository)
+):
+    print(f'this is get /responses/uuid_job function')
+    if not request.state.user_is_authenticated:
+        print(f'authenticated = Fals ---> редирект на login')
+        return RedirectResponse("/auth/login", status_code=302)
+
+    context = {
+        "request": request,
+        "user_object": request.state.user,
+        "user_name": request.state.user.name,
+        "user_uuid": request.state.user.uuid,
+        "authenticated": True,
+    }
+
+    user_list = await jobs.get_users_from_booking_tab(uuid)
+
+    context['user_list'] = user_list
+    response = templates.TemplateResponse("booking_userlist_profile.html", context=context)
+    return response

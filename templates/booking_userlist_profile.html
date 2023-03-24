@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    {% include 'meta_link_include.html' %}
+
+    {% block title %}
+    <title>Личный кабинет</title>
+    {% endblock %}
+
+</head>
+<body>
+<div class="container my_head fixed-top">
+        {% include 'main_menu.html' %}
+</div>
+
+                       <div class="container my_content">
+  <div class="row">
+  <div class="col-md-12 p-0">
+<div class="card">
+            <div>
+                <h5 class="card-header">Блок меню пользователя:</h5>
+            </div>
+            <div class="razdelitel">
+
+            </div>
+    <div class="container my_content p-0">
+  <div class="row m-0">
+      {% block content %}
+    <div class="col-md-4">
+
+                    {%if user_object %}
+
+                    {% include 'user_card.html' %}
+
+                    {%endif%}
+
+    </div>
+    <div class="col-md-8">
+
+        {%if user_list%}
+        {%for user in user_list%}
+          <div class="card">
+          <div class="card-header">
+              <div class="row m-0 p-0">
+                  <div class="col d-flex justify-content-start text-success"><h5>Пользователь</h5></div>
+              </div>
+          </div>
+
+          <div class="card-body">
+            <h5 class="card-title">Имя: {{ user.name }}</h5>
+            <p class="card-text">Телефон: {{ user.phone }}</p>
+            <p class="card-text">Email: {{ user.email }}</p>
+            <p class="card-text"> Рэйтинг: {{ user.rating }}</p>
+            <button type="button" class="btn btn-warning" uuid_job="" onclick="" value="">Отзывы</button>
+            <button type="button" class="btn btn-success" uuid_job="" onclick="" value="">Согласиться</button>
+            <button type="button" class="btn btn-success" uuid_job="" onclick="" value="">Поручение выполнено</button>
+          </div>
+        </div>
+        {%endfor%}
+        {%else%}
+        нет откликов
+        {%endif%}
+    </div>
+
+      {% endblock %}
+  </div>
+</div>
+
+          </div>
+        </div>
+
+</div>
+</div>
+
+{%include 'footer_col.html'%}
+
+{% include 'js_include.html' %}
+
+</body>
+</html>
