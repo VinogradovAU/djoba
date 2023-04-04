@@ -15,7 +15,32 @@ if (typeof(modalUserInfo) != 'undefined' && modalUserInfo != null)
 
 		})
 }
+async function approved_performer(element_button){
+	//функция срабатывает при нажатии кнопки "одобрить исполнитетя" - на конкретном юзере
+	// в профиле юзера в списке откликнувшихся юзеров.
+	var uuid_job = element_button.getAttribute('uuid_job');
+	var user_id = element_button.getAttribute('user_id');
+	var text_status = document.querySelector('.card-status-' + user_id);
+	url = '/jobs/booking/approved/' + uuid_job + "/" + user_id;
+	let response = await fetch(url);
+        console.log("response.ok", response.ok);
+        console.log("response.status", response.status);
+        if (response.ok) {
+        // если HTTP-статус в диапазоне 200-299
+        // получаем тело ответа (см. про этот метод ниже)
+        // {'error': None, 'booking_status': '89260000000'}
+            let json = await response.json();
+            console.log("json: ", json);
+			if (json['code']=='E001'){
+                console.log("approved_performer_status:", json['approved_performer_status']);
+                text_status.innerText = 'Исполнителю отправлено сообщение';
+                }
+        } else {
+            text_status.innerText = 'Ошибка сервера. Обратитесь к администратору';
+            console.log("Ошибка HTTP: " + response.status);
+        }
 
+}
 async function set_booking_jobuuid(element_button){
 //	var uuid_job = element_button.getAttribute('jobuuid');
 	var getphone_button = document.querySelector('.get-phone');

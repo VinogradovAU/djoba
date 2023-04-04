@@ -130,9 +130,9 @@ async def edit_user_info(
         return RedirectResponse("/auth/login", status_code=302)
 
 
-@router.get('/responses/{uuid}')
+@router.get('/responses/{job_uuid}')
 async def response_booking(request: Request,
-        uuid: str,
+        job_uuid: str,
         users: UserRepository = Depends(get_user_repository),
         jobs: JobRepositoryes = Depends(get_job_repository)
 ):
@@ -149,8 +149,9 @@ async def response_booking(request: Request,
         "authenticated": True,
     }
 
-    user_list = await jobs.get_users_from_booking_tab(uuid)
+    user_list = await jobs.get_users_from_booking_tab(job_uuid)
 
     context['user_list'] = user_list
+    context['target_job_uuid'] = job_uuid
     response = templates.TemplateResponse("booking_userlist_profile.html", context=context)
     return response

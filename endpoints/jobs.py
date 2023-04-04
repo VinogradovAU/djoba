@@ -244,8 +244,24 @@ async def job_edit(request: Request,
 
         return RedirectResponse("/profile", status_code=302)
     print(f'пользователь не залогинен')
-    manager.direction = 'create_job'
+    # manager.direction = 'create_job'
     return RedirectResponse("/auth/login", status_code=302)
+
+
+@router.get("/booking/approved/{uuid_job}/{user_id}")
+async def approved_performer(request: Request,
+                             uuid_job: str,
+                             user_id: int,
+                             jobs: JobRepositoryes = Depends(get_job_repository)):
+    if request.state.user_is_authenticated:
+        code = 'E001'
+        approved_performer_status = "OK"
+        active_job = await jobs.set_booking_job_approved_performer(job_uuid=uuid_job, user_id=int(user_id))
+        if active_job:
+            return {'code': code, 'approved_performer_status': approved_performer_status}
+        else:
+            return {'code': 'error', 'approved_performer_status': 'Не удалось назначить исполнителя'}
+    return RedirectResponse("/auth/login, status_code=302")
 
 
 @router.get("/set_booking/{uuid_job}")

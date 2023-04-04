@@ -8,7 +8,7 @@ import datetime
 from fastapi import HTTPException, status
 from pydantic import ValidationError
 import uuid
-from sqlalchemy import select, func
+from sqlalchemy import select, func, nullslast
 
 
 class JobRepositoryes(BaseRepository):
@@ -309,10 +309,25 @@ JOIN active_jobs ON jobs.uuid = active_jobs.job_uuid WHERE jobs.user_id={user_id
         return {'status': status, 'text': text, 'code': code}
 
     async def get_users_from_booking_tab(self, job_uuid: str) -> Optional[User]:
-        query = select(booking_job.c.user_id, users).join(users, booking_job.c.user_id == users.c.id).where(
-            booking_job.c.job_uuid == job_uuid)
+        query = select(booking_job.c.user_id, users, active_jobs).join(users,
+                                                                       booking_job.c.user_id == users.c.id).where(
+            booking_job.c.job_uuid == job_uuid).join(active_jobs,
+                                                     booking_job.c.job_uuid == active_jobs.c.job_uuid).order_by(
+            nullslast(active_jobs.c.performer_confirmed.asc()))
+
         print(f'get user list query--->{query}')
         res = await self.database.fetch_all(query=query)
         if res is None:
             return False
         return res
+
+    async def set_booking_job_approved_performer(self, job_uuid: str, user_id: int):
+        # редактируем запись в таблице active_jobs
+        # добавляем исполнителя в конкретной джобе
+
+        query = active_jobs.update().where(active_jobs.c.job_uuid == job_uuid).values(performer_confirmed=user_id)
+        try:
+            await self.database.execute(query=query)
+        except Exception as e:
+            return False
+        return True
