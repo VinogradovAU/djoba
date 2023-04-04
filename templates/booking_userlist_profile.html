@@ -52,12 +52,11 @@
             <p class="card-text">Email: {{ user.email }}</p>
             <p class="card-text"> Рэйтинг: {{ user.rating }}</p>
             <button type="button" class="btn btn-warning" uuid_job="" onclick="" value="">Отзывы</button>
-              {%if user.performer_confirmed == user.user_id %}
-
-            <button type="button" class="btn btn-primary" uuid_job="{{ target_job_uuid }}" user_id="{{ user.user_id }}" onclick="return approved_performer(this)" value="">Одобрить исполнителя</button>
-              {%else%}
+             {%if user.performer_confirmed == user.user_id %}
             <button type="button" class="btn btn-success" uuid_job="{{ target_job_uuid }}" onclick="" user_id="{{ user.user_id }}" value="">Поручение выполнено</button>
-              {%endif%}
+            {%else%}
+            <button type="button" class="btn btn-primary" uuid_job="{{ target_job_uuid }}" user_id="{{ user.user_id }}" onclick="return approved_performer(this)" value="">Одобрить исполнителя</button>
+            {%endif%}
               <p class="card-status-{{user.user_id}} text-warning"></p>
           </div>
         </div>
