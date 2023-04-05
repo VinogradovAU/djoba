@@ -39,31 +39,54 @@
 
         {%if user_list%}
         {%for user in user_list%}
+        {%if user.performer_confirmed == user.user_id %}
+          <div class="card text-white bg-secondary mb-3">
+          <div class="card-header">
+              <div class="row m-0 p-0">
+                  <div class="col d-flex justify-content-start"><h5>Исполнитель</h5></div>
+              </div>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Имя: {{ user.name }}</h5>
+            <p class="card-text">Телефон: {{ user.phone }}</p>
+            <p class="card-text">Email: {{ user.email }}</p>
+            <p class="card-text"> Рэйтинг: {{ user.rating }}</p>
+            <button type="button" class="btn btn-danger" uuid_job="" onclick="" value="">Отменить</button>
+            <button type="button" class="btn btn-warning" uuid_job="" onclick="" value="">Отзывы</button>
+            <button type="button" class="btn btn-success" uuid_job="{{ target_job_uuid }}" onclick="" user_id="{{ user.user_id }}" value="">Поручение выполнено</button>
+              <p class="card-status-{{user.user_id}} text-warning"></p>
+          </div>
+        </div>
+        {%endif%}
+        {%endfor%}
+
+        {%for user in user_list%}
+        {%if user.performer_confirmed != user.user_id %}
           <div class="card">
           <div class="card-header">
               <div class="row m-0 p-0">
-                  <div class="col d-flex justify-content-start text-success"><h5>Пользователь</h5></div>
+                  <div class="col d-flex justify-content-start"><h5></h5></div>
               </div>
           </div>
-
           <div class="card-body">
             <h5 class="card-title">Имя: {{ user.name }}</h5>
             <p class="card-text">Телефон: {{ user.phone }}</p>
             <p class="card-text">Email: {{ user.email }}</p>
             <p class="card-text"> Рэйтинг: {{ user.rating }}</p>
             <button type="button" class="btn btn-warning" uuid_job="" onclick="" value="">Отзывы</button>
-             {%if user.performer_confirmed == user.user_id %}
-            <button type="button" class="btn btn-success" uuid_job="{{ target_job_uuid }}" onclick="" user_id="{{ user.user_id }}" value="">Поручение выполнено</button>
-            {%else%}
-            <button type="button" class="btn btn-primary" uuid_job="{{ target_job_uuid }}" user_id="{{ user.user_id }}" onclick="return approved_performer(this)" value="">Одобрить исполнителя</button>
-            {%endif%}
+              <button type="button" class="btn btn-primary" uuid_job="{{ target_job_uuid }}" user_id="{{ user.user_id }}" onclick="return approved_performer(this)" value="">Одобрить исполнителя</button>
               <p class="card-status-{{user.user_id}} text-warning"></p>
           </div>
         </div>
+        {%endif%}
         {%endfor%}
+
         {%else%}
         нет откликов
         {%endif%}
+
+
+
     </div>
 
       {% endblock %}

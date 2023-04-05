@@ -30,9 +30,13 @@
     <p class="card-text">Цена: <b>{{ job.jobs_price }} р.</b></p>
 <!--    <a href="#" class="btn btn-primary">Бронировать</a>-->
       <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" title="{{ job.jobs_title }}" data-bs-target="#exampleModal" data-bs-jobuuid="{{job.jobs_uuid}}">
-  Откликнуться
-</button> (телефон автора будет доступен в процессе отклика)
+     {%if job.active_jobs_performer_confirmed %}
+       <p class="card-text text-primary">Исполнитель найден</p>
+      {%else%}
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" title="{{ job.jobs_title }}" data-bs-target="#exampleModal" data-bs-jobuuid="{{job.jobs_uuid}}">
+        Откликнуться
+        </button> (телефон автора будет доступен в процессе отклика)
+     {%endif%}
   </div>
 </div>
 

@@ -46,6 +46,25 @@ async def profil(
     else:
         my_jobs = await jobs.get_job_by_user_id(request.state.user.id)
         context['jobs'] = my_jobs
+        my_response_job_list = await jobs.get_my_response_job_list(request.state.user.id)
+        context['my_response_job_list'] = my_response_job_list
+        response_count = False
+        response_confirmed = False
+        count1 = 0
+        count2 = 0
+        if my_response_job_list:
+            for k in my_response_job_list:
+                if k.performer_confirmed == request.state.user.id:
+                    response_confirmed = True
+                    count2 = +1
+                else:
+                    count1 = count1 + 1
+        if count1 != 0:
+            response_count = True
+        if count2 != 0:
+            response_confirmed = True
+        context['response_count'] = response_count
+        context['response_confirmed'] = response_confirmed
         response = templates.TemplateResponse("user_profile.html", context=context)
 
     return response
@@ -132,10 +151,10 @@ async def edit_user_info(
 
 @router.get('/responses/{job_uuid}')
 async def response_booking(request: Request,
-        job_uuid: str,
-        users: UserRepository = Depends(get_user_repository),
-        jobs: JobRepositoryes = Depends(get_job_repository)
-):
+                           job_uuid: str,
+                           users: UserRepository = Depends(get_user_repository),
+                           jobs: JobRepositoryes = Depends(get_job_repository)
+                           ):
     print(f'this is get /responses/uuid_job function')
     if not request.state.user_is_authenticated:
         print(f'authenticated = Fals ---> редирект на login')

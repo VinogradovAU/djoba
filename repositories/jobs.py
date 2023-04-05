@@ -331,3 +331,14 @@ JOIN active_jobs ON jobs.uuid = active_jobs.job_uuid WHERE jobs.user_id={user_id
         except Exception as e:
             return False
         return True
+
+    async def get_my_response_job_list(self, user_id: int):
+        # получаю id юзера и ищу в booking таблице
+        # надо полуичть список объявлений на которые юзер откликнулся
+        query = select(booking_job.c.user_id, jobs, active_jobs).join(jobs, booking_job.c.job_uuid == jobs.c.uuid).join(
+            active_jobs, active_jobs.c.job_uuid == booking_job.c.job_uuid).where(booking_job.c.user_id == user_id)
+        print(f'get_my_response_job_list query--->{query}')
+        res = await self.database.fetch_all(query=query)
+        if res is None:
+            return False
+        return res

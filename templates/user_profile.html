@@ -10,93 +10,133 @@
 </head>
 <body>
 <div class="container my_head fixed-top">
-        {% include 'main_menu.html' %}
+    {% include 'main_menu.html' %}
 </div>
 
-                       <div class="container my_content">
-  <div class="row">
-  <div class="col-md-12 p-0">
-<div class="card">
-            <div>
-                <h5 class="card-header">Блок меню пользователя:</h5>
-            </div>
-            <div class="razdelitel">
+<div class="container my_content">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div>
+                    <h5 class="card-header">Блок меню пользователя:</h5>
+                </div>
+                <div class="razdelitel">
+
+                </div>
+
+
+                <div class="container my_content p-0">
+                    <div class="row m-0">
+                        {% block content %}
+                        <div class="col-md-4">
+
+                            {%if user_object %}
+
+                            {% include 'user_card.html' %}
+
+                            {%endif%}
+
+                        </div>
+                        <div class="col-md-8">
+
+                            {%if jobs%}
+                            {%for job in jobs%}
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="row m-0 p-0">
+                                        <div class="col d-flex justify-content-start text-success"><h5>{{ job.uuid
+                                            }}</h5></div>
+                                        <div class="col d-flex justify-content-end clear_data_{{job.uuid}}"
+                                             value="Истекает: {{ job.disactivate_date }}">
+                                            {%if job.is_publish %}
+                                            <h5>Истекает: {{ job.disactivate_date }}</h5></div>
+                                        {%endif%}
+                                    </div>
+                                </div>
+                                {% if job.is_publish %}
+                                <div class="alert alert-success job_status_{{job.uuid}}" role="alert">
+                                    Объявление опубликовано!
+                                </div>
+                                {% else %}
+                                <div class="alert alert-primary job_status_{{job.uuid}}" role="alert">
+                                    ЧЕРНОВИК!
+                                </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ job.title }}</h5>
+                                    <p class="card-text">{{ job.description }}</p>
+                                    <p class="card-text">{{ job.city }}, {{ job.address }} </p>
+                                    <p class="card-text">м.{{ job.metrostation }}</p>
+                                    <p class="card-text">Цена: <b>{{ job.price }} р.</b></p>
+                                    <a href="/jobs/job_edit/{{ job.uuid }}" class="btn btn-primary">Редактировать</a>
+
+                                    {% if job.is_publish %}
+                                    <button type="button" class="btn btn-warning" uuid_job="{{job.uuid}}"
+                                            onclick="return publish_job_change(this);" value="publishoff">Снять с
+                                        публикации
+                                    </button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-success" uuid_job="{{job.uuid}}"
+                                            onclick="return publish_job_change(this);" value="publishon">Опубликовать
+                                    </button>
+                                    {% endif %}
+                                    {% if job.is_booking %}
+
+                                    <a role="button" class="btn btn-success" href="/profile/responses/{{job.uuid}}">
+                                        Отклики <span class="badge bg-secondary">{{job.b_count}}</span></a>
+
+                                    {%endif%}
+
+                                </div>
+                            </div>
+                            {%endfor%}
+                            {%else%}
+                            у вас нет объявлений
+                            {%endif%}
+                            {%if response_count %}
+                            <p>Ваши отклики</p>
+                            {%endif%}
+                            {%if my_response_job_list %}
+                            {%for respjob in my_response_job_list %}
+                            {%if respjob.performer_confirmed != user_object.id%}
+                            <div class="card">
+                                <div class="card-body">
+                                    <a class="text-primary" href="/jobs/view/{{respjob.uuid}}">
+                                        <h5 class="card-title">{{respjob.title}}</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            {%endif%}
+                            {%endfor%}
+                            {%endif%}
+
+                            {%if my_response_job_list %}
+                            {%if response_confirmed %}
+                            <p>Автор объявления одобрил вашу кандидатуру</p>
+                            {%endif%}
+                            {%for respjob in my_response_job_list %}
+                            {%if respjob.performer_confirmed == user_object.id%}
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <a class="text-primary" href="/jobs/view/{{respjob.uuid}}">
+                                        <h5 class="card-title">{{respjob.title}}</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            {%endif%}
+                            {%endfor%}
+                            {%endif%}
+                        </div>
+
+                        {% endblock %}
+                    </div>
+                </div>
 
             </div>
-
-
-
-                               <div class="container my_content p-0">
-  <div class="row m-0">
-      {% block content %}
-    <div class="col-md-4">
-
-                    {%if user_object %}
-
-                    {% include 'user_card.html' %}
-
-                    {%endif%}
+        </div>
 
     </div>
-    <div class="col-md-8">
-
-        {%if jobs%}
-        {%for job in jobs%}
-          <div class="card">
-          <div class="card-header">
-              <div class="row m-0 p-0">
-                  <div class="col d-flex justify-content-start text-success"><h5>{{ job.uuid }}</h5></div>
-                  <div class="col d-flex justify-content-end clear_data_{{job.uuid}}" value="Истекает: {{ job.disactivate_date }}">
-                      {%if job.is_publish %}
-                      <h5>Истекает: {{ job.disactivate_date }}</h5></div>
-                      {%endif%}
-              </div>
-          </div>
-              {% if job.is_publish %}
-              <div class="alert alert-success job_status_{{job.uuid}}" role="alert">
-                    Объявление опубликовано!
-              </div>
-              {% else %}
-              <div class="alert alert-primary job_status_{{job.uuid}}"  role="alert">
-                    ЧЕРНОВИК!
-              </div>
-              {% endif %}
-            <div class="card-body">
-            <h5 class="card-title">{{ job.title }}</h5>
-            <p class="card-text">{{ job.description }}</p>
-            <p class="card-text">{{ job.city }}, {{ job.address }} </p>
-            <p class="card-text">м.{{ job.metrostation }}</p>
-            <p class="card-text">Цена: <b>{{ job.price }} р.</b></p>
-            <a href="/jobs/job_edit/{{ job.uuid }}" class="btn btn-primary">Редактировать</a>
-
-              {% if job.is_publish %}
-            <button type="button" class="btn btn-warning" uuid_job="{{job.uuid}}" onclick="return publish_job_change(this);" value="publishoff">Снять с публикации</button>
-              {% else %}
-            <button type="button" class="btn btn-success" uuid_job="{{job.uuid}}" onclick="return publish_job_change(this);" value="publishon">Опубликовать</button>
-              {% endif %}
-            {% if job.is_booking %}
-
-                <a role="button" class="btn btn-success" href="/profile/responses/{{job.uuid}}">
-                    Отклики <span class="badge bg-secondary">{{job.b_count}}</span></a>
-
-            {%endif%}
-
-          </div>
-        </div>
-        {%endfor%}
-        {%else%}
-        у вас нет объявлений
-        {%endif%}
-    </div>
-
-      {% endblock %}
-  </div>
-</div>
-
-          </div>
-        </div>
-
-</div>
 </div>
 
 {%include 'footer_col.html'%}
