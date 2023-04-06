@@ -119,8 +119,15 @@
 
                             <div class="card">
                                 <div class="card-body">
-                                    <a class="text-primary" href="/jobs/view/{{respjob.uuid}}">
-                                        <h5 class="card-title">{{respjob.title}}</h5>
+                                    <button type="button" class="btn btn-link" jobuuid="{{respjob.uuid}}" onclick="return toogle_view_job(this)">
+                                        <h5 class="card-title">{{respjob.title}}</h5></button>
+                                        <div class="view-job-{{respjob.uuid}} view-job-style">
+                                            <p class="card-text">{{ respjob.description }}</p>
+                                            <p class="card-text">{{ respjob.city }}, {{ respjob.address }} </p>
+                                            <p class="card-text">м.{{ respjob.metrostation }}</p>
+                                            <p class="card-text">м.{{ respjob.phone }}</p>
+                                            <p class="card-text">Цена: <b>{{ respjob.price }} р.</b></p>
+                                        </div>
                                     </a>
                                 </div>
                             </div>

@@ -41,6 +41,16 @@ async function approved_performer(element_button){
         }
 
 }
+
+async function toogle_view_job(element_button){
+	var uuid_job = element_button.getAttribute('jobuuid');
+	var views_div = document.querySelector('.view-job-'+uuid_job);
+	if(views_div.classList.contains("view-job-style")) {
+          views_div.classList.remove('view-job-style');
+     } else {
+          views_div.classList.add('view-job-style');
+     }
+}
 async function set_booking_jobuuid(element_button){
 //	var uuid_job = element_button.getAttribute('jobuuid');
 	var getphone_button = document.querySelector('.get-phone');

@@ -107,3 +107,8 @@ padding: 0.25rem;
 .min-width-logо{
 	min-width: 110px;
 }
+
+.view-job-style{
+visibility: hidden;
+display: none;
+}

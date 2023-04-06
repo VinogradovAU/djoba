@@ -48,8 +48,8 @@ async def profil(
         context['jobs'] = my_jobs
         my_response_job_list = await jobs.get_my_response_job_list(request.state.user.id)
         context['my_response_job_list'] = my_response_job_list
-        response_count = False
-        response_confirmed = False
+        response_count = False #для правильного отображения списков работ
+        response_confirmed = False # есть те что с откликами, а есть те которые уже одобрили
         count1 = 0
         count2 = 0
         if my_response_job_list:
