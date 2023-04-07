@@ -144,13 +144,15 @@ async def api_login(mylogin: Login, users: UserRepository = Depends(get_user_rep
 @router.get("/logout")
 async def logout(request: Request, users: UserRepository = Depends(get_user_repository)):
     print('this is get logout function')
-    user_from_pool = request.state.user
-    await users.user_set_status(user_from_pool.uuid, False)
-    request.cookies.clear()
-    del manager.resp[request.state.access_token]  # удаляем юзера из словаря
+    if request.state.user_is_authenticated:
+        user_from_pool = request.state.user
+        await users.user_set_status(user_from_pool.uuid, False)
+        request.cookies.clear()
+        del manager.resp[request.state.access_token]  # удаляем юзера из словаря
     response = RedirectResponse(url="/", status_code=302)
     response.set_cookie(key="access_token", value='', httponly=True)
     return response
+
 
 
 @router.get("/login")

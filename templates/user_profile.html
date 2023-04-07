@@ -112,7 +112,12 @@
 
                             {%if my_response_job_list %}
                             {%if response_confirmed %}
-                            <p>Автор объявления одобрил вашу кандидатуру</p>
+                            <div class=" my-height"></div>
+                            <div class="card">
+                                <div class="card-body">
+                            <p class="card-title">Автор объявления одобрил вашу кандидатуру</p>
+                                </div>
+                            </div>
                             {%endif%}
                             {%for respjob in my_response_job_list %}
                             {%if respjob.performer_confirmed == user_object.id%}
