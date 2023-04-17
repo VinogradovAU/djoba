@@ -124,8 +124,10 @@
 
                             <div class="card">
                                 <div class="card-body">
+                                    {{respjob.name | title}}
                                     <button type="button" class="btn btn-link" jobuuid="{{respjob.uuid}}" onclick="return toogle_view_job(this)">
                                         <h5 class="card-title">{{respjob.title}}</h5></button>
+                                    <button type="button" class="btn btn-danger" jobuuid="{{respjob.uuid}}" onclick="">Отмена</button>
                                         <div class="view-job-{{respjob.uuid}} view-job-style">
                                             <p class="card-text">{{ respjob.description }}</p>
                                             <p class="card-text">{{ respjob.city }}, {{ respjob.address }} </p>
