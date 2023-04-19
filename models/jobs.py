@@ -107,3 +107,9 @@ class Model_list_jobs_join(BaseModel):
     users_status_banned: bool
     users_rating: Optional[float] = 0.0
     booking_b_count: Optional[int] = None
+
+
+class Close_job(BaseModel):
+    uuid_job: str
+    user_id: str
+    text_area_cancel: Optional[str] = ''

@@ -42,6 +42,68 @@ async function approved_performer(element_button){
 
 }
 
+async function close_job_uuid_userid(element_button){
+	var uuid_job = element_button.getAttribute('jobuuid');
+	var user_id = element_button.getAttribute('userid');
+	var text_area_cancel = document.querySelector('.jobuuid-' + uuid_job);
+	console.log("uuid_job:"+uuid_job);
+	console.log("user_id="+user_id);
+	console.log("text_area_cancel: "+text_area_cancel.value);
+	//----------------------
+	let close_job = {
+	  uuid_job: uuid_job,
+	  user_id: user_id,
+	  text_area_cancel: text_area_cancel.value
+	};
+
+	let response = await fetch('/jobs/close_job', {
+	  method: 'POST',
+	  headers: {
+	    'Content-Type': 'application/json; charset=utf-8'
+	  },
+	  body: JSON.stringify(close_job)
+	});
+
+	if (response.ok) {
+        // если HTTP-статус в диапазоне 200-299
+        // получаем тело ответа (см. про этот метод ниже)
+        // {'error': None, 'booking_status': '89260000000'}
+            let json = await response.json();
+//            console.log('json:' + json)
+            if (json['error']=='None'){
+                console.log("status_cancel:", json['status_cancel']);
+                text_area_cancel.value = "Услуга завершена!";
+                element_button.classList.add('hide-hide');
+                var c_button = document.getElementById('cancelbutton-' + user_id);
+                c_button.classList.add('hide-hide');
+                var j_title = document.querySelector('.job-title-' + user_id);
+                j_title.innerText = j_title.innerHTML + " (в архиве)";
+                }
+        }
+		//---------------------
+
+}
+
+    var modalCancelJob = document.getElementById('modalCancelJob');
+
+if (typeof(modalCancelJob) != 'undefined' && modalCancelJob != null)
+{
+		  modalCancelJob.addEventListener('show.bs.modal', function (event) {
+		  // Кнопка, запускающая модальное окно
+		  var button = event.relatedTarget;
+		  // Извлечь информацию из атрибутов data-bs- *
+		  var jobuuid = button.getAttribute('data-bs-jobuuid');
+		  var userid = button.getAttribute('data-bs-userid');
+//		  console.log("jobuuid:" + jobuuid);
+		  var button_canсel = modalCancelJob.querySelector('.button-cansel-approve')
+		  button_canсel.setAttribute('jobuuid', jobuuid);
+		  button_canсel.setAttribute('userid', userid);
+		  var text_area_cancel = modalCancelJob.querySelector('.textarea-cancel-approve')
+		  text_area_cancel.classList.add("jobuuid-" + jobuuid);
+		  })
+}
+
+
 async function toogle_view_job(element_button){
 	var uuid_job = element_button.getAttribute('jobuuid');
 	var views_div = document.querySelector('.view-job-'+uuid_job);

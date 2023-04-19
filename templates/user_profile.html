@@ -126,8 +126,8 @@
                                 <div class="card-body">
                                     {{respjob.name | title}}
                                     <button type="button" class="btn btn-link" jobuuid="{{respjob.uuid}}" onclick="return toogle_view_job(this)">
-                                        <h5 class="card-title">{{respjob.title}}</h5></button>
-                                    <button type="button" class="btn btn-danger btn-sm" jobuuid="{{respjob.uuid}}" onclick="">Отмена</button>
+                                        <h5 class="card-title job-title-{{respjob.user_id}}">{{respjob.title}}</h5></button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" id="cancelbutton-{{respjob.user_id}}" data-bs-target="#modalCancelJob" data-bs-jobuuid="{{respjob.uuid}}" data-bs-userid="{{respjob.user_id}}">Отменить/Завершить</button>
                                         <div class="view-job-{{respjob.uuid}} view-job-style">
                                             <p class="card-text">{{ respjob.description }}</p>
                                             <p class="card-text">{{ respjob.city }}, {{ respjob.address }} </p>
@@ -152,10 +152,34 @@
 
     </div>
 </div>
+<!-- Modal for modalCancelJob -->
+<div class="modal fade" id="modalCancelJob" tabindex="-1" aria-labelledby="modalCancelJob" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalUserInfoLabel">Отказ от выполения или услуга оказана</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">Напишите отзыв</label>
+          <textarea class="form-control textarea-cancel-approve" id="exampleFormControlTextarea1" rows="3" onKeyPress="return ( this.value.length < 250 );"></textarea>
+        </div>
+      </div>
+        <div class="phone-path text-center"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary button-cansel-approve" jobuuid="" userid="" onclick="return close_job_uuid_userid(this)">Продолжить</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Закрыть окно</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 {%include 'footer_col.html'%}
 
 {% include 'js_include.html' %}
+
+
 
 </body>
 </html>

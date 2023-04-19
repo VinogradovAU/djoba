@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Depends
 from core.security import manager
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
-from models.jobs import CreateJobIn
+from models.jobs import CreateJobIn, Close_job
 from pydantic import ValidationError
 
 from endpoints.depends import get_job_repository
@@ -13,6 +13,16 @@ from repositories.users import UserRepository
 templates = Jinja2Templates(directory="templates")
 
 router = APIRouter()
+
+
+@router.post("/close_job")
+async def close_job(request: Request):
+    close_job = await request.json()
+    print(f'close_job from post: {close_job}')
+    # тут буду сохранять отзыв и отменять/завершать выполнение джобы, уведомлять автора джобы
+
+    # пока возвращаем заглушку
+    return {'error': 'None', 'status_cancel': 'ok'}
 
 
 @router.get("/get_phone/{uuid_job}")

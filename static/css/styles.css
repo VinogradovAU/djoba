@@ -113,6 +113,12 @@ visibility: hidden;
 display: none;
 }
 
+.hide-hide{
+visibility: hidden;
+display: none;
+
+}
+
 .my-height{
 	height: 15px;
 }
