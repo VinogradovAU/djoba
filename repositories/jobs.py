@@ -123,7 +123,7 @@ class JobRepositoryes(BaseRepository):
 
     async def create_job(self, user_id: int, j: JobIn_model) -> Jobs_model:
         my_uuid = str(uuid.uuid4())
-        print(f'my_uuid: {my_uuid}')
+        # print(f'my_uuid: {my_uuid}')
         job = Jobs_model(
             uuid=my_uuid,
             id=0,
@@ -331,6 +331,21 @@ JOIN active_jobs ON jobs.uuid = active_jobs.job_uuid WHERE jobs.user_id={user_id
         except Exception as e:
             return False
         return True
+
+    async def booking_job_cancel_performer(self, job_uuid: str, user_id: int):
+
+        query = active_jobs.update().where(active_jobs.c.job_uuid == job_uuid,
+                                           active_jobs.c.performer_confirmed == user_id).values(
+            performer_confirmed=None)
+        try:
+            await self.database.execute(query=query)
+        except Exception as e:
+            return False
+        return True
+
+    async def delete_from_booking(self, job_uuid: str, user_id: int):
+        query = booking_job.delete().where(booking_job.c.job_uuid == job_uuid, booking_job.c.user_id == user_id)
+        return await self.database.execute(query=query)
 
     async def get_my_response_job_list(self, user_id: int):
         # получаю id юзера и ищу в booking таблице

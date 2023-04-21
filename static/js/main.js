@@ -103,7 +103,6 @@ if (typeof(modalCancelJob) != 'undefined' && modalCancelJob != null)
 		  })
 }
 
-
 async function toogle_view_job(element_button){
 	var uuid_job = element_button.getAttribute('jobuuid');
 	var views_div = document.querySelector('.view-job-'+uuid_job);

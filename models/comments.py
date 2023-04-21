@@ -1,15 +1,21 @@
-from pydantic import BaseModel, condecimal, Field, conint
-from typing import Union, Optional, List
+from pydantic import BaseModel
 import datetime
-from uuid import UUID
-from models.user import User
-from models.jobs import Jobs_model
 
-class Comment_model(BaseModel):
+class Comment_base(BaseModel):
     id: int
-    job_id: int
+    job_uuid: str
+    comment: str
+    performer_id: int
+    is_publish: bool = True
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
-class comment_out(Comment_model):
+
+class Comment_out(Comment_base):
     user_id: int
+
+
+class Comment_model_in(BaseModel):
+    job_uuid: str
+    comment: str
+    performer_id: int

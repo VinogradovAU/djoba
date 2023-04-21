@@ -4,6 +4,7 @@ from models.user import User
 from core.security import JWTBearer, decode_access_token
 from repositories.users import UserRepository
 from repositories.jobs import JobRepositoryes
+from repositories.comments import CommentRepositoryes
 
 from endpoints import depends
 
@@ -14,6 +15,8 @@ def get_user_repository() -> UserRepository:
 def get_job_repository() -> JobRepositoryes:
     return JobRepositoryes(database)
 
+def get_comment_repository() -> CommentRepositoryes:
+    return CommentRepositoryes(database)
 
 async def get_current_user(mytoken: str = Depends(JWTBearer()),
                            users: UserRepository = Depends(get_user_repository)) -> User:

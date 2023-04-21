@@ -1,5 +1,6 @@
 from .users import users
 from .jobs import jobs
+from .comments import comments
 from .base import metadata, engine
 # from core.config import ADMIN_USERMANE, ADMIN_PASSWORD
 # from models.user import User, UserIn

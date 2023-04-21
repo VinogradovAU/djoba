@@ -22,7 +22,7 @@ jobs = sqlalchemy.Table(
     sqlalchemy.Column("is_active", sqlalchemy.Boolean),
     sqlalchemy.Column("is_publish", sqlalchemy.Boolean),
     sqlalchemy.Column("is_expired_time", sqlalchemy.Boolean),
-    sqlalchemy.Column("is_booking", sqlalchemy.Boolean), # забронирована или нет
+    sqlalchemy.Column("is_booking", sqlalchemy.Boolean),  # забронирована или нет
     sqlalchemy.Column("created_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),
     sqlalchemy.Column("updated_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),
 )
@@ -33,7 +33,7 @@ active_jobs = sqlalchemy.Table(
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, autoincrement=True, unique=True),
     sqlalchemy.Column("job_uuid", sqlalchemy.String, sqlalchemy.ForeignKey("jobs.uuid"), nullable=False),
     sqlalchemy.Column("performer_confirmed", sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), nullable=True,
-                      default=None), #юзер взявший работу в резуьтате. создатель услуги жмет на кнопку
+                      default=None),  # юзер взявший работу в резуьтате. создатель услуги жмет на кнопку
     sqlalchemy.Column("disactivate_date", sqlalchemy.DateTime),
 )
 
@@ -46,5 +46,6 @@ booking_job = sqlalchemy.Table(
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, autoincrement=True, unique=True),
     sqlalchemy.Column("job_uuid", sqlalchemy.String, sqlalchemy.ForeignKey("jobs.uuid"), nullable=False),
     sqlalchemy.Column("user_id", sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), nullable=True,
-                      default=None), #юзер который хочет выполнить работу - кандидат
+                      default=None),  # юзер который хочет выполнить работу - кандидат
 )
+

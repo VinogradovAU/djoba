@@ -4,11 +4,11 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from models.jobs import CreateJobIn, Close_job
 from pydantic import ValidationError
-
 from endpoints.depends import get_job_repository
-
+from endpoints.depends import get_comment_repository
 from repositories.jobs import JobRepositoryes
-from repositories.users import UserRepository
+from repositories.comments import CommentRepositoryes
+from models.comments import Comment_model_in
 
 templates = Jinja2Templates(directory="templates")
 
@@ -16,11 +16,42 @@ router = APIRouter()
 
 
 @router.post("/close_job")
-async def close_job(request: Request):
+async def close_job(request: Request,
+                    comment: CommentRepositoryes = Depends(get_comment_repository),
+                    jobs: JobRepositoryes = Depends(get_job_repository)):
     close_job = await request.json()
-    print(f'close_job from post: {close_job}')
+    print(f'close_job from post: {close_job["uuid_job"]}')
+    print(f'close_job from post: {close_job["user_id"]}')
+    print(f'close_job from post: {close_job["text_area_cancel"]}')
     # тут буду сохранять отзыв и отменять/завершать выполнение джобы, уведомлять автора джобы
+    item = Comment_model_in(
+        job_uuid=close_job["uuid_job"],
+        comment=close_job["text_area_cancel"],
+        performer_id=close_job["user_id"],
+    )
+    if len(str(close_job["text_area_cancel"])) > 0:
+        new_comment = await comment.create_job_comment(item=item)
+    else:
+        # просто коммент не оставили, поэтому ничего не пишем в бд
+        new_comment = True
+    result = await jobs.booking_job_cancel_performer(job_uuid=close_job["uuid_job"],
+                                                     user_id=int(close_job["user_id"]))
+    booking_job_cancel = await jobs.delete_from_booking(job_uuid=close_job["uuid_job"],
+                                                     user_id=int(close_job["user_id"]))
 
+    errors = []
+    error = False
+    if not booking_job_cancel:
+        error = True
+        errors.append('Ошибка при работе с БД')
+    if not result:
+        error = True
+        errors.append('Ошибка при работе с БД')
+    if not new_comment:
+        error = True
+        errors.append('Ошибка при записи комментария')
+    if error:
+        return {'error': 'True', 'status_cancel': 'NO'}
     # пока возвращаем заглушку
     return {'error': 'None', 'status_cancel': 'ok'}
 
