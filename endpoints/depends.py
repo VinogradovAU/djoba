@@ -32,3 +32,19 @@ async def get_current_user(mytoken: str = Depends(JWTBearer()),
     if user is None:
         raise cred_exeption
     return user
+
+async def get_comment_by_performer_id(user_id: int):
+    comments = depends.get_comment_repository()
+    return await comments.get_comment_by_performer_id(user_id)
+
+async def get_comment_by_author_id(user_id: int):
+    comments = depends.get_comment_repository()
+    return await comments.get_comment_by_author_id(user_id)
+
+async def set_is_author_read(comment_id: int):
+    comments = depends.get_comment_repository()
+    return await comments.set_is_author_read(comment_id=comment_id)
+
+async def set_is_performer_read(comment_id: int):
+    comments = depends.get_comment_repository()
+    return await comments.set_is_performer_read(comment_id=comment_id)

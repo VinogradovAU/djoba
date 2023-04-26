@@ -5,7 +5,9 @@ from fastapi.templating import Jinja2Templates
 from repositories.users import UserRepository
 from endpoints.depends import get_user_repository
 from repositories.jobs import JobRepositoryes
+from repositories.comments import CommentRepositoryes
 from endpoints.depends import get_job_repository
+from endpoints.depends import get_comment_repository
 from models.user import EditUserProfilData
 
 templates = Jinja2Templates(directory="templates")
@@ -20,7 +22,8 @@ router = APIRouter(include_in_schema=False)
 async def profil(
         request: Request,
         users: UserRepository = Depends(get_user_repository),
-        jobs: JobRepositoryes = Depends(get_job_repository)):
+        jobs: JobRepositoryes = Depends(get_job_repository),
+        comments: CommentRepositoryes = Depends(get_comment_repository)):
     print('this is get profile function')
 
     # user = await users.get_by_uuid(uuid)
@@ -44,6 +47,23 @@ async def profil(
             context['all_users'] = all_users
         response = templates.TemplateResponse("admin_profile.html", context=context)
     else:
+        my_comments = await comments.get_comment_by_performer_id(request.state.user.id)
+
+        if my_comments:
+            context['comments'] = my_comments
+            for ii in my_comments:
+                if ii.is_performer_read:
+                    await comments.set_is_performer_read(comment_id=ii.id)
+                print(f'get comments----> {dict(ii)}')
+        else:
+            my_comments = await comments.get_comment_by_author_id(request.state.user.id)
+            if my_comments:
+                context['comments'] = my_comments
+                for ii in my_comments:
+                    if ii.is_author_read:
+                        await comments.set_is_author_read(comment_id=ii.id)
+                    print(f'get comments----> {dict(ii)}')
+
         my_jobs = await jobs.get_job_by_user_id(request.state.user.id)
         context['jobs'] = my_jobs
         my_response_job_list = await jobs.get_my_response_job_list(request.state.user.id)

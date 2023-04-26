@@ -20,39 +20,51 @@ async def close_job(request: Request,
                     comment: CommentRepositoryes = Depends(get_comment_repository),
                     jobs: JobRepositoryes = Depends(get_job_repository)):
     close_job = await request.json()
-    print(f'close_job from post: {close_job["uuid_job"]}')
-    print(f'close_job from post: {close_job["user_id"]}')
-    print(f'close_job from post: {close_job["text_area_cancel"]}')
+    # print(f'close_job from post: {close_job["uuid_job"]}')
+    # print(f'close_job from post: {close_job["user_id"]}')
+    # print(f'close_job from post: {close_job["text_area_cancel"]}')
     # тут буду сохранять отзыв и отменять/завершать выполнение джобы, уведомлять автора джобы
+    if len(str(close_job["text_area_cancel"])) == 0:
+        close_job["text_area_cancel"] = None
+
+    if str(close_job["text_area_cancel"]) == '':
+        close_job["text_area_cancel"] = None
+
+    author_id = await jobs.get_userinfo_by_uuid_job(uuid_job=close_job["uuid_job"])
+    print(f'autor_id: {author_id}')
     item = Comment_model_in(
         job_uuid=close_job["uuid_job"],
         comment=close_job["text_area_cancel"],
         performer_id=close_job["user_id"],
+        author_id=author_id.id,
     )
-    if len(str(close_job["text_area_cancel"])) > 0:
-        new_comment = await comment.create_job_comment(item=item)
-    else:
-        # просто коммент не оставили, поэтому ничего не пишем в бд
-        new_comment = True
+
+    new_comment = await comment.create_job_comment(item=item)
     result = await jobs.booking_job_cancel_performer(job_uuid=close_job["uuid_job"],
                                                      user_id=int(close_job["user_id"]))
     booking_job_cancel = await jobs.delete_from_booking(job_uuid=close_job["uuid_job"],
-                                                     user_id=int(close_job["user_id"]))
+                                                        user_id=int(close_job["user_id"]))
+    false_is_booking = await jobs.false_is_booking(job_uuid=close_job["uuid_job"], new_value=False)
 
     errors = []
     error = False
     if not booking_job_cancel:
         error = True
-        errors.append('Ошибка при работе с БД')
+        errors.append('Ошибка при работе с БД (delete_from_booking)')
     if not result:
         error = True
-        errors.append('Ошибка при работе с БД')
+        errors.append('Ошибка при работе с БД (booking_job_cancel_performer)')
     if not new_comment:
         error = True
-        errors.append('Ошибка при записи комментария')
+        errors.append('Ошибка при записи комментария (БД - create_job_comment)')
+    if not false_is_booking:
+        error = True
+        errors.append('Ошибка при работе с БД (изменение is_booking)')
     if error:
+        # print(f'ошибка в методе jobs/close_job: {errors}')
+        # можно возвращать массив ошибок errors вместо True, если будет кому их там разобрать
         return {'error': 'True', 'status_cancel': 'NO'}
-    # пока возвращаем заглушку
+
     return {'error': 'None', 'status_cancel': 'ok'}
 
 

@@ -6,7 +6,7 @@
         </div>
     </div>
 <div class="col-3 col-sm-4 col-md-10">
-
+<div class="row d-flex align-items-center h-25"></div>
 <div class="row d-flex align-items-center">
 
         <div class="col-2 d-none d-xs-none d-sm-none d-md-block d-lg-block d-xl-block d-xxl-block"></div>
@@ -14,13 +14,24 @@
             <ul class="list-group list-group-flush list-group-horizontal-md list-unstyled d-flex justify-content-end">
             <li>
                     {% if user_name %}
-                    <h8 class="text-warning">{{user_name}}</h8>
+                <button type="button" class="btn position-relative">
+                    <h8 class="text-warning">{{user_name | title}}</h8>
+                    </button>
                     {% endif %}
             </li>
             <li>
                 <a class="btn btn-link text-light" role="button" href="/jobs/create_job">Создать объявление</a></li>
                         {% if authenticated %}
-                        <li><a class="btn btn-link text-light" role="button" href="/profile">Профиль</a></li>
+                        <li><a class="btn btn-link text-light position-relative" role="button" href="/profile">Профиль
+
+                        {%if new_message_status %}
+                            <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                                <span class="visually-hidden">New alerts</span>
+                            </span>
+                        {%endif%}
+
+                        </a>
+                        </li>
                         <li><a class="btn btn-link text-light" role="button" href="/auth/logout">Выход</a></li>
                         {% else %}
                         <li><a class="btn btn-link text-light" role="button" href="/auth/login">Вход</a></li>

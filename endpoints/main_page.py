@@ -42,6 +42,9 @@ async def main_page(
         context['user_name'] = request.state.user.name
         context['user_uuid'] = request.state.user.uuid
         context['user'] = request.state.user
+        context['new_message_status'] = False
+        if request.state.new_message_status:
+            context['new_message_status'] = True
     if request.state.user_is_anonymous:
         context['authenticated'] = False
 
@@ -65,8 +68,8 @@ async def job_page(request: Request,
 
 @router.get("/userinfo/{uuid_job}")
 async def get_user_info(request: Request,
-                    uuid_job: str,
-                    jobs: JobRepositoryes = Depends(get_job_repository)):
+                        uuid_job: str,
+                        jobs: JobRepositoryes = Depends(get_job_repository)):
     user_info = await jobs.get_userinfo_by_uuid_job(uuid_job=uuid_job)
     # status_banned
     print('this is get get_user_info function')
@@ -76,9 +79,8 @@ async def get_user_info(request: Request,
     else:
         rait = str(user_info.rating)
         return {"error": None,
-                   "user_name": user_info.name,
-                   "user_phone": user_info.phone,
-                   "user_email": user_info.email,
-                   "user_rait": rait,
-                   "user_banned": user_info.status_banned}
-
+                "user_name": user_info.name,
+                "user_phone": user_info.phone,
+                "user_email": user_info.email,
+                "user_rait": rait,
+                "user_banned": user_info.status_banned}

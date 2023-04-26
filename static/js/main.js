@@ -69,7 +69,7 @@ async function close_job_uuid_userid(element_button){
         // получаем тело ответа (см. про этот метод ниже)
         // {'error': None, 'booking_status': '89260000000'}
             let json = await response.json();
-//            console.log('json:' + json)
+            console.log('json:' + json)
             if (json['error']=='None'){
                 console.log("status_cancel:", json['status_cancel']);
                 text_area_cancel.value = "Услуга завершена!";

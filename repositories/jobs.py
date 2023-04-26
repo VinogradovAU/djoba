@@ -345,7 +345,11 @@ JOIN active_jobs ON jobs.uuid = active_jobs.job_uuid WHERE jobs.user_id={user_id
 
     async def delete_from_booking(self, job_uuid: str, user_id: int):
         query = booking_job.delete().where(booking_job.c.job_uuid == job_uuid, booking_job.c.user_id == user_id)
-        return await self.database.execute(query=query)
+        try:
+            await self.database.execute(query=query)
+        except Exception as e:
+            return False
+        return True
 
     async def get_my_response_job_list(self, user_id: int):
         # получаю id юзера и ищу в booking таблице
@@ -359,3 +363,12 @@ JOIN active_jobs ON jobs.uuid = active_jobs.job_uuid WHERE jobs.user_id={user_id
         if res is None:
             return False
         return res
+
+    async def false_is_booking(self, job_uuid: str, new_value: bool = False) -> bool:
+        print(f'job_is_publish_change function')
+        query = jobs.update().where(jobs.c.uuid == job_uuid).values(is_booking=new_value)
+        try:
+            await self.database.execute(query)
+            return True
+        except Exception as e:
+            return False

@@ -12,7 +12,9 @@ from endpoints.api import jobs_api
 from fastapi.middleware.cors import CORSMiddleware
 from db.users import users as db_users
 import uuid
-from endpoints.depends import get_current_user
+from endpoints.depends import get_current_user, get_comment_by_performer_id, get_comment_by_author_id, \
+    set_is_author_read, set_is_performer_read
+from repositories.comments import CommentRepositoryes
 
 app = fastapi.FastAPI(title="Djoba Project")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -86,6 +88,32 @@ async def add_process_time_header(request: Request, call_next):
                 request.state.user_is_authenticated = True
                 request.state.user = user
                 request.state.access_token = access_token
+                new_message_status = False  # если нет не прочитанных комментов
+
+                my_comments = await get_comment_by_performer_id(user_id=user.id)
+                if my_comments:
+                    for ii in my_comments:
+                        dd = dict(ii)
+                        if ii["is_performer_read"] == True:
+                            new_message_status = True
+                            print(f'есть новое СООБЩЕНИЕ для {user.name}')
+                            res = await set_is_performer_read(comment_id=int(ii['id']))
+                            if not res:
+                                print(f'ошибка записи в Comments.c.is_performer_read ---> false')
+                my_comments = await get_comment_by_author_id(user_id=user.id)
+                if my_comments:
+                    for ii in my_comments:
+                        dd = dict(ii)
+                        if dd["is_author_read"] == True:
+                            new_message_status = True
+                            print(f'есть новое СООБЩЕНИЕ для {user.name}')
+                            res = await set_is_author_read(comment_id=int(ii['id']))
+                            if not res:
+                                print(f'ошибка записи в Comments.c.is_author_read ---> false')
+
+                request.state.new_message_status = new_message_status
+                if not new_message_status:
+                    print(f'нет новых сообщений для пользователя: {user.name} c ID: {user.id}')
 
         else:
             # print(f'в куках пришел неверный токен')
@@ -95,7 +123,6 @@ async def add_process_time_header(request: Request, call_next):
             manager.user_status = "offline"
             manager.access_token = ''
             request.cookies.clear()
-
 
         # except Exception as e:
         #     print(f'middleware ошибка проверки token')
