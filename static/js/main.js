@@ -1,7 +1,33 @@
-async function start_in(star_image_obj){
-	star_image_obj.getAttribute('sec');
-	console.log(star_image_obj);
+async function stars_click(star_image_obj){
+		num_star = star_image_obj.getAttribute("value");
+		num_star = Number(num_star) + 1;
+		document.querySelector(".stars-rait-value").setAttribute("rait", num_star);
+		document.querySelector(".num-rait-title").innerHTML="<h1><b>"+num_star+"</b></h1>";
 }
+
+async function stars_in(star_image_obj){
+	star_image_obj.setAttribute('src', "/static/images/star-10.png");
+	console.log(star_image_obj.getAttribute("value"));
+	num_star = star_image_obj.getAttribute("value");
+	if(num_star=>1){
+		for(i=num_star;i>-1; i--){
+			document.getElementById("star-"+i).setAttribute('src', "/static/images/star-10.png");
+		}
+	}
+}
+
+
+async function stars_out(star_image_obj){
+	star_image_obj.setAttribute('src', "/static/images/star-0.png");
+	num_star = star_image_obj.getAttribute("value");
+	if(num_star=>1){
+		for(i=num_star;i>-1; i--){
+			document.getElementById("star-"+i).setAttribute('src', "/static/images/star-0.png");
+		}
+	}
+
+}
+
 
 //модальное окно для вывода данных юзера по кнопке ИМЯ на джобе (на объявлении)
  var modalUserInfo = document.getElementById('modalUserInfo');
@@ -51,6 +77,7 @@ async function close_job_uuid_userid(element_button){
 	var uuid_job = element_button.getAttribute('jobuuid');
 	var user_id = element_button.getAttribute('userid');
 	var text_area_cancel = document.querySelector('.jobuuid-' + uuid_job);
+	var rait = element_button.getAttribute('rait');
 	console.log("uuid_job:"+uuid_job);
 	console.log("user_id="+user_id);
 	console.log("text_area_cancel: "+text_area_cancel.value);
@@ -58,7 +85,8 @@ async function close_job_uuid_userid(element_button){
 	let close_job = {
 	  uuid_job: uuid_job,
 	  user_id: user_id,
-	  text_area_cancel: text_area_cancel.value
+	  text_area_cancel: text_area_cancel.value,
+	  rait: rait,
 	};
 
 	let response = await fetch('/jobs/close_job', {

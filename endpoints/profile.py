@@ -47,22 +47,23 @@ async def profil(
             context['all_users'] = all_users
         response = templates.TemplateResponse("admin_profile.html", context=context)
     else:
-        my_comments = await comments.get_comment_by_performer_id(request.state.user.id)
+        my_comments_performer = await comments.get_comment_by_performer_id(request.state.user.id)
 
-        if my_comments:
-            context['comments'] = my_comments
-            for ii in my_comments:
+        if my_comments_performer:
+            context['comments_performer'] = my_comments_performer
+            for ii in my_comments_performer:
                 if ii.is_performer_read:
                     await comments.set_is_performer_read(comment_id=ii.id)
                 print(f'get comments----> {dict(ii)}')
-        else:
-            my_comments = await comments.get_comment_by_author_id(request.state.user.id)
-            if my_comments:
-                context['comments'] = my_comments
-                for ii in my_comments:
-                    if ii.is_author_read:
-                        await comments.set_is_author_read(comment_id=ii.id)
-                    print(f'get comments----> {dict(ii)}')
+
+        my_comments_author = await comments.get_comment_by_author_id(request.state.user.id)
+
+        if my_comments_author:
+            context['comments_author'] = my_comments_author
+            for ii in my_comments_author:
+                if ii.is_author_read:
+                    await comments.set_is_author_read(comment_id=ii.id)
+                print(f'get comments----> {dict(ii)}')
 
         my_jobs = await jobs.get_job_by_user_id(request.state.user.id)
         context['jobs'] = my_jobs

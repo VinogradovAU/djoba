@@ -153,15 +153,41 @@
                     <div class="row m-0">
                         <div class="col-md-4"></div>
                         <div class="col-md-8">
-                            {% if comments %}
+                            {% if comments_author %}
                             <div class="card">
-                                <div class="card-title"><div class="col-md-12 d-flex justify-content-center">
-                        <button type="button" class="btn btn-info p-1 m-1" uuid_job="{{comments.job_uuid}}"
-                                            onclick="" value="publishoff">История
-                        </button>
-                    </div></div>
+                                <div class="card-title">
+                                    <div class="col-md-12 d-flex justify-content-center">
+                                    <button type="button" class="btn btn-info p-1 m-1" uuid_job="{{comments_author.job_uuid}}"
+                                                        onclick="" value="publishoff">История
+                                    </button>
+                                    </div>
+                                </div>
                             </div>
-                            {% for comment in comments %}
+                            {% for comment in comments_author %}
+                            <div class="card">
+                                <div class="card">
+                                    <div class="row">
+
+                                        <div class="col-md-4 d-flex justify-content-center">
+                                            <h5><a href="">{{comment.name | title}}</a></h5>
+                                        </div>
+                                            <div class="col-md-8">
+                                            <h9>{{comment.created_at}}</h9>
+                                            </div>
+                                    </div>
+
+                                <div class="card-body">
+                                    <p class="card-text">{{comment.title}}</p>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item list-background-color">"{{comment.comment}}"</li>
+                                </ul>
+                            </div>
+                            {%endfor%}
+                            {%endif%}
+
+                                {% if comments_performer %}
+                            {% for comment in comments_performer %}
                             <div class="card">
                                 <div class="card">
                                     <div class="row">
@@ -214,10 +240,17 @@
       </div>
         <div class="phone-path text-center"></div>
         <div class="row">
-            <div class="wrapper exmpl"><div><img onmouseover="start_in(this)" src="/static/images/star-0.png"></div></div>
+            <div class="col-1"></div>
+            <div class="col-3">Оставьте оценку:</div>
+            <div class="col-1 num-rait-title"></div>
+            <div class="wrapper exmpl"><img value="0" id="star-0" onclick=stars_click(this) onmouseout="stars_out(this)" onmouseover="stars_in(this)" src="/static/images/star-0.png"><div></div></div>
+            <div class="wrapper exmpl"><img value="1" id="star-1" onclick=stars_click(this) onmouseout="stars_out(this)" onmouseover="stars_in(this)" src="/static/images/star-0.png"><div></div></div>
+            <div class="wrapper exmpl"><img value="2" id="star-2" onclick=stars_click(this) onmouseout="stars_out(this)" onmouseover="stars_in(this)" src="/static/images/star-0.png"><div></div></div>
+            <div class="wrapper exmpl"><img value="3" id="star-3" onclick=stars_click(this) onmouseout="stars_out(this)" onmouseover="stars_in(this)" src="/static/images/star-0.png"><div></div></div>
+            <div class="wrapper exmpl"><img value="4" id="star-4" onclick=stars_click(this) onmouseout="stars_out(this)" onmouseover="stars_in(this)" src="/static/images/star-0.png"><div></div></div>
         </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary button-cansel-approve stars-value" rait="-1" jobuuid="" userid="" onclick="return close_job_uuid_userid(this)">Продолжить</button>
+        <button type="button" class="btn btn-primary button-cansel-approve stars-rait-value" rait="-1" jobuuid="" userid="" onclick="return close_job_uuid_userid(this)">Продолжить</button>
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Закрыть окно</button>
       </div>
     </div>

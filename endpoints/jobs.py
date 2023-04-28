@@ -32,6 +32,13 @@ async def close_job(request: Request,
 
     author_id = await jobs.get_userinfo_by_uuid_job(uuid_job=close_job["uuid_job"])
     print(f'autor_id: {author_id}')
+
+    if str(close_job["rait"]) != "-1":
+        # есть новая оценка пользователя
+        # требуется сделать перерасчет рейтинга и записать в БД
+        print(f'Получена оценка работодателя по завершении работы ----> {close_job["rait"]}')
+
+
     item = Comment_model_in(
         job_uuid=close_job["uuid_job"],
         comment=close_job["text_area_cancel"],
