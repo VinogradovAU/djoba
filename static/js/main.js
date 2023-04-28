@@ -1,3 +1,8 @@
+async function start_in(star_image_obj){
+	star_image_obj.getAttribute('sec');
+	console.log(star_image_obj);
+}
+
 //модальное окно для вывода данных юзера по кнопке ИМЯ на джобе (на объявлении)
  var modalUserInfo = document.getElementById('modalUserInfo');
 
@@ -116,6 +121,7 @@ async function set_booking_jobuuid(element_button){
 //	var uuid_job = element_button.getAttribute('jobuuid');
 	var getphone_button = document.querySelector('.get-phone');
 	var uuid_job = getphone_button.getAttribute('jobuuid');
+	var myBut = document.querySelector('.my-btn-button');
 	url = '/jobs/set_booking/' + uuid_job;
         let response = await fetch(url);
         console.log("response.ok", response.ok);
@@ -129,6 +135,8 @@ async function set_booking_jobuuid(element_button){
             if (json['code']=='E003'){
                 console.log("booking_status:", json['booking_status']);
                 phone_path.innerText = 'Заявка создана. Автор заявки получит сообщение.';
+                myBut.innerHTML = "Закрыть";
+                element_button.classList.add('hide-hide');
                 }
             if (json['code']=='E001' || json['code']=='E002' ||json['code']=='E006'){
                 console.log("error:", json['error']);
