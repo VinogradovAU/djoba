@@ -51,8 +51,8 @@ class UserRepository(BaseRepository):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Что-то пошло не так!!!")
         return res
 
-    async def users_rait_get_by_id(self, id: int) -> Optional[Users_rait]:
-        query = users_rait.select().where(users_rait.c.id == id)
+    async def users_rait_get_by_id(self, user_id: int) -> Optional[Users_rait]:
+        query = users_rait.select().where(users_rait.c.user_id == user_id)
         user_r = await database.fetch_one(query=query)
         if user_r is None:
             return None
@@ -77,14 +77,14 @@ class UserRepository(BaseRepository):
         return new_rait
 
     async def users_rait_update(self, user_id: int, new_rating: int):
-        record = await self.users_rait_get_by_id(id=user_id)
+        record = await self.users_rait_get_by_id(user_id=user_id)
         if record is None:
             return False
         new_summ = record.rait_summ + new_rating
         new_count = record.coutn_rait + 1
         result_rating = round(float(new_summ / new_count), 1)
 
-        query = users_rait.update().where(users_rait.c.id == user_id).values(
+        query = users_rait.update().where(users_rait.c.user_id == user_id).values(
             rait_summ=new_summ,
             coutn_rait=new_count,
             rating=result_rating)
@@ -96,7 +96,7 @@ class UserRepository(BaseRepository):
             return False
 
     async def update_user_raiting(self, user_id: int) -> bool:
-        user_r = await self.users_rait_get_by_id(id=user_id)
+        user_r = await self.users_rait_get_by_id(user_id=user_id)
         if user_r is None:
             return False
         query = users.update().where(users.c.id == user_id).values(rating=user_r.rating)

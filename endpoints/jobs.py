@@ -40,7 +40,7 @@ async def close_job(request: Request,
         # есть новая оценка пользователя
         # требуется сделать перерасчет рейтинга и записать в БД
         print(f'Получена оценка работодателя по завершении работы ----> {close_job["rait"]}')
-        get_rait_data = await users.users_rait_get_by_id(id=author_id.id)
+        get_rait_data = await users.users_rait_get_by_id(user_id=author_id.id)
         if get_rait_data is None:
             new_reit_record = await users.users_rait_create_record(user_id=author_id.id, new_rating=int(close_job["rait"]))
             if new_reit_record is None:
