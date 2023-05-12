@@ -22,3 +22,15 @@ users = sqlalchemy.Table(
 
 # rating - рейтин юзера будет расчитываться когда другой юзер будет ставить оценку
 # после выполения договоренностей (работа или предоставление работы) от 1 до 5 звезд
+
+users_rait = sqlalchemy.Table(
+    'users_rait',
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, autoincrement=True, unique=True),
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), nullable=False),
+    sqlalchemy.Column("rating", sqlalchemy.DECIMAL(3, 1), default=0.0),  # рассчитаный рейтинг
+    sqlalchemy.Column("rait_summ", sqlalchemy.Integer, default=0),  # общая сумма оценок - звезд
+    sqlalchemy.Column("coutn_rait", sqlalchemy.Integer, default=0),  # количество проголосовавших
+    sqlalchemy.Column("created_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),
+    sqlalchemy.Column("updated_at", sqlalchemy.DateTime, default=datetime.datetime.utcnow()),
+)

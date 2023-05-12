@@ -9,16 +9,19 @@ from endpoints.depends import get_comment_repository
 from repositories.jobs import JobRepositoryes
 from repositories.comments import CommentRepositoryes
 from models.comments import Comment_model_in
+from repositories.users import UserRepository
+from endpoints.depends import get_user_repository
 
 templates = Jinja2Templates(directory="templates")
 
 router = APIRouter()
 
-
+# срабатывает по кнопке завершить работу их профиля пользователя
 @router.post("/close_job")
 async def close_job(request: Request,
                     comment: CommentRepositoryes = Depends(get_comment_repository),
-                    jobs: JobRepositoryes = Depends(get_job_repository)):
+                    jobs: JobRepositoryes = Depends(get_job_repository),
+                    users: UserRepository = Depends(get_user_repository)):
     close_job = await request.json()
     # print(f'close_job from post: {close_job["uuid_job"]}')
     # print(f'close_job from post: {close_job["user_id"]}')
@@ -37,7 +40,20 @@ async def close_job(request: Request,
         # есть новая оценка пользователя
         # требуется сделать перерасчет рейтинга и записать в БД
         print(f'Получена оценка работодателя по завершении работы ----> {close_job["rait"]}')
-
+        get_rait_data = await users.users_rait_get_by_id(id=author_id.id)
+        if get_rait_data is None:
+            new_reit_record = await users.users_rait_create_record(user_id=author_id.id, new_rating=int(close_job["rait"]))
+            if new_reit_record is None:
+                print(f'Ошибка БД при создании записи в users_rait')
+            else:
+                await users.update_user_raiting(user_id=author_id.id)
+                print(f'Райтинг изменен')
+        else:
+            if await users.users_rait_update(user_id=author_id.id, new_rating=int(close_job["rait"])):
+                print(f'Райтинг изменен')
+                await users.update_user_raiting(user_id=author_id.id)
+            else:
+                print(f'ошибка записи в БД - users_rait_update')
 
     item = Comment_model_in(
         job_uuid=close_job["uuid_job"],

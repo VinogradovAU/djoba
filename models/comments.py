@@ -23,6 +23,6 @@ class Comment_out(Comment_base):
 
 class Comment_model_in(BaseModel):
     job_uuid: str
-    comment: str
+    comment: Optional[str] = None
     performer_id: int
     author_id: int

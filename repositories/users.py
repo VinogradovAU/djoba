@@ -4,8 +4,8 @@ import datetime
 from typing import List, Optional
 
 from db.base import database, metadata
-from models.user import User, UserIn, UserOut, EditUserProfilData
-from db.users import users
+from models.user import User, UserIn, UserOut, EditUserProfilData, Users_rait
+from db.users import users, users_rait
 from repositories.base import BaseRepository
 from core.security import hashed_password
 from sqlalchemy import select
@@ -50,6 +50,61 @@ class UserRepository(BaseRepository):
             print(e)
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Что-то пошло не так!!!")
         return res
+
+    async def users_rait_get_by_id(self, id: int) -> Optional[Users_rait]:
+        query = users_rait.select().where(users_rait.c.id == id)
+        user_r = await database.fetch_one(query=query)
+        if user_r is None:
+            return None
+        return Users_rait.parse_obj(user_r)
+
+    async def users_rait_create_record(self, user_id: int, new_rating: int) -> Users_rait:
+        new_data = Users_rait(
+            id=1,
+            user_id=user_id,
+            rating=new_rating,
+            rait_summ=new_rating,
+            coutn_rait=1,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow(),
+        )
+        values = {**new_data.dict()}
+        values.pop("id", None)
+        query = users_rait.insert().values(**values)
+        new_rait = await self.database.execute(query)
+        if new_rait is None:
+            return None
+        return new_rait
+
+    async def users_rait_update(self, user_id: int, new_rating: int):
+        record = await self.users_rait_get_by_id(id=user_id)
+        if record is None:
+            return False
+        new_summ = record.rait_summ + new_rating
+        new_count = record.coutn_rait + 1
+        result_rating = round(float(new_summ / new_count), 1)
+
+        query = users_rait.update().where(users_rait.c.id == user_id).values(
+            rait_summ=new_summ,
+            coutn_rait=new_count,
+            rating=result_rating)
+
+        try:
+            await self.database.execute(query)
+            return True
+        except Exception as e:
+            return False
+
+    async def update_user_raiting(self, user_id: int) -> bool:
+        user_r = await self.users_rait_get_by_id(id=user_id)
+        if user_r is None:
+            return False
+        query = users.update().where(users.c.id == user_id).values(rating=user_r.rating)
+        try:
+            await self.database.execute(query=query)
+        except Exception as e:
+            return False
+        return True
 
     async def get_by_id(self, id: int) -> Optional[User]:
         query = users.select().where(users.c.id == id)

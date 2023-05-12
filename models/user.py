@@ -53,6 +53,14 @@ class EditUserProfilData(BaseModel):
             raise ValueError("phonenumbers don't match")
         return v
 
+class Users_rait(BaseModel):
+    id: Optional[int] = None
+    user_id: Optional[int] = None
+    rating: float = 0.0
+    rait_summ: float = 0.0
+    coutn_rait: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
 
 @validator("password2")
 async def password_match(cls, v, values, **kwargs):
