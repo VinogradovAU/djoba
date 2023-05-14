@@ -3,7 +3,16 @@
   <div class="card">
     <h5 class="card-header">Учетные данные</h5>
   <div class="card-body">
+    {%if notifications%}
+      {%for notif in notifications%}
+          <div class="alert alert-success" role="alert">
+
+                  {{notif}}
+          </div>
+      {%endfor%}
+    {%else%}
     <p class="card-text">Для изменения данных нажмите "Редактировать"</p>
+    {%endif%}
   </div>
   <ul class="list-group list-group-flush">
     <li class="list-group-item">ID: {{user_object.id}}</li>

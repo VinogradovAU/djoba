@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, Depends
 from core.security import manager
+from core.config import NOTIFICATIONS
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from models.jobs import CreateJobIn, Close_job
@@ -15,6 +16,7 @@ from endpoints.depends import get_user_repository
 templates = Jinja2Templates(directory="templates")
 
 router = APIRouter()
+
 
 # срабатывает по кнопке завершить работу их профиля пользователя
 @router.post("/close_job")
@@ -42,7 +44,8 @@ async def close_job(request: Request,
         print(f'Получена оценка работодателя по завершении работы ----> {close_job["rait"]}')
         get_rait_data = await users.users_rait_get_by_id(user_id=author_id.id)
         if get_rait_data is None:
-            new_reit_record = await users.users_rait_create_record(user_id=author_id.id, new_rating=int(close_job["rait"]))
+            new_reit_record = await users.users_rait_create_record(user_id=author_id.id,
+                                                                   new_rating=int(close_job["rait"]))
             if new_reit_record is None:
                 print(f'Ошибка БД при создании записи в users_rait')
             else:
@@ -54,32 +57,35 @@ async def close_job(request: Request,
                 await users.update_user_raiting(user_id=author_id.id)
             else:
                 print(f'ошибка записи в БД - users_rait_update')
+    errors = []
+    error = False
 
-    item = Comment_model_in(
-        job_uuid=close_job["uuid_job"],
-        comment=close_job["text_area_cancel"],
-        performer_id=close_job["user_id"],
-        author_id=author_id.id,
-    )
+    if close_job["text_area_cancel"]:
+        item = Comment_model_in(
+            job_uuid=close_job["uuid_job"],
+            comment=close_job["text_area_cancel"],
+            performer_id=close_job["user_id"],
+            author_id=author_id.id,
+        )
 
-    new_comment = await comment.create_job_comment(item=item)
+        new_comment = await comment.create_job_comment(item=item)
+        if not new_comment:
+            error = True
+            errors.append('Ошибка при записи комментария (БД - create_job_comment)')
+
     result = await jobs.booking_job_cancel_performer(job_uuid=close_job["uuid_job"],
                                                      user_id=int(close_job["user_id"]))
     booking_job_cancel = await jobs.delete_from_booking(job_uuid=close_job["uuid_job"],
                                                         user_id=int(close_job["user_id"]))
     false_is_booking = await jobs.false_is_booking(job_uuid=close_job["uuid_job"], new_value=False)
 
-    errors = []
-    error = False
     if not booking_job_cancel:
         error = True
         errors.append('Ошибка при работе с БД (delete_from_booking)')
     if not result:
         error = True
         errors.append('Ошибка при работе с БД (booking_job_cancel_performer)')
-    if not new_comment:
-        error = True
-        errors.append('Ошибка при записи комментария (БД - create_job_comment)')
+
     if not false_is_booking:
         error = True
         errors.append('Ошибка при работе с БД (изменение is_booking)')
@@ -87,6 +93,14 @@ async def close_job(request: Request,
         # print(f'ошибка в методе jobs/close_job: {errors}')
         # можно возвращать массив ошибок errors вместо True, если будет кому их там разобрать
         return {'error': 'True', 'status_cancel': 'NO'}
+
+    author_job = await jobs.get_userinfo_by_uuid_job(uuid_job=close_job["uuid_job"])  # получаю инфо о авторе объявдения
+    if author_job.id in manager.notifications:
+        # если уже есть сообщения для этого юзера добавляю запись
+        manager.notifications[author_job.id].append({request.state.user.id, NOTIFICATIONS.joba_cancel()})
+    else:
+        # если еще нет сообщений для этого юзера создаю новую запись
+        manager.notifications[author_job.id] = [{request.state.user.id, NOTIFICATIONS.joba_cancel()}, ]
 
     return {'error': 'None', 'status_cancel': 'ok'}
 
@@ -334,6 +348,9 @@ async def approved_performer(request: Request,
         approved_performer_status = "OK"
         active_job = await jobs.set_booking_job_approved_performer(job_uuid=uuid_job, user_id=int(user_id))
         if active_job:
+            #отправляю уведомление
+            await set_notification(user_id1=user_id, user_id2=request.state.user.id,
+                                   notification=NOTIFICATIONS.response_approved())
             return {'code': code, 'approved_performer_status': approved_performer_status}
         else:
             return {'code': 'error', 'approved_performer_status': 'Не удалось назначить исполнителя'}
@@ -364,6 +381,10 @@ async def set_job_booking(request: Request,
             if set_booking_job['status']:
                 # code='E003'
                 print(f'Статуc бронирования джобы с {uuid_job} установлен в {True}')
+                author_job = await jobs.get_userinfo_by_uuid_job(uuid_job=uuid_job)  # получаю инфо о авторе объявдения
+                await set_notification(user_id1=author_job.id, user_id2=request.state.user.id,
+                                       notification=NOTIFICATIONS.new_response())
+
                 return {'error': 'None', 'booking_status': 'True', 'code': set_booking_job['code']}
             else:
                 # code E001 и E002
@@ -372,3 +393,15 @@ async def set_job_booking(request: Request,
             return {'error': 'Не верный uuid джобы', 'booking_status': '', 'code': 'E004'}
 
     return {'error': 'Пользователь не распознан', 'booking_status': '', 'code': 'E005'}
+
+
+async def set_notification(user_id1, user_id2, notification):
+    ''':param user_id1 - id юзера кому назначается сообщение
+    user_id2 - id юзера который инициирует передеачу сообщения
+    notification - текст сообщения/уведомления'''
+    if user_id1 in manager.notifications:
+        # если уже есть сообщения для этого юзера добавляю запись
+        manager.notifications[user_id1].append({user_id2, notification})
+    else:
+        # если еще нет сообщений для этого юзера создаю новую запись
+        manager.notifications[user_id1] = [{user_id2, notification}, ]

@@ -59,6 +59,7 @@ class Manager():
                  access_token: str = '',
                  direction: str = '/',  # login или logout пришли на главную по 302 или просто на главную заход
                  user: Any = None,
+                 notifications: Optional[dict] = {},
                  ):
         self.user_status = user_status
         self.autorization = autorization
@@ -68,6 +69,17 @@ class Manager():
         self.access_token = ''
         self.direction = direction
         self.user = user
+        self.notifications = notifications
 
 
 manager = Manager()
+
+''' 
+self.notifications = {
+    user_id1: [{user_id2: n},], 
+    ...
+}
+# user_id1 - пользователь которому передано сообщение , 
+# user_id2 - пользователь который инициирует передачу сообещния (изменеие состояния), 
+# n - номер сообщения в NOTIFICATION
+'''

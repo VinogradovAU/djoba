@@ -145,6 +145,7 @@ async function toogle_view_job(element_button){
           views_div.classList.add('view-job-style');
      }
 }
+// откликнуться на объявление
 async function set_booking_jobuuid(element_button){
 //	var uuid_job = element_button.getAttribute('jobuuid');
 	var getphone_button = document.querySelector('.get-phone');

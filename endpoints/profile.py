@@ -38,6 +38,13 @@ async def profil(
         "user_uuid": request.state.user.uuid,
         "authenticated": True,
     }
+    if request.state.notifications:
+        #передаю уведомления на страницу профиля
+        context["notifications"] = request.state.notifications
+
+        #удаляю уведомления, чтобы больше не показывать
+        request.state.notifications = None
+        del manager.notifications[request.state.user.id]
 
     if request.state.user.is_admin:
         all_users = await users.get_all(limit=100, skip=0)

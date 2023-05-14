@@ -88,7 +88,12 @@ async def add_process_time_header(request: Request, call_next):
                 request.state.user_is_authenticated = True
                 request.state.user = user
                 request.state.access_token = access_token
+                request.state.notifications = None
                 new_message_status = False  # если нет не прочитанных комментов
+                if user.id in manager.notifications:
+                    new_message_status = True
+                    request.state.notifications = manager.notifications[user.id] # массив словарей уведомлений(сообщений)
+                    print(f'есть уведомления для пользователя {user.name} c ID: {user.id}')
 
                 my_comments = await get_comment_by_performer_id(user_id=user.id)
                 if my_comments:
