@@ -19,7 +19,10 @@
             {% if job.jobs_is_booking %}
             <div class="col-sm-3 col-sm-pull-6 d-flex align-items-center justify-content-start text-danger"><h9>Отклики ({{ job.booking_b_count }}) </h9></div>
             {%endif%}
-            <div class="col-sm-6 col-sm-pull-6 d-flex align-items-center justify-content-end"><h5>Истекает: {{ job.active_jobs_disactivate_date }}</h5></div>
+            <div class="col-sm-6 col-sm-pull-6 d-flex align-items-center justify-content-end">
+                <h9>Истекает: {{ job.active_jobs_disactivate_date | ts_to_datetime }}<br>
+                Изменено: {{ job.jobs_updated_at | ts_to_datetime }}</h9>
+            </div>
         </div>
     </dev>
   <div class="card-body">

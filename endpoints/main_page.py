@@ -3,14 +3,13 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import APIRouter, Request, Depends, Response, Cookie
 from repositories.jobs import JobRepositoryes
 from endpoints.depends import get_job_repository
-from fastapi.templating import Jinja2Templates
+from core.filters import templates
 from core.security import decode_access_token
 from starlette.datastructures import MutableHeaders
 from core.security import manager
 
 router = APIRouter()
 
-templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/", response_class=HTMLResponse)

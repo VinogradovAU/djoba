@@ -4,7 +4,7 @@ import datetime
 from db.comments import comments
 from db.jobs import jobs, active_jobs, booking_job
 from db.users import users
-from sqlalchemy import select
+from sqlalchemy import select, desc
 
 
 class CommentRepositoryes(BaseRepository):
@@ -36,7 +36,7 @@ class CommentRepositoryes(BaseRepository):
         # достать строчки исполнителя с id = performer_id
         query = select(comments, jobs, users).where(comments.c.performer_id == performer_id).join(jobs,
                                                                                                   comments.c.job_uuid == jobs.c.uuid).join(
-            users, jobs.c.user_id == users.c.id)
+            users, jobs.c.user_id == users.c.id).order_by(desc(comments.c.updated_at))
         result = await self.database.fetch_all(query=query)
         if result is None:
             return False
@@ -46,7 +46,7 @@ class CommentRepositoryes(BaseRepository):
         # достать строчки исполнителя с id = author_id
         query = select(comments, jobs, users).where(comments.c.author_id == author_id).join(jobs,
                                                                                             comments.c.job_uuid == jobs.c.uuid).join(
-            users, jobs.c.user_id == users.c.id)
+            users, comments.c.performer_id == users.c.id).order_by(desc(comments.c.updated_at))
         result = await self.database.fetch_all(query=query)
         if result is None:
             return False

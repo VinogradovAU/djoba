@@ -1,3 +1,5 @@
+import datetime
+
 from fastapi.responses import HTMLResponse
 from fastapi.responses import RedirectResponse
 from fastapi import APIRouter, Request, Depends
@@ -9,10 +11,16 @@ from repositories.comments import CommentRepositoryes
 from endpoints.depends import get_job_repository
 from endpoints.depends import get_comment_repository
 from models.user import EditUserProfilData
-
-templates = Jinja2Templates(directory="templates")
 from core.security import manager
+from dateutil.parser import parse
+from core.filters import templates
 
+# templates = Jinja2Templates(directory="templates")
+#
+# def ts_to_datetime(ts) -> str:
+#     return ts.strftime('%Y-%m-%d %H:%M')
+#
+# templates.env.filters["ts_to_datetime"] = ts_to_datetime
 # router = APIRouter()
 
 router = APIRouter(include_in_schema=False)
