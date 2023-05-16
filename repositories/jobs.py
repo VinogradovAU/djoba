@@ -178,7 +178,8 @@ class JobRepositoryes(BaseRepository):
         (SELECT count(*) from booking_job where booking_job.job_uuid=jobs.uuid) AS booking_b_count 
         from jobs 
         JOIN active_jobs ON jobs.uuid = active_jobs.job_uuid 
-        JOIN users ON jobs.user_id = users.id LIMIT {limit} OFFSET {skip};'''
+        JOIN users ON jobs.user_id = users.id 
+        ORDER BY jobs.updated_at DESC LIMIT {limit} OFFSET {skip};'''
 
         result = {"erorr": False, 'list_jobs': ''}
         try:
