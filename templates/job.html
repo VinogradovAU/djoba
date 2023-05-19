@@ -4,7 +4,7 @@
             {% if job.users_name %}
             <div class="col d-flex justify-content-start text-success">
                 <img src="{{ url_for('static', path='/images/logo/user_logo')}}{{range(1,3) | random }}.png" class="img-logo-user">
-                <button type="button" class="btn btn-light btn-sm position-relative" data-bs-toggle="modal" data-bs-target="#modalUserInfo" data-bs-jobuuid={{job.jobs_uuid}}>
+                <button type="button" class="btn btn-link btn-sm position-relative" data-bs-toggle="modal" data-bs-target="#modalUserInfo" data-bs-jobuuid={{job.jobs_uuid}}>
                     <h5>{{ job.users_name | title }}</h5>
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         {{ job.users_rating }}
