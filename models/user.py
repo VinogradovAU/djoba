@@ -3,7 +3,7 @@ from typing import Optional, Union
 from uuid import UUID
 import phonenumbers
 
-from pydantic import BaseModel, EmailStr, validator, constr
+from pydantic import BaseModel, EmailStr, validator, constr, Field
 
 
 class User(BaseModel):
@@ -61,6 +61,16 @@ class Users_rait(BaseModel):
     coutn_rait: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
+
+class Users_stars(BaseModel):
+    id: Optional[int] = None
+    job_id: int
+    user_id_who: int
+    user_id_to_who: int
+    stars: int = Field(..., gt=0, le=5)
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
 
 @validator("password2")
 async def password_match(cls, v, values, **kwargs):

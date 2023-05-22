@@ -4,8 +4,8 @@ import datetime
 from typing import List, Optional
 
 from db.base import database, metadata
-from models.user import User, UserIn, UserOut, EditUserProfilData, Users_rait
-from db.users import users, users_rait
+from models.user import User, UserIn, UserOut, EditUserProfilData, Users_rait, Users_stars
+from db.users import users, users_rait, users_stars
 from repositories.base import BaseRepository
 from core.security import hashed_password
 from sqlalchemy import select
@@ -94,6 +94,27 @@ class UserRepository(BaseRepository):
             return True
         except Exception as e:
             return False
+
+    async def user_stars_create_record(self, job_id: int,
+                                       user_id_who: int,
+                                       user_id_to_whom: int,
+                                       stars: int) -> Users_stars:
+        new_data = Users_stars(
+            id=1,
+            job_id=job_id,
+            user_id_who=user_id_who,
+            user_id_to_who=user_id_to_whom,
+            stars=stars,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow(),
+        )
+        values = {**new_data.dict()}
+        values.pop("id", None)
+        query = users_stars.insert().values(**values)
+        new_record = await self.database.execute(query)
+        if new_record is None:
+            return None
+        return new_record
 
     async def update_user_raiting(self, user_id: int) -> bool:
         user_r = await self.users_rait_get_by_id(user_id=user_id)
