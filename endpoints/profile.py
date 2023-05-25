@@ -69,7 +69,7 @@ async def profil(
             for ii in my_comments_performer:
                 if ii.is_performer_read:
                     await comments.set_is_performer_read(comment_id=ii.id)
-                print(f'get comments----> {dict(ii)}')
+                print(f'get comments_performer----> {dict(ii)}')
 
         my_comments_author = await comments.get_comment_by_author_id(request.state.user.id)
 
@@ -78,7 +78,7 @@ async def profil(
             for ii in my_comments_author:
                 if ii.is_author_read:
                     await comments.set_is_author_read(comment_id=ii.id)
-                print(f'get comments----> {dict(ii)}')
+                print(f'get comments_author----> {dict(ii)}')
 
         my_jobs = await jobs.get_job_by_user_id(request.state.user.id)
         context['jobs'] = my_jobs

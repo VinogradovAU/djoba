@@ -222,7 +222,7 @@ if (typeof(exampleModal) != 'undefined' && exampleModal != null)
 
 }
 
-function generate_stars(rait_num){
+async function generate_stars(rait_num){
 	val_rait = rait_num;
 	if (val_rait == null) {
         val_rait = "0.0";

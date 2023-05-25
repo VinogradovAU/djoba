@@ -62,6 +62,12 @@ body {
     display: block;
     /*    border: 5px solid #515151;*/
 }
+.wrapper2 {
+    width: 20px;
+    height: 20px;
+    display: block;
+    /*    border: 5px solid #515151;*/
+}
 
 .exmpl img {
     display: block;
@@ -71,6 +77,11 @@ body {
 .rait_row {
     height: 50px;
 }
+
+.rait_row_min {
+    height: 35px;
+}
+
 .text-logo {
     font-size: 1.25rem;
     display: flex;

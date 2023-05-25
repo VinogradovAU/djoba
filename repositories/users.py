@@ -103,7 +103,7 @@ class UserRepository(BaseRepository):
             id=1,
             job_id=job_id,
             user_id_who=user_id_who,
-            user_id_to_who=user_id_to_whom,
+            user_id_to_whom=user_id_to_whom,
             stars=stars,
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow(),
@@ -221,3 +221,14 @@ class UserRepository(BaseRepository):
         except Exception as e:
             return False
         return True
+
+    async def get_star_by_jobid_useruuid(self, job_id: int, user_uuid: str):
+        u_id = await self.get_by_uuid(uuid=user_uuid)
+        if u_id is None:
+            return False
+        print(f'user_id ----> {u_id.id}')
+        query = users_stars.select().where(users_stars.c.user_id_who == int(u_id.id), users_stars.c.job_id == job_id)
+        res = await database.fetch_all(query=query)
+        if res:
+            return res
+        return False

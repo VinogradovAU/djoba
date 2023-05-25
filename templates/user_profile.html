@@ -186,7 +186,12 @@
                                             <h5><a href="">{{cc.name | title}}</a></h5>
                                             "{{cc.comment}}"
                                         </li>
-                                        <li class="list-group-item list-background-color">{{cc.created_at | ts_to_datetime}}</li>
+                                        <li class="list-group-item list-background-color">
+                                            <div class="row">
+                                                <div class="col-md-4">{{cc.created_at | ts_to_datetime}}</div>
+                                                <div class="col d-flex justify-content-end">Вас оценили:</div>
+                                            </div>
+                                            </li>
                                     </ul>
                                     {%endif%}
                                  {%endfor%}
@@ -200,7 +205,7 @@
                                 <div class="card">
                                 <div class="card-title">
                                     <div class="col-md-12 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-info p-1 m-1" uuid_job="{{comments_author.job_uuid}}"
+                                    <button type="button" class="btn btn-info p-1 m-1" uuid_job="{{comments_performer.job_uuid}}"
                                                         onclick="" value="publishoff">Мои отзывы
                                     </button>
                                     </div>
@@ -223,7 +228,13 @@
                                     <p class="card-text">{{comment.title}}</p>
                                 </div>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item list-background-color">"{{comment.comment}}"</li>
+                                    <li class="list-group-item list-background-color">
+                                        <div class="row">
+                                                <div class="col-md-4">"{{comment.comment}}"</div>
+                                                <div class="col d-flex justify-content-center stars_pic" value_rait="4.2" value_user_uuid="{{request.state.user.uuid}}" value_job_uuid="{{comment.job_uuid}}">Ваша оценка: --- </div>
+                                            </div>
+
+                                    </li>
                                 </ul>
                             </div>
                             {%endfor%}
@@ -279,7 +290,7 @@
 {%include 'footer_col.html'%}
 
 {% include 'js_include.html' %}
-
+<script src="{{ url_for('static', path='/js/profile.js') }}"></script>
 
 
 </body>

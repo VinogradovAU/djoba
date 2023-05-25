@@ -18,6 +18,24 @@ templates = Jinja2Templates(directory="templates")
 router = APIRouter()
 
 
+@router.get("/star/{user_uuid}/{job_uuid}")
+async def get_star_by_jobuuid_useruuid(request: Request,
+                                       user_uuid: str,
+                                       job_uuid: str,
+                                       users: UserRepository = Depends(get_user_repository),
+                                       jobs: JobRepositoryes = Depends(get_job_repository),
+                                       ):
+    print(f'this is get_star_by_jobuuid_useruuid function')
+    job = await jobs.get_job_by_uuid(uuid=job_uuid)
+    if not job:
+        return False
+    print(f'user_uuid: {user_uuid}')
+    rait = await users.get_star_by_jobid_useruuid(job_id=int(job.id), user_uuid=user_uuid)
+    if not rait:
+        return {"rait": "None"}
+    return {"rait": str(rait[0].stars)}
+
+
 # срабатывает по кнопке завершить работу их профиля пользователя
 @router.post("/close_job")
 async def close_job(request: Request,
@@ -42,9 +60,16 @@ async def close_job(request: Request,
         # есть новая оценка пользователя
         # требуется сделать перерасчет рейтинга и записать в БД
         print(f'Получена оценка работодателя по завершении работы ----> {close_job["rait"]}')
-        if 0 < int(str(close_job["rait"])) <=5:
-             # записываем в бд кто кому и на какой джобе поставил звезды. user_stars_create_record
-            pass
+        if 0 < int(str(close_job["rait"])) <= 5:
+            job = await jobs.get_job_by_uuid(uuid=close_job["uuid_job"])
+            # записываем в бд кто кому и на какой джобе поставил звезды. user_stars_create_record
+            new_rec = await users.user_stars_create_record(job_id=job.id,
+                                                           user_id_who=request.state.user.id,
+                                                           user_id_to_whom=author_id.id,
+                                                           stars=close_job["rait"])
+            if new_rec is None:
+                print(f'Ошибка создания записи в таблицу users_stars')
+
         get_rait_data = await users.users_rait_get_by_id(user_id=author_id.id)
         if get_rait_data is None:
             new_reit_record = await users.users_rait_create_record(user_id=author_id.id,
@@ -351,7 +376,7 @@ async def approved_performer(request: Request,
         approved_performer_status = "OK"
         active_job = await jobs.set_booking_job_approved_performer(job_uuid=uuid_job, user_id=int(user_id))
         if active_job:
-            #отправляю уведомление
+            # отправляю уведомление
             await set_notification(user_id1=user_id, user_id2=request.state.user.id,
                                    notification=NOTIFICATIONS.response_approved())
             return {'code': code, 'approved_performer_status': approved_performer_status}

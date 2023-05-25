@@ -66,7 +66,7 @@ class Users_stars(BaseModel):
     id: Optional[int] = None
     job_id: int
     user_id_who: int
-    user_id_to_who: int
+    user_id_to_whom: int
     stars: int = Field(..., gt=0, le=5)
     created_at: datetime.datetime
     updated_at: datetime.datetime
