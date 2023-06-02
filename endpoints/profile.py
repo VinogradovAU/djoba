@@ -14,6 +14,7 @@ from models.user import EditUserProfilData
 from core.security import manager
 from dateutil.parser import parse
 from core.filters import templates
+from auth.forms import EditPassworForm
 
 # templates = Jinja2Templates(directory="templates")
 #
@@ -47,10 +48,10 @@ async def profil(
         "authenticated": True,
     }
     if request.state.notifications:
-        #передаю уведомления на страницу профиля
+        # передаю уведомления на страницу профиля
         context["notifications"] = request.state.notifications
 
-        #удаляю уведомления, чтобы больше не показывать
+        # удаляю уведомления, чтобы больше не показывать
         request.state.notifications = None
         del manager.notifications[request.state.user.id]
 
@@ -84,8 +85,8 @@ async def profil(
         context['jobs'] = my_jobs
         my_response_job_list = await jobs.get_my_response_job_list(request.state.user.id)
         context['my_response_job_list'] = my_response_job_list
-        response_count = False #для правильного отображения списков работ
-        response_confirmed = False # есть те что с откликами, а есть те которые уже одобрили
+        response_count = False  # для правильного отображения списков работ
+        response_confirmed = False  # есть те что с откликами, а есть те которые уже одобрили
         count1 = 0
         count2 = 0
         if my_response_job_list:
@@ -103,6 +104,71 @@ async def profil(
         context['response_confirmed'] = response_confirmed
         response = templates.TemplateResponse("user_profile.html", context=context)
 
+    return response
+
+
+@router.post('/edit_pass/{uuid}')
+async def edit_user_password_post(
+        request: Request,
+        uuid: str,
+        users: UserRepository = Depends(get_user_repository)
+):
+    print(f'this is post change_password_form function')
+    if request.state.user_is_authenticated:
+        errors = []
+        context = {
+            "errors": errors,
+            "request": request,
+            "user_object": request.state.user,
+            "user_name": request.state.user.name,
+            "user_uuid": request.state.user.uuid,
+            "authenticated": True,
+        }
+        myform = EditPassworForm(request)
+        await myform.load_data()
+        if await myform.is_valid():
+            print("form change_password_form is valid - ok")
+            # обновляем поле с паролем для юзера
+            if await users.user_set_newpassword(user_uuid=uuid, newpass=myform.newpassword1):
+                print(f'Пароль успершно изменЁн')
+            return RedirectResponse("/profile", status_code=302)
+        else:
+            errors.append('не удалось провести валидацию формы')
+        # ошибка валидации формы
+        errors.append('Ошибка валидации формы. Проверьте поля')
+        context['errors'] = errors
+        response = templates.TemplateResponse("edit_pass.html", context=context)
+        return response
+    else:
+        print(f'authenticated = False ---> редирект на login')
+        return RedirectResponse("/auth/login", status_code=302)
+
+    response = {}
+    return response
+
+
+@router.get('/edit_pass/{uuid}')
+async def edit_user_password(
+        request: Request,
+        uuid: str,
+        users: UserRepository = Depends(get_user_repository)
+):
+    print(f'this is post change_password_form function')
+    if request.state.user_is_authenticated:
+        errors = []
+        context = {
+            "errors": errors,
+            "request": request,
+            "user_object": request.state.user,
+            "user_name": request.state.user.name,
+            "user_uuid": request.state.user.uuid,
+            "authenticated": True,
+        }
+    else:
+        print(f'authenticated = Fals ---> редирект на login')
+        return RedirectResponse("/auth/login", status_code=302)
+
+    response = templates.TemplateResponse("edit_pass.html", context=context)
     return response
 
 

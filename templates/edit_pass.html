@@ -16,11 +16,6 @@
       </div>
 
       <div class="text-success font-weight-bold">
-        {%if authenticated %}
-        <div class="badge bg-success text-wrap font-weight-bold" style="font-size: large;">
-          ЗАЛОГИНИЛСЯ!
-        </div>
-        {% endif %}
         {% if msg %}
         <div class="badge bg-success text-wrap font-weight-bold" style="font-size: large;">
           {{msg}}
@@ -28,23 +23,21 @@
         {% endif %}
       </div>
     </div>
-
-
     <div class="row my-5">
-      <div class="mx-auto" style="width: 400px;">
-        <div class="d-flex justify-content-center"><h4>Вход в систему</h4></div>
+      <div class="mx-auto" style="width: 450px;">
+        <div class="d-flex justify-content-center" style="margin-bottom: 30px;"><h4>Измение пароля пользователя {{user_name | title}}</h4></div>
       <form method="POST">
         <div class="mb-3">
-          <label>Email</label>
-          <input type="text" required placeholder="Your email" name="email" value="{{email}}" class="form-control">
+          <label>NewPassword</label>
+          <input type="password" required placeholder="Введите новый пароль" value="{{newpassword1}}" name="newpassword1" class="form-control">
         </div>
         <div class="mb-3">
-          <label>Password</label>
-          <input type="password" required placeholder="Choose a secure password" value="{{password}}" name="password" class="form-control">
+          <label>NewPassword2</label>
+          <input type="password" required placeholder="Введите новый пароль повторно" value="{{newpassword2}}" name="newpassword2" class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary">Войти</button>
+        <button type="submit" class="btn btn-primary">Изменить</button>
       </form>
-    </div>
+        </div>
     </div>
   </div>
   {% endblock %}

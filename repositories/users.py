@@ -29,6 +29,14 @@ class UserRepository(BaseRepository):
         query = users.update().where(users.c.uuid == u).values(status_online=status_online)
         return await self.database.execute(query)
 
+    async def user_set_newpassword(self, user_uuid: str, newpass: str) -> bool:
+        print(f'function user_set_newpassword')
+        query = users.update().where(users.c.uuid == user_uuid).values(hashed_password=hashed_password(newpass))
+        result = await self.database.execute(query)
+        if result is None:
+            return False
+        return True
+
     async def get_all(self, limit: int = 100, skip: int = 0) -> List[UserOut]:
 
         try:

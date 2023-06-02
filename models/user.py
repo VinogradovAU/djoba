@@ -53,6 +53,11 @@ class EditUserProfilData(BaseModel):
             raise ValueError("phonenumbers don't match")
         return v
 
+class EditUserPassworModel(BaseModel):
+    newpassword1: str
+    newpassword2: str
+
+
 class Users_rait(BaseModel):
     id: Optional[int] = None
     user_id: Optional[int] = None
